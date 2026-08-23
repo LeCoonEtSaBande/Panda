@@ -6,7 +6,8 @@ Tu parles en français (texte ou, plus tard, dictée). L’agent crée et met à
 
 **Statut :** spécification uniquement. Le code vient ensuite.
 
-Spécification complète : [`docs/specification.md`](docs/specification.md).
+- Spécification v1 : [`docs/specification.md`](docs/specification.md)
+- **À remplir avant le code agent** (modes, phrases, cartes, mails) : [`docs/brief/README.md`](docs/brief/README.md)
 
 ---
 
