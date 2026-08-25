@@ -1,0 +1,467 @@
+1 - Objectif de l'application
+Gérer une to do list persistante à l'aide d'un Agent IA afin de gagner du temps et de la fluidité
+Stockage une liste de contact persistante pour alimenter les échanges avec l'agent et la to do list
+
+2 - Accessibilité
+Accessible depuis Iphone ou PC. Version simplifié sur Iphone et complete sur PC.
+Sécurisation a la connexion via un MDP ou une reconnaissance de l'appareil. Fluide/invisible pour un appareil déjà connecté.
+Visibilité sur la page permettant les échange libre avec l'agent IA du nombre de tokens restant
+
+3 - Stockage des informations Tâches
+ID;
+Date de modification;
+Action;
+Statut; (A Faire; En Attente; Fait)
+Qui Agit;
+Interlocuteur;
+A Faire Avant le;
+Contexte; (Pro; Perso)
+Récurrence;
+Historique;
+Dépend de; (Une autre ID de Tâche)
+
+4 - Stockage des informations de contact
+ID;
+Nom;
+Prénom;
+Fonction;
+Organisation;
+Téléphone;
+Email;
+Lien;
+Alias; (Pédiatre de ma fille; Pédiatre de Laure) OU (Un de mes associés) OU (Papa; Grand père de Laure)
+
+5 - Fonctionnalités
+Possibilité d'interagir avec un agent IA "formaté" beneficiants d'outils retenus au préalable
+Mise a jour et organisation de deux BDD (Contact et Tâches) par l'agent IA
+Systèmes de validation rapide de/des action(s) proposée(s) en un seul clic après chaque échange
+Tâches et dépendances organisées par blocs
+Peut rédiger un email ou un ordre du jour listant les sujets en cours avec un interlocuteur
+Possibilité de faire rédiger un email automatique pour faire avancer une tâche (prise de contact, demande de devis, etc...)
+Possibilité de saisir le contenu d'un email ou sms pour obtenir une proposition de création de tâches ou une mise à jour. Et mise a jour des contacts.
+Possibilité d'échange libre avec l'agent en parallèle des échanges formatés. Accès aux BBD en lecture seule.
+Possibilité de faire une recherche google ou google map rapide depuis la page d'accueil
+L'agent sait reconnaitre quand on s'adresse a moi dans des échanges écrit (Nom, Prénom, Organisation, Coordonnées)
+Possibilité de faire des modifications/ajouts/recherches manuellement des taches et contacts
+Archivage des tâches en un clic si plus rapide que par l'agent IA
+Gestion persistante d'une liste de course en parallèle
+Avoir des rappels des tâches du pour aujourdhui, cette semaine, ce mois-ci, en retard
+Avoir une liste des personnes que je dois relancer (A trier dans l'ordre des personnes contacté il y a le plus longtemps)
+
+6 - Evolutions futurs prévues
+Possibilité de lire ou écrire directement les emails dans Outlook
+Possibilité de stocker des PJ (Email, PDF, Image, Etc...) dans les tâches
+Synchro contacts outlook
+
+7 - Actions/Boutons (Pour simplifier le travail de l'agent IA et limiter la complexité pour lui)
+Type d'interaction :
+Assistant - Modifie des tâches, des contacts, rédige des CR ou des emails, en prennant en compte le fait que je m'adresse directement à l'assistant
+Message reçu - Modifie des tâches, des contacts, en prennant en compte le fait que je vais fournir du texte correspondant a un message que j'ai reçu
+Message envoyé - Modifie des tâches, des contacts, en prennant en compte le fait que je vais fournir du texte correspondant a un message que j'ai envoyé
+
+Puis validation en un clic ou modification
+
+Boutons :
+Rappel des taches dues Aujourd'hui/Cette semaine/Ce mois-ci/En retard
+Rappel des contacts à relancer
+
+8 - Phrases type de l'utilisateur et actions de l'agent sur la BDD (Tâches et Dates fictives)
+
+1
+Fonction "Assistant" - 25/08/2026
+"Je dois réparer ma douche avant Noël".
+-> Crée une tache
+ID; T20260001
+Date de modification; 25/08/2026
+Action; Réparer la Douche
+Statut; A Faire
+Qui Agit; Moi
+Interlocuteur;
+A Faire Avant le; 25/12/2026
+Contexte; Perso
+Récurrence; Non
+Historique;
+Dépend de;
+
+2
+Fonction "Assistant" - 26/08/2026
+"Je vais contacter ce plombier pour ma douche pour obtenir un devis : Société Qualitec 0404040404"
+-> Modifie la tâche
+ID; T20260001
+Date de modification; 26/08/2026
+Action; Contacter la société Qualitec pour réparer la douche
+Statut; A Faire
+Qui Agit; Moi
+Interlocuteur; C2026001
+A Faire Avant le; 25/12/2026
+Contexte; Perso
+Récurrence; Non
+Historique; Réparer la Douche - 25/08/2026
+Dépend de;
+-> Crée une entrée dans le carnet d'adresse
+ID; C2026001
+Nom;
+Prénom;
+Fonction; Plombier
+Organisation; Qualitec
+Téléphone; 0404040404
+Email;
+Lien;
+Alias;
+
+3
+Fonction "Assistant" - 27/08/2026
+"Le contact chez Qualitec s'appelle Franck Bouvard voici ses coordonnées modifie la fiche de Qualitec : Franck Bouvard 06060606060"
+-> Modifie le contact dans le carnet d'adresse
+ID; C2026001
+Nom; Bouvard
+Prénom; Franck
+Fonction; Plombier
+Organisation; Qualitec
+Téléphone; 0606060606
+Email;
+Lien;
+Alias; Plombier pour la maison
+-> Modifie la tâche
+ID; T20260001
+Date de modification; 27/08/2026
+Action; Contacter Franck Bouvard de chez Qualitec pour réparer la douche
+Statut; A Faire
+Qui Agit; Moi
+Interlocuteur; C2026001
+A Faire Avant le; 25/12/2026
+Contexte; Perso
+Récurrence; Non
+Historique; Réparer la Douche - 25/08/2026, Contacter la société Qualitec pour réparer la douche - 26/08/2026
+Dépend de;
+
+4
+Fonction "Assistant" - 27/08/2026
+"J'ai contacté Franck Bouvard pour ma douche j'attends un devis"
+-> Modifie la tâche
+ID; T20260001
+Date de modification; 27/08/2026
+Action; Franck Bouvard de chez Qualitec doit m'envoyer un devis pour réparer la Douche
+Statut; En attente
+Qui Agit; C2026001
+Interlocuteur; C2026001
+A Faire Avant le; 25/12/2026
+Contexte; Perso
+Récurrence; Non
+Historique;Réparer la Douche - 25/08/2026, Contacter la société Qualitec pour réparer la douche - 26/08/2026, Contacter Franck Bouvard de chez Qualitec pour réparer la douche - 27/08/2026
+Dépend de;
+
+5
+"Clic sur Rappel des personnes à relancer" - 28/08/2026
+-> Affiche
+Franck Bouvard de chez Qualitec contacté le 27/08/2026 pour un devis pour réparer la douche
+
+6
+Fonction "Assistant" - 28/08/2026
+"Dis moi si je dois relancer du monde pour avancer"
+-> Affiche
+Franck Bouvard de chez Qualitec contacté le 27/08/2026 pour un devis pour réparer la douche
+
+7
+Fonction "Assistant" - 30/08/2026
+"Ma douche est réparée"
+-> Modifie la tâche
+ID; T20260001
+Date de modification; 27/08/2026
+Action; Franck Bouvard de chez Qualitec doit m'envoyer un devis pour réparer la Douche
+Statut; Fait
+Qui Agit; C2026001
+Interlocuteur; C2026001
+A Faire Avant le; 25/12/2026
+Contexte; Perso
+Récurrence; Non
+Historique;Réparer la Douche - 25/08/2026, Contacter la société Qualitec pour réparer la douche - 26/08/2026, Contacter Franck Bouvard de chez Qualitec pour réparer la douche - 27/08/2026
+Dépend de;
+
+8
+Fonction "Assistant" - 30/08/2026
+"Rappel moi l'historique concernant la réparation de ma douche"
+-> Affiche
+25/08/2026 : Réparer la Douche
+26/08/2026 : Contacter la société Qualitec pour réparer la douche
+27/08/2026 : Contacter Franck Bouvard de chez Qualitec pour réparer la douche
+27/08/2026 : Franck Bouvard de chez Qualitec doit m'envoyer un devis pour réparer la Douche
+30/08/2026 : Tâche completée
+
+9
+Fonction "Assistant" - 30/08/2026
+"Je dois vendre sur Le Bon Coin du matériel de sport. Je veux le mettre en vente avant Dimanche prochain.
+Il y a a vendre :
+- Une planche de surf
+- Un masque de ski
+- Des palmes
+Mais avant ça je dois créer un compte sur Le Bon Coin"
+-> Crée la tâche
+ID; T20260002
+Date de modification; 30/08/2026
+Action; Créer un compte sur le Bon coin
+Statut; A Faire
+Qui Agit; Moi
+Interlocuteur; 
+A Faire Avant le; 06/09/2026
+Contexte; Perso
+Récurrence; Non
+Historique;
+Dépend de;
+-> Crée la tâche
+ID; T20260003
+Date de modification; 30/08/2026
+Action; Mettre en vente les palmes, le masque de ski et la planche de surf sur Le Bon Coin
+Statut; A Faire
+Qui Agit; Moi
+Interlocuteur; 
+A Faire Avant le; 06/09/2026
+Contexte; Perso
+Récurrence; Non
+Historique;
+Dépend de; T20260002
+
+10
+Fonction "Assistant" - 31/08/2026
+"Il faut que j'appelle aujourd'hui rémi parent pour la réunion de la semaine prochaine"
+-> On ne crée pas de contact si il n'y a pas à minima : (Nom OU Prenom OU Organisation) ET (Téléphone OU Email OU Lien) on rapelle juste le nom en format texte dans la tâche
+-> Crée une tâche
+ID; T20260004
+Date de modification; 31/08/2026
+Action; Contacter Rémi Parent concernant la réunion de la semaine du 07/09/2026
+Statut; A Faire
+Qui Agit; Moi
+Interlocuteur; Rémi Parent
+A Faire Avant le; 31/09/2026
+Contexte; Pro
+Récurrence; Non
+Historique;
+Dépend de;
+
+11
+Fonction "Assistant" - 31/08/2026
+"Décalle toute mes tâches a faire pour aujourd'hui d'une semaine car je suis en vacances"
+-> Modifie la tâche
+ID; T20260004
+Date de modification; 31/08/2026
+Action; Contacter Rémi Parent concernant la réunion de la semaine du 07/09/2026
+Statut; A Faire
+Qui Agit; Moi
+Interlocuteur; Rémi Parent
+A Faire Avant le; 07/09/2026
+Contexte; Pro
+Récurrence; Non
+Historique;
+Dépend de;
+
+12
+Fonction "Assistant" - 07/09/2026
+"Crée le contact Aurélie Pierre travaille comme Directrice Financière 0707070707"
+-> Crée un contact
+ID; C2026002
+Nom; Pierre
+Prénom; Aurélie
+Fonction; Directrice Financière
+Organisation; 
+Téléphone; 0707070707
+Email;
+Lien;
+Alias;
+
+13
+Fonction "Message Reçu" - 08/09/2026
+"De Aurélie Pierre <apierre@roche.fr>
+Le : 07/09/2026
+
+Salut,
+
+Peux tu stp demander a Christophe Pallot qui travaille aussi chez Tecmotec les infos sur son véhicule et me les renvoyer
+Je te rappelle son email : cpallot@tecmotec.fr
+
+Merci
+Aurélie Pierre
+Société Roche"
+-> Modifie un contact
+ID; C2026002
+Nom; Pierre
+Prénom; Aurélie
+Fonction; Directrice Financière
+Organisation; Société Roche
+Téléphone; 0707070707
+Email; apierre@roche.fr
+Lien;
+Alias;
+-> Crée un contact (On rempli les conditions permettant la création d'un contact)
+ID; C2026003
+Nom; Pallot
+Prénom; Christophe
+Fonction; 
+Organisation; Société Tecmotec
+Téléphone; 
+Email; cpallot@tecmotec.fr
+Lien;
+Alias;
+-> Crée une tâche
+ID; T20260005
+Date de modification; 08/09/2026
+Action; Demander à Christophe Pallot les informations concernant son véhicule
+(Si l'interlocuteur travaille au sein d'une des mêmes organisation que moi (Ici Tecmotec par exemple), on ne met pas le nom de l'organisation dans la descriptiond de la tâche. Sinon elle y figure)
+Statut; A faire
+Qui Agit; Moi
+Interlocuteur; C2026003
+A Faire Avant le;
+Contexte; Pro
+Récurrence;
+Historique;
+Dépend de;
+-> Crée une tâche
+ID; T20260006
+Date de modification; 08/09/2026
+Action; Envoyer à Aurélie Pierre de chez Roche les informations concernant le véhicule de Christophe Pallot
+(Si l'interlocuteur travaille au sein d'une des mêmes organisation que moi (Ici Tecmotec par exemple), on ne met pas le nom de l'organisation dans la descriptiond de la tâche. Sinon elle y figure)
+Statut; A faire
+Qui Agit; Moi
+Interlocuteur; C2026003
+A Faire Avant le;
+Contexte; Pro
+Récurrence;
+Historique;
+Dépend de; T20260005
+
+14
+Fonction "Message envoyé" - 08/09/2026
+"Salut Rémi,
+J'ai envoyé sur ton email (rparent@stox.fr) les infos pour la réunion de cette semaine.
+Tu peux stp me repondre pour demain pour que je puisse faire l'ordre du jour et envoyer les convocations.
+Il est important qu'en tant que directeur de production tu puisses donner ton avis.
+Merci"
+-> Crée un contact
+ID; C2026004
+Nom; Parent
+Prénom; Rémi
+Fonction; Directeur de production
+Organisation; Société Stox
+Téléphone; 
+Email; rparent@stox.fr
+Lien;
+Alias;
+-> Modifie la tâche
+ID; T20260004
+Date de modification; 31/08/2026
+Action; Rémi Parent doit me faire un retour sur les infos concernant la réunion de la semaine du 07/09/2026
+Statut; En attente
+Qui Agit; C2026004
+Interlocuteur; C2026004
+A Faire Avant le; 09/09/2026
+Contexte; Pro
+Récurrence; Non
+Historique; Contacter Rémi Parent concernant la réunion de la semaine du 07/09/2026 - 37/08/2026
+Dépend de;
+
+15
+Fonction "Assistant" - 08/09/2026
+"Crée les coordonnées de Zoé Pelmont"
+-> Affiche
+"Information insuffisantes pour créer le contact"
+
+16
+Fonction "Assistant" - 08/09/2026
+"Crée les coordonnées de la Pédiatre de ma fille Zoé Pelmont. Le lien est www.doctolib.fr/123"
+-> Crée un contact
+ID; C2026005
+Nom; Pelmont
+Prénom; Zoé
+Fonction; Médecin Pédiatre
+Organisation;
+Téléphone; 
+Email; 
+Lien; www.doctolib.fr/123
+Alias; Pédiatre de ma fille
+
+17
+Fonction "Assistant" - 09/09/2026
+"Je dois prendre RDV chez la pédiatre pour ma fille avant fin Septembre. Il faut que je m'en occupe aujourd'hui."
+-> Crée une tâche
+ID; T20260007
+Date de modification; 08/09/2026
+Action; Prendre un RDV avant fin Septembre chez la Pédiatre pour ma fille
+Statut; A faire
+Qui Agit; Moi
+Interlocuteur; C2026005
+A Faire Avant le; 09/09/2026
+Contexte; Perso
+Récurrence;
+Historique;
+Dépend de;
+
+18
+Fonction "Assistant" - 09/09/2026
+"Prépare un email pour Christophe Pallot avec l'ensemble des sujets à traiter avec lui"
+-> Affiche
+"A : cpallot@tecmotec.fr
+
+Bonjour Christophe,
+
+Peux-tu stp me faire passer les informations concernant ton véhicule?
+
+Bonne journée"
+-> Modifie la tâche
+ID; T20260005
+Date de modification; 09/09/2026
+Action; Christophe Pallot doit me renvoyer les informations concernant son véhicule
+(Si l'interlocuteur travaille au sein d'une des mêmes organisation que moi (Ici Tecmotec par exemple), on ne met pas le nom de l'organisation dans la descriptiond de la tâche. Sinon elle y figure)
+Statut; En Attente
+Qui Agit; C2026003
+Interlocuteur; C2026003
+A Faire Avant le;
+Contexte; Pro
+Récurrence;
+Historique; Demander à Christophe Pallot les informations concernant son véhicule - 08/09/2026
+Dépend de;
+
+19
+Fonction "Message Reçu" - 09/09/2026
+"De: Christophe Pallot <cpallot@tecmotec.fr>
+
+Bonjour,
+
+Je n'ai pas accès aux infos de mon véhicule.
+Il faudrait que tu demandes au service informatique de me donner l'accès.
+
+Bonne journée"
+-> Modifie la tâche
+ID; T20260005
+Date de modification; 09/09/2026
+Action; Christophe Pallot doit me renvoyer les informations concernant son véhicule
+Statut; En Attente
+Qui Agit; C2026003
+Interlocuteur; C2026003
+A Faire Avant le;
+Contexte; Pro
+Récurrence;
+Historique; Demander à Christophe Pallot les informations concernant son véhicule - 08/09/2026
+Dépend de; T20260008
+-> Crée une tâche
+ID; T20260008
+Date de modification; 09/09/2026
+Action; Demander au service informatique de donner l'accès à Christophe Pallot aux informations sur son véhicule pour qu'il puisse me les renvoyer
+Statut; A faire
+Qui Agit; Moi
+Interlocuteur; C2026003
+A Faire Avant le;
+Contexte; Pro
+Récurrence;
+Historique;
+Dépend de;
+
+20
+Dans la fenêtre d'échange libre
+"Je veux prendre RDV avec la pédiatre de ma fille"
+-> Ouvre le lien www.doctolib.fr/123
+
+21
+Dans la fenetre d'échange libre
+"Modifie le lien précédent il est faux c'est /456"
+-> Affiche
+"Désole je ne peux pas modifier les informations de vos contact merci d'utiliser la fonction assistant"
+(Ce n'est pas grave si les réponses ne sont pas strictement formulées pareil tant qu'on comprend)
