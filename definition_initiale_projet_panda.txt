@@ -111,7 +111,7 @@ Alias;
 
 3
 Fonction "Assistant" - 27/08/2026
-"Le contact chez Qualitec s'appelle Franck Bouvard voici ses coordonnées modifie la fiche de Qualitec : Franck Bouvard 06060606060"
+"Le contact chez Qualitec s'appelle Franck Bouvard voici ses coordonnées modifie la fiche de Qualitec : Franck Bouvard 0606060606"
 -> Modifie le contact dans le carnet d'adresse
 ID; C2026001
 Nom; Bouvard
@@ -167,7 +167,7 @@ Fonction "Assistant" - 30/08/2026
 "Ma douche est réparée"
 -> Modifie la tâche
 ID; T20260001
-Date de modification; 27/08/2026
+Date de modification; 30/08/2026
 Action; Franck Bouvard de chez Qualitec doit m'envoyer un devis pour réparer la Douche
 Statut; Fait
 Qui Agit; C2026001
@@ -232,7 +232,7 @@ Action; Contacter Rémi Parent concernant la réunion de la semaine du 07/09/202
 Statut; A Faire
 Qui Agit; Moi
 Interlocuteur; Rémi Parent
-A Faire Avant le; 31/09/2026
+A Faire Avant le; 31/08/2026
 Contexte; Pro
 Récurrence; Non
 Historique;
@@ -321,7 +321,7 @@ Action; Envoyer à Aurélie Pierre de chez Roche les informations concernant le 
 (Si l'interlocuteur travaille au sein d'une des mêmes organisation que moi (Ici Tecmotec par exemple), on ne met pas le nom de l'organisation dans la descriptiond de la tâche. Sinon elle y figure)
 Statut; A faire
 Qui Agit; Moi
-Interlocuteur; C2026003
+Interlocuteur; C2026002
 A Faire Avant le;
 Contexte; Pro
 Récurrence;
@@ -347,7 +347,7 @@ Lien;
 Alias;
 -> Modifie la tâche
 ID; T20260004
-Date de modification; 31/08/2026
+Date de modification; 08/09/2026
 Action; Rémi Parent doit me faire un retour sur les infos concernant la réunion de la semaine du 07/09/2026
 Statut; En attente
 Qui Agit; C2026004
@@ -355,7 +355,7 @@ Interlocuteur; C2026004
 A Faire Avant le; 09/09/2026
 Contexte; Pro
 Récurrence; Non
-Historique; Contacter Rémi Parent concernant la réunion de la semaine du 07/09/2026 - 37/08/2026
+Historique; Contacter Rémi Parent concernant la réunion de la semaine du 07/09/2026 - 31/08/2026
 Dépend de;
 
 15
@@ -383,7 +383,7 @@ Fonction "Assistant" - 09/09/2026
 "Je dois prendre RDV chez la pédiatre pour ma fille avant fin Septembre. Il faut que je m'en occupe aujourd'hui."
 -> Crée une tâche
 ID; T20260007
-Date de modification; 08/09/2026
+Date de modification; 09/09/2026
 Action; Prendre un RDV avant fin Septembre chez la Pédiatre pour ma fille
 Statut; A faire
 Qui Agit; Moi
