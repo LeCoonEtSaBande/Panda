@@ -177,6 +177,7 @@ Contexte; Perso
 Récurrence; Non
 Historique;Réparer la Douche - 25/08/2026, Contacter la société Qualitec pour réparer la douche - 26/08/2026, Contacter Franck Bouvard de chez Qualitec pour réparer la douche - 27/08/2026
 Dépend de;
+« Ma douche est réparée » passe en Fait alors qu’on n’a jamais reçu le devis. C'est Volontaire car je ne suis pas obligé de tout mettre dans l'appli pour ne pas perdre de temps.
 
 8
 Fonction "Assistant" - 30/08/2026
@@ -187,6 +188,7 @@ Fonction "Assistant" - 30/08/2026
 27/08/2026 : Contacter Franck Bouvard de chez Qualitec pour réparer la douche
 27/08/2026 : Franck Bouvard de chez Qualitec doit m'envoyer un devis pour réparer la Douche
 30/08/2026 : Tâche completée
+Ici on affiche l'historique + le dernier intitulé de la tâche + la date de complétion
 
 9
 Fonction "Assistant" - 30/08/2026
@@ -398,13 +400,14 @@ Dépend de;
 Fonction "Assistant" - 09/09/2026
 "Prépare un email pour Christophe Pallot avec l'ensemble des sujets à traiter avec lui"
 -> Affiche
-"A : cpallot@tecmotec.fr
-
-Bonjour Christophe,
+Champs email : "Mail to : cpallot@tecmotec.fr"
+Champs texte modifiable avec un icône "copier" immédiatement a porté de main
+"Bonjour Christophe,
 
 Peux-tu stp me faire passer les informations concernant ton véhicule?
 
 Bonne journée"
+L'utilisateur clique sur "Email envoyé"
 -> Modifie la tâche
 ID; T20260005
 Date de modification; 09/09/2026
@@ -429,30 +432,33 @@ Je n'ai pas accès aux infos de mon véhicule.
 Il faudrait que tu demandes au service informatique de me donner l'accès.
 
 Bonne journée"
--> Modifie la tâche
-ID; T20260005
-Date de modification; 09/09/2026
-Action; Christophe Pallot doit me renvoyer les informations concernant son véhicule
-Statut; En Attente
-Qui Agit; C2026003
-Interlocuteur; C2026003
-A Faire Avant le;
-Contexte; Pro
-Récurrence;
-Historique; Demander à Christophe Pallot les informations concernant son véhicule - 08/09/2026
-Dépend de; T20260008
 -> Crée une tâche
 ID; T20260008
 Date de modification; 09/09/2026
 Action; Demander au service informatique de donner l'accès à Christophe Pallot aux informations sur son véhicule pour qu'il puisse me les renvoyer
+Ici on ne crée pas d'interlocuteur service informatique car les informations sont insuffisante pour créer un contact conformément aux règles vues plus haut
 Statut; A faire
 Qui Agit; Moi
 Interlocuteur; C2026003
+Christophe m'a demandé cette action il reste donc l'interlocuteur
 A Faire Avant le;
 Contexte; Pro
 Récurrence;
 Historique;
 Dépend de;
+-> Modifie la tâche
+ID; T20260006
+Date de modification; 08/09/2026
+Action; Envoyer à Aurélie Pierre de chez Roche les informations concernant le véhicule de Christophe Pallot
+(Si l'interlocuteur travaille au sein d'une des mêmes organisation que moi (Ici Tecmotec par exemple), on ne met pas le nom de l'organisation dans la descriptiond de la tâche. Sinon elle y figure)
+Statut; A faire
+Qui Agit; Moi
+Interlocuteur; C2026002
+A Faire Avant le;
+Contexte; Pro
+Récurrence;
+Historique;
+Dépend de; T20260005, T20260008
 
 20
 Dans la fenêtre d'échange libre
