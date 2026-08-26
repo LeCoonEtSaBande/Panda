@@ -1,3 +1,4 @@
+### Description générale
 1 - Objectif de l'application
 Gérer une to do list persistante à l'aide d'un Agent IA afin de gagner du temps et de la fluidité
 Stockage une liste de contact persistante pour alimenter les échanges avec l'agent et la to do list
@@ -7,7 +8,81 @@ Accessible depuis Iphone ou PC. Version simplifié sur Iphone et complete sur PC
 Sécurisation a la connexion via un MDP ou une reconnaissance de l'appareil. Fluide/invisible pour un appareil déjà connecté.
 Visibilité sur la page permettant les échange libre avec l'agent IA du nombre de tokens restant
 
-3 - Stockage des informations Tâches
+3 - Fonctionnalités
+Possibilité d'interagir avec un agent IA "formaté" beneficiants d'outils retenus au préalable
+Mise a jour et organisation de trois BDD (Contacts,Tâches, Liste de courses) par l'agent IA
+Systèmes de validation rapide de/des action(s) proposée(s) en un seul clic après chaque échange
+Tâches et dépendances organisées par blocs (Un seul niveau de dépendance)
+Peut rédiger un email ou un ordre du jour listant les sujets en cours avec un interlocuteur
+Possibilité de faire rédiger un email automatique pour faire avancer une tâche (prise de contact, demande de devis, etc...)
+Possibilité de saisir le contenu d'un email ou sms pour obtenir une proposition de création de tâches ou une mise à jour. Et mise a jour des contacts.
+Possibilité d'échange libre avec l'agent en parallèle des échanges formatés. Accès aux BBD en lecture seule.
+L'agent sait reconnaitre quand on s'adresse a moi dans des échanges écrit (Nom, Prénom, Organisation, Coordonnées)
+Possibilité de faire des modifications/ajouts/recherches manuellement des taches et contacts
+Avoir des rappels des tâches du pour aujourdhui, cette semaine, ce mois-ci, en retard
+Avoir une liste des personnes que je dois relancer (A trier dans l'ordre des personnes contacté il y a le plus longtemps)
+Possibilité de cliquer sur un contact pour obtenir ses coordonnées puis de cliquer de nouveau (sur téléphone pour le moment) pour envoyer un email, appeller ou écrire un sms ou
+
+4 - Évolutions futurs prévues
+Possibilité de lire ou écrire directement les emails dans Outlook
+Possibilité de stocker des PJ (Email, PDF, Image, Etc...) dans les tâches
+Synchro contacts outlook
+
+5 - Actions/Boutons (Pour simplifier le travail de l'agent IA et limiter la complexité pour lui)
+Type d'interactions :
+ASSISTANT- Modifie des tâches, des contacts, rédige des CR ou des emails, en prennant en compte le fait que je m'adresse directement à l'assistant
+MESSAGE RECU - Modifie des tâches, des contacts, en prennant en compte le fait que je vais fournir du texte correspondant a un message que j'ai reçu
+MESSAGE ENVOYE - Modifie des tâches, des contacts, en prennant en compte le fait que je vais fournir du texte correspondant a un message que j'ai envoyé
+Puis validation en un clic ou modification
+
+#EN CAS DE DEMANDE DE REDACTION
+Si la demande auprès de l'assistant est la rédaction d'un email ou d'un sms (et non un ordre du jour) le format de réponse est :
+- Une zone en haut (mailto : xxx@yyy.com) ou (smsto : +33 XXXXXXXXX)
+- Une zone en dessous avec le texte du mail ou message, éditable, avec une icône cliquable "copier" pour copier le texte
+On peut alors cliquer sur "C'est Envoyé" ou "Annuler"
+Si on clique sur "C'est envoyé" l'assistant considère le message présent dans le champs texte et l'interlocuteur pour alimenter automatiquement une requête "MESSAGE ENVOYE" et agir en conséquence
+Si l'assistant n'a pas compris la demande ou a une question il peut la poser a ce moment là avant de rédiger ou d'indiquer son incapacité à le faire et revenir sur la page précédente
+
+### Interface attendues PC/Iphone
+Iphone :
+Page d'accueil = Échange avec l'assistant.
+Cette page affiche le nombre de token restant avec l'assistant IA sous forme de jauge avec xxx/total discrete
+Suite a une requête a l'assistant occasionnant un changement sur les BDD Contacts ou Tâches un page minimaliste de validation des actions. Elle s'ouvrira autant de fois qu'il y a d'action.
+Trois options :
+Valider (On passe a la prochaine validation d'action jusqu'à ce qu'il n'y en ai plus)
+Non (On ne fait pas cette modification et on passe a la prochaine validation d'action jusqu'à ce qu'il n'y en ai plus)
+Tout annuler (On annule toutes les modifications prévues suite à cette requête)
+Si la requête concerne la liste de courses alors action immédiate sans validation. La page d’accueil indique simplement que la modification est faite.
+Après chaque requête. La fenêtre de discussion avec l'assistant est vidée et on peut en envoyer une nouvelle.
+
+Page liste de courses. On peut cocher pour barrer ou débarrer les articles.
+On peut aussi rajouter des articles manuellement dans le dernier champs.
+Dès qu'on clique sur OK en bas de la page les articles barrés disparaissent et les ajouts manuels sont sauvegardé.
+
+Page Chat libre avec l'assistant IA avec une interface fluides pour des échanges instantanés.
+Cette page affiche le nombre de token restant avec l'assistant IA sous forme de jauge avec xxx/total discrete
+
+Page tâches avec un champs de recherche textuel et deux filtres rapides a coté de ce champs.
+Les tâches sont classées par "A faire avant le" (Les plus urgentes en haut) puis par date de modification (Les moins récentes en haut)
+Les blocs de dépendances sont signalés par une indentation et un braquet léger.
+Recherche cherche sur les champs Action; Historique; Interlocuteur
+Filtre 1 : A faire avant le (Ajd = Minuit, Demain = Demain Minuit, Semaine = Le prochaine Dimanche, 1 Mois = Sous 30 jours)
+Filtre 2 : A Faire/En Attente
+Filtre 3 : Pro/Perso
+Sur cette page il est possible de cliquer sur une page pour avoir le choix de trois options :
+Inspecter : Ouvrir la tâche pour accéder à sa "carte". On peut la modifier ou la marquer comme faite.
+SMS : Demander à l'assistant de rédiger un sms pour faire avancer la tâche.
+Email : Demander à l'assistant de régiger un email pour faire avancer cette tâche.
+On bascule alors sur la page de l'assistant en mode #EN CAS DE DEMANDE DE RÉDACTION
+
+PC : 
+Idem Téléphone
++ Visuel sur les tâches plus complet
++ Accès à l'archive des tâches
++ Accès au carnet d'adresse
+
+### Base de données
+1 - Stockage des informations Tâches
 ID;
 Date de modification;
 Action;
@@ -20,7 +95,7 @@ Récurrence;
 Historique;
 Dépend de; (Une autre ID de Tâche)
 
-4 - Stockage des informations de contact
+2 - Stockage des informations de contact
 ID;
 Nom;
 Prénom;
@@ -31,42 +106,10 @@ Email;
 Lien;
 Alias; (Pédiatre de ma fille; Pédiatre de Laure) OU (Un de mes associés) OU (Papa; Grand père de Laure)
 
-5 - Fonctionnalités
-Possibilité d'interagir avec un agent IA "formaté" beneficiants d'outils retenus au préalable
-Mise a jour et organisation de deux BDD (Contact et Tâches) par l'agent IA
-Systèmes de validation rapide de/des action(s) proposée(s) en un seul clic après chaque échange
-Tâches et dépendances organisées par blocs
-Peut rédiger un email ou un ordre du jour listant les sujets en cours avec un interlocuteur
-Possibilité de faire rédiger un email automatique pour faire avancer une tâche (prise de contact, demande de devis, etc...)
-Possibilité de saisir le contenu d'un email ou sms pour obtenir une proposition de création de tâches ou une mise à jour. Et mise a jour des contacts.
-Possibilité d'échange libre avec l'agent en parallèle des échanges formatés. Accès aux BBD en lecture seule.
-Possibilité de faire une recherche google ou google map rapide depuis la page d'accueil
-L'agent sait reconnaitre quand on s'adresse a moi dans des échanges écrit (Nom, Prénom, Organisation, Coordonnées)
-Possibilité de faire des modifications/ajouts/recherches manuellement des taches et contacts
-Archivage des tâches en un clic si plus rapide que par l'agent IA
-Gestion persistante d'une liste de course en parallèle
-Avoir des rappels des tâches du pour aujourdhui, cette semaine, ce mois-ci, en retard
-Avoir une liste des personnes que je dois relancer (A trier dans l'ordre des personnes contacté il y a le plus longtemps)
+3 - Liste de courses
+Cette liste est un simple ajout/enlève sans archivage
 
-6 - Evolutions futurs prévues
-Possibilité de lire ou écrire directement les emails dans Outlook
-Possibilité de stocker des PJ (Email, PDF, Image, Etc...) dans les tâches
-Synchro contacts outlook
-
-7 - Actions/Boutons (Pour simplifier le travail de l'agent IA et limiter la complexité pour lui)
-Type d'interaction :
-Assistant - Modifie des tâches, des contacts, rédige des CR ou des emails, en prennant en compte le fait que je m'adresse directement à l'assistant
-Message reçu - Modifie des tâches, des contacts, en prennant en compte le fait que je vais fournir du texte correspondant a un message que j'ai reçu
-Message envoyé - Modifie des tâches, des contacts, en prennant en compte le fait que je vais fournir du texte correspondant a un message que j'ai envoyé
-
-Puis validation en un clic ou modification
-
-Boutons :
-Rappel des taches dues Aujourd'hui/Cette semaine/Ce mois-ci/En retard
-Rappel des contacts à relancer
-
-8 - Phrases type de l'utilisateur et actions de l'agent sur la BDD (Tâches et Dates fictives)
-
+### Exemples d'échange avec l'assistant
 1
 Fonction "Assistant" - 25/08/2026
 "Je dois réparer ma douche avant Noël".
@@ -407,7 +450,7 @@ Champs texte modifiable avec un icône "copier" immédiatement a porté de main
 Peux-tu stp me faire passer les informations concernant ton véhicule?
 
 Bonne journée"
-L'utilisateur clique sur "Email envoyé"
+L'utilisateur clique sur "C'est Envoyé"
 -> Modifie la tâche
 ID; T20260005
 Date de modification; 09/09/2026
@@ -471,3 +514,11 @@ Dans la fenetre d'échange libre
 -> Affiche
 "Désole je ne peux pas modifier les informations de vos contact merci d'utiliser la fonction assistant"
 (Ce n'est pas grave si les réponses ne sont pas strictement formulées pareil tant qu'on comprend)
+
+21
+Fonction "Assistant"
+"Je dois acheter de la Farine et 12 oeufs"
+-> Ajoute a la liste de course persistante
+Farine
+-> Ajoute a la liste de course persistante
+12 Oeufs
