@@ -35,13 +35,14 @@ MESSAGE RECU - Modifie des tâches, des contacts, en prennant en compte le fait 
 MESSAGE ENVOYE - Modifie des tâches, des contacts, en prennant en compte le fait que je vais fournir du texte correspondant a un message que j'ai envoyé
 Puis validation en un clic ou modification
 
-#EN CAS DE DEMANDE DE REDACTION
+#EN CAS DE DEMANDE DE REDACTION (Ne s'applique pas si la demande est faites dans le champs de discussion libre)
 Si la demande auprès de l'assistant est la rédaction d'un email ou d'un sms (et non un ordre du jour) le format de réponse est :
 - Une zone en haut (mailto : xxx@yyy.com) ou (smsto : +33 XXXXXXXXX)
 - Une zone en dessous avec le texte du mail ou message, éditable, avec une icône cliquable "copier" pour copier le texte
 On peut alors cliquer sur "C'est Envoyé" ou "Annuler"
 Si on clique sur "C'est envoyé" l'assistant considère le message présent dans le champs texte et l'interlocuteur pour alimenter automatiquement une requête "MESSAGE ENVOYE" et agir en conséquence
 Si l'assistant n'a pas compris la demande ou a une question il peut la poser a ce moment là avant de rédiger ou d'indiquer son incapacité à le faire et revenir sur la page précédente
+Si la demande est un ordre du jour un simple texte de réponse suffit.
 
 ### Interface attendues PC/Iphone
 Iphone :
