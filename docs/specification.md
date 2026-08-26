@@ -1,160 +1,99 @@
-# Panda — spécification (après définition initiale)
+# Panda — spécification
 
-Source métier : [`definition_initiale_projet_panda.txt`](../definition_initiale_projet_panda.txt) (23 scénarios = tests d’acceptation).
+Source métier : [`definition_initiale_projet_panda.txt`](../definition_initiale_projet_panda.txt).
 
-**Implémentable : oui.** Même socle technique. **La base change** (2 tables métier, plus une pour les courses). L’agent n’écrit plus tout seul : carte → **Valider**.
-
-Les 23 phrases du `.txt` **gagnent** sur les anciennes règles (durée 15 min, sous-tâches en liste d’ids, contact dénormalisé sur la tâche).
+**Implémentable : oui.** Socle inchangé : une URL, Vercel, Claude Sonnet, Supabase. L’IA propose ; **Valider / Non / Tout annuler** (une action à la fois). Fermer la page = tout annuler. Pas de 2ᵉ message tant que le cycle n’est pas fini.
 
 ---
 
-## 1. Vision
+## Décisions figées (tes réponses)
 
-Panda = **suivi d’actions** (perso + pro) + **carnet de contacts**, pilotés par un agent à **3 modes**, plus un chat **libre** (lecture seule).
-
-Ce n’est pas un scanner d’inbox. Tu parles ou tu colles un extrait. Outlook / PJ / synchro contacts = **après**.
+| Sujet | Décision |
+|---|---|
+| iPhone / PC | Accueil = Assistant ; PC = même chose + visuel tâches riche + **archive** + **carnet** |
+| Courses | **Proto**, action **immédiate** (pas de carte Valider) |
+| Google / Maps | **Oublier** |
+| Récurrence | Champ en base, **comportement après** le proto |
+| Durée / 30 min | **Oublier** |
+| Jauge tokens | **Proto**, accueil Assistant **et** chat libre (`xxx / total`) |
+| Relancer (bouton) | **Supprimé** — filtres tâches (`En attente` + tri) |
+| 2ᵉ message | **Bloqué** tant que Valider/Non/Tout annuler pas fini |
+| Fermeture page | **Annule** la requête en cours |
+| Plusieurs actions | **Une carte par action**, à la suite (Valider ou Non), ou Tout annuler |
+| Identité | **Modifiable dans l’app** (pas figée dans Git). Proto : Lee Sin ; Lee, L. Sin, M. Sin, Mr Sin ; org **Tecmotec** ; **tu** internes / **vous** externes |
+| Rédaction mail/SMS | Zones `mailto:` / `smsto:` + texte éditable + copier ; **C’est envoyé** = enchaîne comme un **Message envoyé** ; **Annuler** = rien |
+| Ordre du jour | Texte simple, pas le flux mailto |
 
 ---
 
-## 2. Architecture (maintenue)
+## Architecture
 
 ```text
-iPhone (simple)  ou  PC (complet)
-        même URL, même compte
-                │
-                ▼
-        Vercel (page + API)
-                │
-     ┌──────────┴──────────┐
-     ▼                     ▼
- Claude Sonnet         Supabase
- (outils selon mode)   Postgres
-                       tasks, contacts
-                       grocery_items
-                       auth
+iPhone (simple)  /  PC (complet)     même URL, même compte
+        →  Vercel
+              → Claude (outils selon ASSISTANT / REÇU / ENVOYÉ)
+              → Supabase : tasks, contacts, grocery_items, settings
 ```
 
-- **Anthropic Claude Sonnet** + tool use. Clé **uniquement** sur Vercel. Jamais dans Git, jamais dans le chat.
-- **Supabase** = vérité. Pas Git, pas Rappels.
-- **Une seule app web** (responsive). Pas deux codebases. Écrans **masqués ou simplifiés** sur téléphone.
-- Cookie de session long (« déjà connecté ») + mot de passe ou magic link. Pas de reconnaissance d’appareil type empreinte hardware (fragile, douteux). « Rester connecté » = le même effet, fluide.
+Libre = lecture seule. Courses via Assistant = écriture directe.
 
-Hors v1 (déjà dans tes évolutions) : lecture/écriture Outlook, PJ, synchro carnet Outlook.
+Clés API : uniquement variables Vercel, jamais Git.
 
 ---
 
-## 3. Téléphone vs PC
+## Téléphone vs PC
 
-| | **iPhone (simple)** | **PC (complet)** |
-|---|---|---|
-| Connexion | Oui, puis invisible | Idem |
-| 3 modes + chat + carte Valider | **Oui — écran principal** | Oui |
-| Chat libre | Oui | Oui + **compteur tokens / budget** (plus lisible) |
-| Rappels (aujourd’hui / semaine / mois / retard) | **Boutons** | Boutons + tableau |
-| Personnes à relancer | **Bouton** | Bouton + tableau trié |
-| Liste des tâches | Cartes, archiver 1 clic | Tableau + **blocs de dépendances** |
-| Contacts | Fiche courte, tel/mail cliquables | **Carnet** : recherche, ajout, édition tous champs |
-| Courses | Liste cochable (si v1) | Idem |
-| Recherche Google / Maps | Barre (nouvel onglet) | Idem |
-| Édition manuelle lourde (récurrence, dépendances, historique) | Non (agent ou PC) | Oui |
-| Rédaction mail / ODJ | Texte à copier | Texte + large zone |
+**iPhone — 4 pages**
 
-Sur iPhone on **ne** reconstruit **pas** un Excel. On capture et on relance.
+1. **Accueil / Assistant** — 3 modes, jauge tokens, champ bloqué pendant validation.  
+2. **Validation** — une action, puis la suivante : Valider / Non / Tout annuler.  
+3. **Courses** — cocher, ajouter, OK = barrés disparus + ajouts sauvés.  
+4. **Chat libre** — jauge tokens.  
+5. **Tâches** — recherche + filtres ; clic → Inspecter / SMS / Email (rédaction).  
+Clic contact (sur une carte) → coords, puis `tel:` / `mailto:` / `sms:`.
+
+**PC** : idem + tableau tâches plus complet + **archive** + **carnet d’adresses** + **Paramètres** (identité, orgs, plafond jauge).
 
 ---
 
-## 4. Base de données (changée)
+## Base
 
-Plus une seule table `tasks` avec tél sur la ligne. **Deux** tables métier (+ courses).
+### `settings` (modifiable dans l’app)
 
-### 4.1 `contacts`
+`display_name`, `name_aliases[]`, `organizations[]`, `ai_budget_units` (total de la jauge).
 
-| Colonne | Sens |
-|---|---|
-| `id` | UUID interne |
-| `display_id` | Ex. `C2026001` (lisible) |
-| `last_name`, `first_name` | Nom, prénom |
-| `role` | Fonction |
-| `organization` | |
-| `phone`, `email`, `url` | Tél, mail, lien |
-| `alias` | « Pédiatre de ma fille », « Papa » |
-| `user_id` | Toi |
-| `created_at`, `updated_at` | |
+### `contacts`
 
-**Création autorisée seulement si :**  
-`(nom OU prénom OU organisation) ET (téléphone OU email OU lien)`.  
-Sinon l’agent **refuse** et le nom reste du **texte** sur la tâche (`interlocutor_text`).
+id, display_id, nom, prénom, fonction, organisation, tél, email, lien, alias.
 
-### 4.2 `tasks`
+Création si `(nom ∪ prénom ∪ org) ∩ (tél ∪ email ∪ lien)`.
 
-| Colonne | Sens |
-|---|---|
-| `id` / `display_id` | UUID / `T20260001` |
-| `action` | Intitulé **courant** (se met à jour, l’ancien va dans l’historique) |
-| `status` | `a_faire` \| `en_attente` \| `fait` |
-| `actor` | `moi` **ou** id contact (`qui_agit`) |
-| `interlocutor_id` | Contact, nullable |
-| `interlocutor_text` | Si pas de fiche (ex. « Rémi Parent » avant email) |
-| `due_at` | Date butoir |
-| `context` | `pro` \| `perso` |
-| `recurrence` | Texte/json, **v1 tardive** si trop flou |
-| `history` | Liste `{ date, action }` — append only |
-| `depends_on_id` | **Une** autre tâche (prérequis) |
-| `archived_at` | Null = active |
-| `updated_at` | |
+### `tasks`
 
-**Plus dans cette BDD :** `duration_min`, `waiting_for_reply` (remplacé par le statut `en_attente`), `notes`/`links` sur la tâche (l’historique + le contact portent le contexte), liste `subtask_ids` (remplacé par `depends_on_id` sur la tâche **bloquée**).
+id, display_id, action, statut (`a_faire` \| `en_attente` \| `fait`), qui_agit (`moi` ou contact), interlocuteur_id **ou** texte, due_at, contexte, recurrence (stocké, ignoré en v1), history[], **`depends_on_ids uuid[]`** (un **niveau** : pas de pyramide ; **plusieurs** parents autorisés, scénario 19).
 
-Règle d’intitulé : si l’interlocuteur est dans **une de tes organisations**, on **n’écrit pas** le nom de la boîte dans `action`. Sinon on le met (« de chez Roche »).
+Tri liste : `due_at` croissant (vides en bas) puis `updated_at` **le plus ancien en haut**.
 
-Quand statut → `en_attente` : `actor` = l’interlocuteur (c’est **lui** qui doit agir). Quand c’est toi : `actor` = `moi`.
+### `grocery_items`
 
-### 4.3 `grocery_items` (courses, parallèle)
-
-`id`, `user_id`, `label`, `checked`, `sort`, timestamps. Pas d’agent obligatoire : saisie manuelle + éventuellement l’assistant.
-
-### 4.4 Paramètres utilisateur
-
-`my_organizations` (liste de chaînes, ex. Tecmotec) — pour la règle d’intitulé.  
-`monthly_ai_budget` — pour l’affichage « tokens / € restants » (estimation d’usage API, pas le solde Anthropic au centime).
+label, checked. Pas d’archive. OK page = supprimer les cochés.
 
 ---
 
-## 5. Agent
+## Filtres tâches (remplacent Relancer)
 
-### 5.1 Trois modes (outils différents)
+1. **A faire avant le** : Ajd (jusqu’à minuit) / Demain / Semaine (jusqu’au **prochain dimanche**) / 1 mois (30 jours)  
+2. **A faire / En attente**  
+3. **Pro / Perso**
 
-| Mode | Entrée | Outils |
-|---|---|---|
-| **Assistant** | Tu parles à Panda | Créer/maj tâches **et** contacts, rédiger mail/ODJ, décaler des dates, lister relances |
-| **Message reçu** | Collage mail/SMS **reçu** | Extraire contacts + tâches (toi = destinataire) |
-| **Message envoyé** | Collage de ce **que tu as envoyé** | Contacts + tâches (souvent → `en_attente`) |
+Recherche : Action, Historique, Interlocuteur.
 
-**Libre** (fenêtre à part) : **aucun** outil d’écriture. Lecture tâches/contacts. Peut **ouvrir un lien** (Doctolib). Si tu demandes une maj : *utilise Assistant*.
-
-Boutons **sans** passer par Claude (SQL direct, 0 token) :
-
-- Tâches dues : aujourd’hui / cette semaine / ce mois / en retard  
-- Personnes à relancer : `en_attente`, tri **les plus anciennes** (date de passage en attente / dernier historique)
-
-### 5.2 Carte proposition
-
-Chaque réponse Assistant / Reçu / Envoyé → **diff** (tâches + contacts + éventuellement texte de mail).  
-**Valider** = écriture. **Modifier** / **Annuler** = pas d’écriture (ou nouvelle proposition).
-
-Libre : pas de carte d’écriture.
-
-### 5.3 Contrat compact (prompt)
-
-Règles courtes + schémas d’outils. Les 23 scénarios = **tests**, pas injectés à chaque message. Photo base : tâches actives **sans** tout l’historique + contacts cités. Prompt caching Anthropic.
+« Personnes à relancer » = filtre **En attente**, tri déjà « moins récentes en haut ». L’Assistant peut quand même **lister** ça à l’oral (scénario 6).
 
 ---
 
-## 6. Découpage réaliste
+## Agent
 
-| V1 proto | Juste après | Plus tard (ton §6) |
-|---|---|---|
-| Auth, 2 tables, 3 modes, Valider, Libre lecture, boutons rappels/relances, liste+archive, carnet PC, Google/Maps en nouvel onglet | Courses, récurrence, compteur budget soigné, blocs dépendances soignés | Outlook, PJ, synchro contacts |
+Outils selon le mode. Photo base compacte + consignes courtes. Tes scénarios = **tests**, pas le prompt.
 
-**Oui on maintient** Vercel + Claude + Supabase.  
-**Non on ne maintient pas** l’ancienne table unique ni les 6 pastilles (À faire / Fait / Reçu / Envoyé / Rédiger / Libre comme modes d’écriture). Rédiger = **dans Assistant**. Libre = à part.
+Interne = organisation ∈ tes `organizations` (Tecmotec) → tutoiement dans les brouillons. Sinon vouvoiement.

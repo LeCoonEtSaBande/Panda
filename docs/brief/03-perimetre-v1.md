@@ -1,23 +1,9 @@
-# 3 — Périmètre du premier proto
-
-Coche en répondant dans le chat (copie les lignes).
+# 3 — Périmètre — **répondu**
 
 ```
-Courses : [ ] proto  [ ] après
-Recherche Google / Maps (ouvre un onglet) : [ ] proto  [ ] après
-Récurrence (« chaque lundi ») : [ ] proto  [ ] après
-Durée en minutes / « que faire en 30 min » : [ ] on oublie  [ ] on remet plus tard
-Compteur tokens/€ sur le chat libre : [ ] proto  [ ] après
+Courses : proto (écriture immédiate, sans Valider)
+Google / Maps : oublié
+Récurrence : après (colonne en base, pas de logique)
+Durée 30 min : oublié
+Compteur tokens : proto (jauge xxx/total, Assistant + Libre)
 ```
-
-**Exemple :**
-
-```
-Courses : après
-Google / Maps : proto
-Récurrence : après
-Durée 30 min : on oublie
-Compteur tokens : proto
-```
-
-*(Google/Maps = un champ qui ouvre google.com, pas une API payante.)*

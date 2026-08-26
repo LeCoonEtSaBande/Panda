@@ -1,20 +1,7 @@
-# 2 — Téléphone vs PC
+# 2 — Téléphone / PC — **répondu** (définition GitHub)
 
-Proposition (dis **OK** ou corrige) :
+iPhone : Accueil Assistant (jauge) ; validation **une action à la fois** ; courses ; libre (jauge) ; tâches (recherche + filtres) ; Inspecter / SMS / Email.
 
-**iPhone :** 3 modes + carte Valider ; boutons Aujourd’hui / Semaine / Mois / Retard / Relancer ; cartes tâches + archiver ; chat libre ; barre Google/Maps ; courses cochables. **Pas** de tableau contacts ni de graphe de dépendances.
+PC : + visuel tâches, **archive**, **carnet**.
 
-**PC :** tout ça + carnet contacts complet + tableau tâches + blocs « dépend de » + édition manuelle + compteur d’usage IA.
-
-Réponds par exemple :
-
-```
-OK iPhone / PC comme tu dis
-SAUF : je veux le carnet contacts aussi sur iPhone
-```
-
-ou
-
-```
-OK tel quel
-```
+Plus de Google/Maps. Plus de bouton Relancer.
