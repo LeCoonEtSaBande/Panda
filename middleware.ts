@@ -1,7 +1,23 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import {
+  gateConfigured,
+  gateTokenOk,
+  readGateCookie,
+} from "./lib/auth/gate";
 
-export async function middleware(request: NextRequest) {
+function isPublic(path: string) {
+  return (
+    path === "/login" ||
+    path.startsWith("/auth") ||
+    path === "/api/login" ||
+    path === "/api/logout" ||
+    path.startsWith("/_next") ||
+    path === "/favicon.ico"
+  );
+}
+
+async function withSupabase(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) {
@@ -25,31 +41,66 @@ export async function middleware(request: NextRequest) {
       },
     },
   });
+  await supabase.auth.getUser();
+  return response;
+}
 
+export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  const publicPath = isPublic(path);
+
+  if (gateConfigured()) {
+    const ok = await gateTokenOk(readGateCookie(request.cookies.getAll()));
+    if (!ok && !publicPath) {
+      const login = request.nextUrl.clone();
+      login.pathname = "/login";
+      return NextResponse.redirect(login);
+    }
+    if (ok && path === "/login") {
+      const home = request.nextUrl.clone();
+      home.pathname = "/";
+      return NextResponse.redirect(home);
+    }
+    return withSupabase(request);
+  }
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    return NextResponse.next({ request });
+  }
+
+  let response = NextResponse.next({ request });
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) =>
+          request.cookies.set(name, value),
+        );
+        response = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        );
+      },
+    },
+  });
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const path = request.nextUrl.pathname;
-  const publicPath =
-    path === "/login" ||
-    path.startsWith("/auth") ||
-    path.startsWith("/api") ||
-    path.startsWith("/_next") ||
-    path === "/favicon.ico";
 
   if (!user && !publicPath) {
     const login = request.nextUrl.clone();
     login.pathname = "/login";
     return NextResponse.redirect(login);
   }
-
   if (user && path === "/login") {
     const home = request.nextUrl.clone();
     home.pathname = "/";
     return NextResponse.redirect(home);
   }
-
   return response;
 }
 
