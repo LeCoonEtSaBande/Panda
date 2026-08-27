@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { upsertTask } from "@/lib/local-db";
+import { upsertTask } from "@/lib/store";
 import { useDb } from "@/lib/use-db";
 
 export default function TaskDetailPage() {
@@ -50,7 +50,7 @@ export default function TaskDetailPage() {
         type="button"
         className="btn"
         onClick={() => {
-          upsertTask({
+          void upsertTask({
             ...task,
             status: "fait",
             history: [
@@ -58,15 +58,19 @@ export default function TaskDetailPage() {
               { date: new Date().toISOString().slice(0, 10), action: task.action },
             ],
             updatedAt: new Date().toISOString(),
-          });
-          router.push("/taches");
+          }).then(() => router.push("/taches"));
         }}
       >
         Marquer faite
       </button>
-      <p className="muted" style={{ marginTop: 16 }}>
-        SMS / Email (rédaction agent) : bientôt, depuis cette carte.
-      </p>
+      <div className="btn-row">
+        <a className="btn btn-link" href={`/?rediger=sms&tache=${task.id}`}>
+          SMS
+        </a>
+        <a className="btn btn-link" href={`/?rediger=email&tache=${task.id}`}>
+          Email
+        </a>
+      </div>
     </main>
   );
 }

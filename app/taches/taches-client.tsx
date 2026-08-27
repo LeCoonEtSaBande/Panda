@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { PullRefresh } from "@/app/pull-refresh";
-import { dueFilter, refreshDb, sortTasks, type Task } from "@/lib/local-db";
+import { dueFilter, sortTasks } from "@/lib/local-db";
+import { refreshStore } from "@/lib/store";
+import type { Task } from "@/lib/types";
 import { useDb } from "@/lib/use-db";
 
 type DueF = "all" | "ajd" | "demain" | "semaine" | "mois";
@@ -30,7 +32,7 @@ export function TachesClient() {
   const [archive, setArchive] = useState(false);
 
   const reload = useCallback(async () => {
-    refreshDb();
+    await refreshStore();
   }, []);
 
   const rows = useMemo(() => {

@@ -15,10 +15,10 @@ To-do + contacts + courses, agent **Assistant / Reçu / Envoyé**, chat **Libre*
 ## État du code (proto)
 
 - Thème gabin-météo / contraste Cursor (fond noir, beige, **monospace**).
-- Pages : Assistant, Tâches (filtres), fiche tâche, Courses, Libre, Carnet (PC), Paramètres.
-- **Tâches :** bouton **Rafraîchir** sur PC ; sur iPhone **tire vers le bas** au-delà du haut de liste.
-- Données **dans le navigateur** pour l’instant. Claude et Supabase : après tes comptes ([déploiement](docs/DEPLOIEMENT.md)).
-- Phrase type courses (« j’achète de la farine et 12 oeufs ») → liste **sans** écran Valider.
+- Pages : Assistant (3 modes + **Valider / Non / Tout annuler**), Tâches, fiche + SMS/Email, Courses, Libre, Carnet (PC), Paramètres, **Login**.
+- **Tâches :** bouton **Rafraîchir** sur PC ; sur iPhone **tire vers le bas**.
+- Données : **Supabase** si les variables d’env sont là ; sinon **ce navigateur** (localStorage).
+- Claude : `POST /api/chat` dès que `ANTHROPIC_API_KEY` est sur le serveur. Courses via l’Assistant **sans** écran Valider.
 
 ```bash
 npm install

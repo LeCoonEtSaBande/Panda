@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getDb, subscribe, type Db } from "@/lib/local-db";
+import { getCachedDb, hydrateDb, subscribeStore } from "@/lib/store";
+import type { Db } from "@/lib/types";
 
 export function useDb(): Db {
-  const [db, setDb] = useState<Db>({ tasks: [], contacts: [], grocery: [] });
+  const [db, setDb] = useState<Db>(getCachedDb);
   useEffect(() => {
-    setDb(getDb());
-    return subscribe(() => setDb(getDb()));
+    void hydrateDb().then(setDb);
+    return subscribeStore(() => setDb(getCachedDb()));
   }, []);
   return db;
 }

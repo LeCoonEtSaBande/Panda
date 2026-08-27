@@ -1,11 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  addGrocery,
-  commitGrocery,
-  toggleGrocery,
-} from "@/lib/local-db";
+import { addGrocery, commitGrocery, toggleGrocery } from "@/lib/store";
 import { useDb } from "@/lib/use-db";
 
 export default function CoursesPage() {
@@ -22,7 +18,7 @@ export default function CoursesPage() {
               <input
                 type="checkbox"
                 checked={g.checked}
-                onChange={() => toggleGrocery(g.id)}
+                onChange={() => void toggleGrocery(g.id)}
               />{" "}
               {g.label}
             </label>
@@ -36,7 +32,7 @@ export default function CoursesPage() {
         onChange={(e) => setLine(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            addGrocery(line);
+            void addGrocery(line);
             setLine("");
           }
         }}
@@ -45,11 +41,12 @@ export default function CoursesPage() {
         type="button"
         className="btn"
         onClick={() => {
-          if (line.trim()) {
-            addGrocery(line);
-            setLine("");
-          }
-          commitGrocery();
+          const toAdd = line.trim();
+          void (async () => {
+            if (toAdd) await addGrocery(toAdd);
+            await commitGrocery();
+          })();
+          setLine("");
         }}
       >
         OK
