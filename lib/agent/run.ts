@@ -55,7 +55,7 @@ export async function runAgent(opts: {
     };
   }
 
-  const client = new Anthropic({ apiKey: key });
+  const client = new Anthropic({ apiKey: key, timeout: 45_000 });
   const tools = toolsFor(opts.mode);
   const groceryLabels: string[] = [];
   const proposals: Proposal[] = [];
@@ -66,52 +66,64 @@ export async function runAgent(opts: {
     { role: "user", content: opts.message },
   ];
 
-  for (let i = 0; i < 8; i += 1) {
-    const res = await client.messages.create({
-      model: MODEL,
-      max_tokens: 4096,
-      system: systemPrompt(opts.mode, opts.db),
-      tools,
-      messages,
-    });
-
-    const toolUses = res.content.filter((b) => b.type === "tool_use");
-    if (res.stop_reason !== "tool_use" || toolUses.length === 0) {
-      const text = res.content
-        .filter((b) => b.type === "text")
-        .map((b) => b.text)
-        .join("\n")
-        .trim();
-      return { text, groceryLabels, proposals, draft, openUrl };
-    }
-
-    const toolResults: Anthropic.Messages.ToolResultBlockParam[] = [];
-    for (const block of toolUses) {
-      const input = asRecord(block.input);
-      let result = "ok";
-      try {
-        result = handleTool(block.name, input, opts.db, {
-          groceryLabels,
-          proposals,
-          setDraft: (d) => {
-            draft = d;
-          },
-          setOpen: (u) => {
-            openUrl = u;
-          },
-        });
-      } catch (e) {
-        result = e instanceof Error ? e.message : "erreur outil";
-      }
-      toolResults.push({
-        type: "tool_result",
-        tool_use_id: block.id,
-        content: result,
+  try {
+    for (let i = 0; i < 4; i += 1) {
+      const res = await client.messages.create({
+        model: MODEL,
+        max_tokens: 2048,
+        system: systemPrompt(opts.mode, opts.db),
+        tools,
+        messages,
       });
-    }
 
-    messages.push({ role: "assistant", content: res.content });
-    messages.push({ role: "user", content: toolResults });
+      const toolUses = res.content.filter((b) => b.type === "tool_use");
+      if (res.stop_reason !== "tool_use" || toolUses.length === 0) {
+        const text = res.content
+          .filter((b) => b.type === "text")
+          .map((b) => b.text)
+          .join("\n")
+          .trim();
+        return { text, groceryLabels, proposals, draft, openUrl };
+      }
+
+      const toolResults: Anthropic.Messages.ToolResultBlockParam[] = [];
+      for (const block of toolUses) {
+        const input = asRecord(block.input);
+        let result = "ok";
+        try {
+          result = handleTool(block.name, input, opts.db, {
+            groceryLabels,
+            proposals,
+            setDraft: (d) => {
+              draft = d;
+            },
+            setOpen: (u) => {
+              openUrl = u;
+            },
+          });
+        } catch (e) {
+          result = e instanceof Error ? e.message : "erreur outil";
+        }
+        toolResults.push({
+          type: "tool_result",
+          tool_use_id: block.id,
+          content: result,
+        });
+      }
+
+      messages.push({ role: "assistant", content: res.content });
+      messages.push({ role: "user", content: toolResults });
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "erreur Claude";
+    return {
+      text: "",
+      groceryLabels,
+      proposals,
+      draft,
+      openUrl,
+      error: msg,
+    };
   }
 
   return {

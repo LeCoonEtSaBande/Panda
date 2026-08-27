@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import type { ChatMode, Db } from "@/lib/types";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 const MODES: ChatMode[] = ["assistant", "recu", "envoye", "libre"];
 

@@ -97,9 +97,14 @@ export default function AssistantPage() {
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: m, message: payload, db: getCachedDb() }),
       });
+      if (!res.ok && res.headers.get("content-type")?.includes("text/html")) {
+        setNote("Session expirée. Recharge la page et reconnecte-toi.");
+        return;
+      }
       const data = (await res.json()) as ChatResponse;
 
       if (data.error === "missing_key") {
@@ -135,7 +140,12 @@ export default function AssistantPage() {
       }
       setText("");
     } catch (e) {
-      setNote(e instanceof Error ? e.message : "Erreur réseau");
+      const msg = e instanceof Error ? e.message : "Erreur réseau";
+      setNote(
+        /load failed|failed to fetch|networkerror/i.test(msg)
+          ? "La requête a été coupée. Réessaie dans un instant."
+          : msg,
+      );
     } finally {
       setBusy(false);
     }
