@@ -12,9 +12,6 @@ export default function ParametresPage() {
         {id.aliases.join(", ")}
         <br />
         Orgs : {id.organizations.join(", ")}
-        <br />
-        {id.tokens_par_mois.toLocaleString("fr-FR")} tokens / mois · reset jour{" "}
-        {id.jour_reset}
       </p>
     </main>
   );

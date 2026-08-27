@@ -15,7 +15,6 @@ Source métier : [`definition_initiale_projet_panda.txt`](../definition_initiale
 | Google / Maps | **Oublier** |
 | Récurrence | Champ en base, **comportement après** le proto |
 | Durée / 30 min | **Oublier** |
-| Jauge tokens | **Proto**. Chaque réponse Claude contient `usage` (input/output/cache). On **cumule dans Panda**. Le `total` = plafond **Paramètres**. Pas le solde portefeuille Anthropic (indisponible en compte perso). |
 | Relancer (bouton) | **Supprimé**. Scénario 5 = chat **Libre**. Filtre `En attente` + question Assistant (scénario 6). |
 | 2ᵉ message | **Bloqué** tant que Valider/Non/Tout annuler pas fini |
 | Fermeture page | **Annule** la requête en cours |
@@ -23,7 +22,6 @@ Source métier : [`definition_initiale_projet_panda.txt`](../definition_initiale
 | Identité | **Paramètres** dans l’app. Proto : Lee Sin ; Lee, L. Sin, M. Sin, Mr Sin ; org **Tecmotec**. |
 | Tutoiement | Champ contact **`pronom`** : `tu` \| `vous`, **défaut `vous`**. `tu` si org ∈ tes organisations à la création, ou si tu le règles (ceux que tu tutoies déjà). |
 | Visuel | gabin-météo + Cursor Night HC : fond `#0e0e0e`, accent beige `#b29f84`, **monospace** |
-| Jauge | Table `token_usage` + `tokens_par_mois` / `jour_reset` dans [`config/identite.yml`](../config/identite.yml) |
 | Rédaction mail/SMS | Zones `mailto:` / `smsto:` + texte éditable + copier ; **C’est envoyé** = enchaîne comme un **Message envoyé** ; **Annuler** = rien |
 | Ordre du jour | Texte simple, pas le flux mailto |
 
@@ -48,14 +46,14 @@ Clés API : uniquement variables Vercel, jamais Git.
 
 **iPhone — 4 pages**
 
-1. **Accueil / Assistant** — 3 modes, jauge tokens, champ bloqué pendant validation.  
+1. **Accueil / Assistant** — 3 modes, champ bloqué pendant validation.  
 2. **Validation** — une action, puis la suivante : Valider / Non / Tout annuler.  
 3. **Courses** — cocher, ajouter, OK = barrés disparus + ajouts sauvés.  
-4. **Chat libre** — jauge tokens.  
+4. **Chat libre**  
 5. **Tâches** — recherche + filtres ; clic → Inspecter / SMS / Email (rédaction).  
 Clic contact (sur une carte) → coords, puis `tel:` / `mailto:` / `sms:`.
 
-**PC** : idem + tableau tâches plus complet + **archive** + **carnet d’adresses** + **Paramètres** (identité, orgs, plafond jauge).
+**PC** : idem + tableau tâches plus complet + **archive** + **carnet d’adresses** + **Paramètres** (identité, orgs).
 
 ---
 
@@ -63,7 +61,7 @@ Clic contact (sur une carte) → coords, puis `tel:` / `mailto:` / `sms:`.
 
 ### `settings` (modifiable dans l’app)
 
-`display_name`, `name_aliases[]`, `organizations[]`, `ai_budget_units` (total de la jauge).
+`display_name`, `name_aliases[]`, `organizations[]`.
 
 ### `contacts`
 
@@ -99,6 +97,4 @@ Recherche : Action, Historique, Interlocuteur.
 
 Outils selon le mode. Photo base compacte + consignes courtes. Tes scénarios = **tests**, pas le prompt.
 
-Brouillons mail/SMS : `tutoiement` du contact. Si `auto` : tu si son org ∈ tes organisations, sinon vous.
-
-Jauge : somme des `usage` des appels Panda (mois en cours) vs `ai_budget_units` en Paramètres. L’API Messages **ne donne pas** le crédit restant sur le compte Anthropic. L’Admin Usage/Cost API exige une org + clé admin, **pas un compte individuel**.
+Brouillons mail/SMS : `pronom` du contact (`tu` / `vous`).

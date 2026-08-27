@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import "./globals.css";
-import { Gauge } from "./gauge";
 import { Nav } from "./nav";
 
 export const metadata = {
@@ -21,7 +20,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <a className="only-pc muted" href="/contacts">
               Carnet
             </a>
-            <Gauge />
           </header>
           <div className="page">{children}</div>
           <Nav />

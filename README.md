@@ -10,7 +10,7 @@ To-do + contacts + courses, agent **Assistant / Reçu / Envoyé**, chat **Libre*
 | **Créer les comptes** et mettre en ligne | [`docs/DEPLOIEMENT.md`](docs/DEPLOIEMENT.md) |
 | Le plan technique | [`docs/PLAN.md`](docs/PLAN.md) |
 | Les règles métier / 22 scénarios | [`definition_initiale_projet_panda.txt`](definition_initiale_projet_panda.txt) |
-| Ton nom, orgs, **plafond tokens** | [`config/identite.yml`](config/identite.yml) |
+| Ton nom, orgs | [`config/identite.yml`](config/identite.yml) |
 
 ## État du code (proto)
 

@@ -6,7 +6,6 @@ Stockage une liste de contact persistante pour alimenter les échanges avec l'ag
 2 - Accessibilité
 Accessible depuis Iphone ou PC. Version simplifié sur Iphone et complete sur PC.
 Sécurisation a la connexion via un MDP ou une reconnaissance de l'appareil. Fluide/invisible pour un appareil déjà connecté.
-Visibilité sur la page permettant les échange libre avec l'agent IA du nombre de tokens restant
 
 3 - Fonctionnalités
 Possibilité d'interagir avec un agent IA "formaté" beneficiants d'outils retenus au préalable
@@ -47,7 +46,6 @@ Si la demande est un ordre du jour un simple texte de réponse suffit.
 ### Interface attendues PC/Iphone
 Iphone :
 Page d'accueil = Échange avec l'assistant.
-Cette page affiche le nombre de token restant avec l'assistant IA sous forme de jauge avec xxx/total discrete
 Suite a une requête a l'assistant occasionnant un changement sur les BDD Contacts ou Tâches un page minimaliste de validation des actions. Elle s'ouvrira autant de fois qu'il y a d'action.
 Trois options :
 Valider (On passe a la prochaine validation d'action jusqu'à ce qu'il n'y en ai plus)
@@ -61,7 +59,6 @@ On peut aussi rajouter des articles manuellement dans le dernier champs.
 Dès qu'on clique sur OK en bas de la page les articles barrés disparaissent et les ajouts manuels sont sauvegardé.
 
 Page Chat libre avec l'assistant IA avec une interface fluides pour des échanges instantanés.
-Cette page affiche le nombre de token restant avec l'assistant IA sous forme de jauge avec xxx/total discrete
 
 Page tâches avec un champs de recherche textuel et trois filtres rapides a coté de ce champs.
 Les tâches sont classées par "A faire avant le" (Les plus urgentes en haut) puis par date de modification (Les moins récentes en haut)

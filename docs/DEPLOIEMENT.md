@@ -64,17 +64,14 @@ Modèle prévu : **Claude Sonnet** (nom exact figé au branchement, ex. Sonnet 4
 
 ## 5. Fichier identité (déjà dans Git)
 
-[`config/identite.yml`](../config/identite.yml) : nom, Tecmotec, **`tokens_par_mois`**, **`jour_reset`**.  
-Change les deux derniers si 2 000 000 tokens / reset le 1er ne te va pas, puis commit (ou on le fera dans Paramètres plus tard).
+[`config/identite.yml`](../config/identite.yml) : nom, alias, organisations (Tecmotec). Modifiable plus tard dans Paramètres.
 
 ---
 
-## 6. Pas encore (on s’en passe pour le proto local)
+## 6. Pas encore
 
 - Nom de domaine
-- Compte Apple Developer
 - Outlook
-- Twilio / WhatsApp
 
 ---
 
