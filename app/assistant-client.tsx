@@ -23,8 +23,10 @@ function looksLikeGrocery(text: string) {
 }
 
 function groceryLines(text: string): string[] {
-  const rest = text.replace(/^[\s\S]*?\bachet\S*\s+/i, "").trim() || text;
-  return rest
+  const rest = text
+    .replace(/^[\s\S]*?(?:acheter|achète|achetes|achètes|achete)\s+/i, "")
+    .trim();
+  return (rest || text)
     .split(/\s+et\s+|,|\n/i)
     .map((s) =>
       s
