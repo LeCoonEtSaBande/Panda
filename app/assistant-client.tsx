@@ -19,14 +19,18 @@ const MODES = [
 ];
 
 function looksLikeGrocery(text: string) {
-  return /acheter|courses|farine|oeufs|œufs/i.test(text);
+  return /achet|courses|farine|oeufs|œufs/i.test(text);
 }
 
 function groceryLines(text: string): string[] {
-  return text
-    .replace(/^.*acheter\s+/i, "")
+  const rest = text.replace(/^[\s\S]*?\bachet\S*\s+/i, "").trim() || text;
+  return rest
     .split(/\s+et\s+|,|\n/i)
-    .map((s) => s.replace(/^de la\s+/i, "").replace(/^des\s+/i, "").trim())
+    .map((s) =>
+      s
+        .replace(/^(de la|de l['’]|des|du|le|la|les|un|une)\s+/i, "")
+        .trim(),
+    )
     .filter((s) => s.length > 1);
 }
 
