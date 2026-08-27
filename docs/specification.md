@@ -15,12 +15,13 @@ Source métier : [`definition_initiale_projet_panda.txt`](../definition_initiale
 | Google / Maps | **Oublier** |
 | Récurrence | Champ en base, **comportement après** le proto |
 | Durée / 30 min | **Oublier** |
-| Jauge tokens | **Proto**, accueil Assistant **et** chat libre (`xxx / total`) |
-| Relancer (bouton) | **Supprimé** — filtres tâches (`En attente` + tri) |
+| Jauge tokens | **Proto**. Chaque réponse Claude contient `usage` (input/output/cache). On **cumule dans Panda**. Le `total` = plafond **Paramètres**. Pas le solde portefeuille Anthropic (indisponible en compte perso). |
+| Relancer (bouton) | **Supprimé**. Scénario 5 = chat **Libre**. Filtre `En attente` + question Assistant (scénario 6). |
 | 2ᵉ message | **Bloqué** tant que Valider/Non/Tout annuler pas fini |
 | Fermeture page | **Annule** la requête en cours |
 | Plusieurs actions | **Une carte par action**, à la suite (Valider ou Non), ou Tout annuler |
-| Identité | **Modifiable dans l’app** (pas figée dans Git). Proto : Lee Sin ; Lee, L. Sin, M. Sin, Mr Sin ; org **Tecmotec** ; **tu** internes / **vous** externes |
+| Identité | **Paramètres** dans l’app. Proto : Lee Sin ; Lee, L. Sin, M. Sin, Mr Sin ; org **Tecmotec**. |
+| Tutoiement | Champ contact `tutoiement` : `tu` \| `vous` \| `auto`. `auto` = tu si org ∈ tes organisations, sinon vous. Ceux que tu tutoies déjà → `tu` sur la fiche. |
 | Rédaction mail/SMS | Zones `mailto:` / `smsto:` + texte éditable + copier ; **C’est envoyé** = enchaîne comme un **Message envoyé** ; **Annuler** = rien |
 | Ordre du jour | Texte simple, pas le flux mailto |
 
@@ -64,13 +65,13 @@ Clic contact (sur une carte) → coords, puis `tel:` / `mailto:` / `sms:`.
 
 ### `contacts`
 
-id, display_id, nom, prénom, fonction, organisation, tél, email, lien, alias.
+id, display_id, nom, prénom, fonction, organisation, tél, email, lien, alias, **`tutoiement`** (`tu` \| `vous` \| `auto`, défaut `auto`).
 
 Création si `(nom ∪ prénom ∪ org) ∩ (tél ∪ email ∪ lien)`.
 
 ### `tasks`
 
-id, display_id, action, statut (`a_faire` \| `en_attente` \| `fait`), qui_agit (`moi` ou contact), interlocuteur_id **ou** texte, due_at, contexte, recurrence (stocké, ignoré en v1), history[], **`depends_on_ids uuid[]`** (un **niveau** : pas de pyramide ; **plusieurs** parents autorisés, scénario 19).
+id, display_id, action, statut (`a_faire` \| `en_attente` \| `fait`), qui_agit (`moi` ou contact), interlocuteur_id **ou** texte, due_at, contexte, recurrence (stocké, ignoré en v1), history[], **`depends_on_ids uuid[]`** (liste ; toutes les dépendances sur la **tâche principale**, pas de cascade A→B→C — note l.97).
 
 Tri liste : `due_at` croissant (vides en bas) puis `updated_at` **le plus ancien en haut**.
 
@@ -96,4 +97,6 @@ Recherche : Action, Historique, Interlocuteur.
 
 Outils selon le mode. Photo base compacte + consignes courtes. Tes scénarios = **tests**, pas le prompt.
 
-Interne = organisation ∈ tes `organizations` (Tecmotec) → tutoiement dans les brouillons. Sinon vouvoiement.
+Brouillons mail/SMS : `tutoiement` du contact. Si `auto` : tu si son org ∈ tes organisations, sinon vous.
+
+Jauge : somme des `usage` des appels Panda (mois en cours) vs `ai_budget_units` en Paramètres. L’API Messages **ne donne pas** le crédit restant sur le compte Anthropic. L’Admin Usage/Cost API exige une org + clé admin, **pas un compte individuel**.

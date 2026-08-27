@@ -1,5 +1,3 @@
-# Questions — tu réponds dans le chat
+# Questions — statut
 
-**1, 2, 3, 5 : répondu.** Identité = **Paramètres dans l’app**, pas ce repo.
-
-Reste : [`06-restant.md`](06-restant.md) (peu de lignes).
+**01 à 06 : répondu.** Rien de bloquant. Identité et plafond jauge = **Paramètres dans l’app**.
