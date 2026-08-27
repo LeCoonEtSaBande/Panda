@@ -11,8 +11,6 @@ create table settings (
   display_name text not null default '',
   aliases text[] not null default '{}',
   organizations text[] not null default '{}',
-  tokens_par_mois integer not null default 2000000 check (tokens_par_mois > 0),
-  jour_reset integer not null default 1 check (jour_reset between 1 and 28),
   updated_at timestamptz not null default now()
 );
 
@@ -64,28 +62,14 @@ create table grocery_items (
   created_at timestamptz not null default now()
 );
 
-create table token_usage (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users (id) on delete cascade,
-  used_at timestamptz not null default now(),
-  input_tokens integer not null default 0,
-  output_tokens integer not null default 0,
-  cache_read_tokens integer not null default 0,
-  cache_create_tokens integer not null default 0,
-  model text
-);
-
-create index token_usage_user_at on token_usage (user_id, used_at desc);
 create index tasks_user_active on tasks (user_id, status) where archived_at is null;
 
 alter table settings enable row level security;
 alter table contacts enable row level security;
 alter table tasks enable row level security;
 alter table grocery_items enable row level security;
-alter table token_usage enable row level security;
 
 create policy "own settings" on settings for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy "own contacts" on contacts for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy "own tasks" on tasks for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy "own grocery" on grocery_items for all using (user_id = auth.uid()) with check (user_id = auth.uid());
-create policy "own tokens" on token_usage for all using (user_id = auth.uid()) with check (user_id = auth.uid());

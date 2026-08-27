@@ -5,5 +5,5 @@ Courses : proto (écriture immédiate, sans Valider)
 Google / Maps : oublié
 Récurrence : après (colonne en base, pas de logique)
 Durée 30 min : oublié
-Compteur tokens : proto (jauge xxx/total, Assistant + Libre)
+Compteur tokens : **oublié** (suivi hors Panda)
 ```

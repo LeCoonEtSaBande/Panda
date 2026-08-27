@@ -18,9 +18,7 @@ Next.js (App Router) sur Vercel
 
 Une app, CSS responsive : iPhone = 4–5 pages simples ; PC = + archive + carnet + tableau.
 
-**Claude « Pro » :** l’abonnement **claude.ai** n’alimente **pas** une appli tierce. Panda parle à l’**API** (console.anthropic.com, compte **individuel / pay-as-you-go**, pas Enterprise). Chaque réponse contient `usage` ; on **cumule** ça. On ne lit pas le solde Console.
-
-Jauge = `tokens_consommés depuis jour_reset` / `tokens_par_mois` (fichier identité, modifiable en Paramètres).
+**Claude « Pro » :** l’abonnement **claude.ai** n’alimente **pas** une appli tierce. Panda parle à l’**API** (console.anthropic.com). La conso se suit **dans la Console Anthropic**, pas dans Panda.
 
 ---
 
@@ -39,7 +37,7 @@ Inspiré **gabin-météo** (`affichage-web`) + contraste type Cursor Night High 
 | Police | `ui-monospace, "SF Mono", Menlo, "Cascadia Mono", Consolas, monospace` |
 | Tap | ≥ 44 px, pastilles mode soulignées beige |
 
-Pas d’illustration, pas de gradient. Chiffres tabulaires (jauge, dates).
+Pas d’illustration, pas de gradient. Chiffres tabulaires (dates).
 
 ---
 
@@ -47,15 +45,15 @@ Pas d’illustration, pas de gradient. Chiffres tabulaires (jauge, dates).
 
 | Route | iPhone | PC |
 |---|---|---|
-| `/` Assistant (3 modes + jauge) | oui | oui |
+| `/` Assistant (3 modes) | oui | oui |
 | `/validation` une action | oui | oui |
 | `/redaction` mailto/smsto | oui | oui |
 | `/courses` | oui | oui |
-| `/libre` jauge | oui | oui |
+| `/libre` | oui | oui |
 | `/taches` recherche + 3 filtres | cartes | tableau + blocs |
 | `/taches/[id]` inspecter | oui | oui |
 | `/contacts` | non (fiche depuis tâche) | carnet |
-| `/parametres` identité + plafond tokens | oui | oui |
+| `/parametres` identité | oui | oui |
 | `/login` | oui | oui |
 | Archive tâches | — | `/taches?archive=1` |
 
@@ -65,11 +63,10 @@ Nav bas iPhone : Assistant · Tâches · Courses · Libre.
 
 ## 4. Base (Supabase)
 
-- `settings` — seed depuis `config/identite.yml` (nom, alias, orgs, `tokens_par_mois`, `jour_reset` 1–28)
+- `settings` — seed depuis `config/identite.yml` (nom, alias, orgs)
 - `contacts` — + **`pronom`** `tu` \| `vous`, **défaut `vous`**. À la création : `tu` si organisation ∈ tes orgs, sinon `vous`. Tu forces `tu` pour ceux que tu tutoies déjà.
 - `tasks` — `depends_on_ids uuid[]` (liste, toutes sur la tâche principale)
 - `grocery_items`
-- `token_usage` — une ligne par appel Claude (`input_tokens`, `output_tokens`, cache)
 - `pending_proposals` — file de validation (perdue si onglet fermé)
 
 RLS : `user_id = auth.uid()`.
@@ -92,13 +89,12 @@ Consignes courtes + cache prompt. Scénarios du `.txt` = tests, pas le prompt.
 
 1. App Next + thème gabin/HC + PWA shell + auth
 2. SQL + seed identité
-3. Jauge (compteur `token_usage` + plafond / jour reset)
-4. Courses (manuel + Assistant sans Valider)
-5. Tâches + filtres + inspecter (sans IA)
-6. Contacts PC + `pronom`
-7. Assistant + file de validation
-8. Rédaction mail/SMS
-9. Chat libre
-10. Tests des scénarios 1–22 (ceux du `.txt`)
+3. Courses (manuel + Assistant sans Valider)
+4. Tâches + filtres + inspecter (sans IA)
+5. Contacts PC + `pronom`
+6. Assistant + file de validation
+7. Rédaction mail/SMS
+8. Chat libre
+9. Tests des scénarios 1–22 (ceux du `.txt`)
 
 Hors proto : Outlook, PJ, synchro carnet, récurrence active, Google Maps.
