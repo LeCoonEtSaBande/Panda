@@ -29,8 +29,7 @@ npm run dev
 
 ## Branches
 
-- **`main`** — ce que Vercel déploiera (après merge).
-- **`cursor/spec-livrables-04ba`** — **travail en cours** (cette PR).
+- **`main`** — ce que Vercel déploie.
 
 Détail : [`docs/BRANCHES.md`](docs/BRANCHES.md).
 
