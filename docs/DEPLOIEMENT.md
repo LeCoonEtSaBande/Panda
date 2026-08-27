@@ -29,25 +29,38 @@ L’app parle à Claude et à Supabase **seulement après** les étapes ci-desso
 
 ---
 
-## B. Vercel — coller les clés et déployer (5 min)
+## B. Vercel — une fois, puis c’est automatique
 
-1. [vercel.com](https://vercel.com) → **Add New → Project** → Import le repo **Panda** (GitHub `LeCoonEtSaBande/Panda`).
-2. Framework : Next.js (détecté). Root = dépôt.
-3. **Environment Variables** — coche **Production** et **Preview** pour chacune :
+Vercel lit **`main`**. Tu n’as **pas** à choisir une autre branche.
+
+### Si le projet n’existe pas encore
+
+1. Va sur [vercel.com/new](https://vercel.com/new).
+2. Import **Panda** (`LeCoonEtSaBande/Panda`).
+3. **Project Name** : `panda-assistant` (URL = `https://panda-assistant.vercel.app` s’il est libre).
+4. Framework : **Next.js**. Root Directory : **laisse vide**.
+5. **Environment Variables** — ajoute les 4, coche Production **et** Preview :
 
 | Nom | Valeur |
 |---|---|
 | `ANTHROPIC_API_KEY` | ta clé `sk-ant-…` |
-| `NEXT_PUBLIC_SUPABASE_URL` | URL projet Supabase |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL projet Supabase (`https://xxxxx.supabase.co`) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | clé anon |
 | `SUPABASE_SERVICE_ROLE_KEY` | service_role |
 
-4. **Branche à déployer tout de suite** : `cursor/spec-livrables-04ba`  
-   (`main` n’a pas encore l’app : on merge la PR plus tard.)
-   - Settings du projet Vercel → Git → Production Branch : tu peux laisser `main` et ouvrir l’onglet **Deployments** → cliquer les déploiements **Preview** de cette branche.
-   - Ou : Settings → Production Branch = `cursor/spec-livrables-04ba` le temps du proto.
-5. Deploy. URL du type `https://panda-xxx.vercel.app`.
-6. Retourne dans Supabase → Redirect URLs : ajoute `https://panda-xxx.vercel.app/auth/callback` et Site URL = cette adresse.
+6. **Deploy**. Attends **Ready** (barre verte). Pas Error.
+
+### Si le projet existe déjà (tu as eu une 404)
+
+1. Projet **panda-assistant** → **Settings → Git** (ou **Settings → Environments → Production → Branch Tracking**) : branche = **`main`**.
+2. **Settings → Environment Variables** : les 4 clés ci-dessus si ce n’est pas déjà fait.
+3. Onglet **Deployments** → **Create Deployment** → branche **`main`** → Deploy.  
+   Ou : le prochain push sur `main` déploie tout seul.
+4. Attends **Ready**, puis ouvre `https://panda-assistant.vercel.app`.
+
+5. Retourne dans Supabase → URL Configuration :
+   - Site URL : `https://panda-assistant.vercel.app`
+   - Redirect : `https://panda-assistant.vercel.app/auth/callback` **et** `http://localhost:3000/auth/callback`
 
 ---
 
@@ -90,6 +103,5 @@ Console [console.anthropic.com](https://console.anthropic.com) → usage / billi
 
 ## Pas encore
 
-- Fusionner la PR dans `main` (quand tu es content du Preview)
-- Nom de domaine
+- Nom de domaine perso (`panda.fr`)
 - Outlook
