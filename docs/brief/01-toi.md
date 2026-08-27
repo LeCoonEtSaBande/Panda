@@ -7,4 +7,4 @@ Valeurs de départ proto :
 - Nom affiché : Lee Sin
 - On m’adresse : Lee, L. Sin, M. Sin, Mr Sin
 - Organisations : Tecmotec
-- Brouillons : **tu** si org ∈ Tecmotec (interne), **vous** sinon
+- Brouillons : champ contact **`tutoiement`** (`tu` / `vous` / `auto`). `auto` = tu si org Tecmotec, sinon vous.
