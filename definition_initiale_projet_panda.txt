@@ -21,7 +21,7 @@ L'agent sait reconnaitre quand on s'adresse a moi dans des échanges écrit (Nom
 Possibilité de faire des modifications/ajouts/recherches manuellement des taches et contacts
 Avoir des rappels des tâches du pour aujourdhui, cette semaine, ce mois-ci, en retard
 Avoir une liste des personnes que je dois relancer (A trier dans l'ordre des personnes contacté il y a le plus longtemps)
-Possibilité de cliquer sur un contact pour obtenir ses coordonnées puis de cliquer de nouveau (sur téléphone pour le moment) pour envoyer un email, appeller ou écrire un sms ou
+Possibilité de cliquer sur un contact pour obtenir ses coordonnées puis de cliquer de nouveau (sur téléphone pour le moment) pour envoyer un email, appeller ou écrire un sms ou ouvrir un lien
 
 4 - Évolutions futurs prévues
 Possibilité de lire ou écrire directement les emails dans Outlook
@@ -63,7 +63,7 @@ Dès qu'on clique sur OK en bas de la page les articles barrés disparaissent et
 Page Chat libre avec l'assistant IA avec une interface fluides pour des échanges instantanés.
 Cette page affiche le nombre de token restant avec l'assistant IA sous forme de jauge avec xxx/total discrete
 
-Page tâches avec un champs de recherche textuel et deux filtres rapides a coté de ce champs.
+Page tâches avec un champs de recherche textuel et trois filtres rapides a coté de ce champs.
 Les tâches sont classées par "A faire avant le" (Les plus urgentes en haut) puis par date de modification (Les moins récentes en haut)
 Les blocs de dépendances sont signalés par une indentation et un braquet léger.
 Recherche cherche sur les champs Action; Historique; Interlocuteur
@@ -94,7 +94,7 @@ A Faire Avant le;
 Contexte; (Pro; Perso)
 Récurrence;
 Historique;
-Dépend de; (Une autre ID de Tâche)
+Dépend de; (Liste d'ID de Tâches. Pour éviter d'avoir des dépendances en cascade on met toutes les dépendances suivantes dans la tâche principale)
 
 2 - Stockage des informations de contact
 ID;
@@ -196,8 +196,9 @@ Historique;Réparer la Douche - 25/08/2026, Contacter la société Qualitec pour
 Dépend de;
 
 5
-"Clic sur Rappel des personnes à relancer" - 28/08/2026
--> Affiche
+Page Echange Libre avec l'assistant - Dans le chat - 27/08/2026
+"Dis moi si je dois relancer du monde pour avancer"
+-> Répond
 Franck Bouvard de chez Qualitec contacté le 27/08/2026 pour un devis pour réparer la douche
 
 6
@@ -492,7 +493,7 @@ Historique;
 Dépend de;
 -> Modifie la tâche
 ID; T20260006
-Date de modification; 08/09/2026
+Date de modification; 09/09/2026
 Action; Envoyer à Aurélie Pierre de chez Roche les informations concernant le véhicule de Christophe Pallot
 (Si l'interlocuteur travaille au sein d'une des mêmes organisation que moi (Ici Tecmotec par exemple), on ne met pas le nom de l'organisation dans la descriptiond de la tâche. Sinon elle y figure)
 Statut; A faire
@@ -516,7 +517,7 @@ Dans la fenetre d'échange libre
 "Désole je ne peux pas modifier les informations de vos contact merci d'utiliser la fonction assistant"
 (Ce n'est pas grave si les réponses ne sont pas strictement formulées pareil tant qu'on comprend)
 
-21
+22
 Fonction "Assistant"
 "Je dois acheter de la Farine et 12 oeufs"
 -> Ajoute a la liste de course persistante
