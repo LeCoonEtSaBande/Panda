@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { isRemoteMode } from "@/lib/store";
 import { useDb } from "@/lib/use-db";
 
@@ -23,19 +22,16 @@ export default function ParametresPage() {
         <br />
         Orgs : {db.settings.organizations.join(", ")}
       </p>
-      {isSupabaseConfigured() ? (
         <button
           type="button"
           className="btn btn-ghost"
           onClick={async () => {
-            const sb = createClient();
-            await sb?.auth.signOut();
+            await fetch("/api/logout", { method: "POST" });
             window.location.href = "/login";
           }}
         >
           Déconnexion
         </button>
-      ) : null}
     </main>
   );
 }

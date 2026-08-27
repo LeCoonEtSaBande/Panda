@@ -39,7 +39,7 @@ Vercel lit **`main`**. Tu n’as **pas** à choisir une autre branche.
 2. Import **Panda** (`LeCoonEtSaBande/Panda`).
 3. **Project Name** : `panda-assistant` (URL = `https://panda-assistant.vercel.app` s’il est libre).
 4. Framework : **Next.js**. Root Directory : **laisse vide**.
-5. **Environment Variables** — ajoute les 4, coche Production **et** Preview :
+5. **Environment Variables** — coche Production **et** Preview :
 
 | Nom | Valeur |
 |---|---|
@@ -47,6 +47,8 @@ Vercel lit **`main`**. Tu n’as **pas** à choisir une autre branche.
 | `NEXT_PUBLIC_SUPABASE_URL` | URL projet Supabase (`https://xxxxx.supabase.co`) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | clé anon |
 | `SUPABASE_SERVICE_ROLE_KEY` | service_role |
+| `PANDA_USER` | ton identifiant (pas dans Git) |
+| `PANDA_PASSWORD` | ton mot de passe (pas dans Git) |
 
 6. **Deploy**. Attends **Ready** (barre verte). Pas Error.
 
