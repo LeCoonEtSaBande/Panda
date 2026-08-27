@@ -106,6 +106,7 @@ Téléphone;
 Email;
 Lien;
 Alias; (Pédiatre de ma fille; Pédiatre de Laure) OU (Un de mes associés) OU (Papa; Grand père de Laure)
+Pronom; (Tu, Vous) par défaut "Vous" sauf si dans mon organisation ou si ils me tutoient ou je les tutoie déjà.
 
 3 - Liste de courses
 Cette liste est un simple ajout/enlève sans archivage
@@ -152,6 +153,7 @@ Téléphone; 0404040404
 Email;
 Lien;
 Alias;
+Pronom; Vous
 
 3
 Fonction "Assistant" - 27/08/2026
@@ -166,6 +168,7 @@ Téléphone; 0606060606
 Email;
 Lien;
 Alias; Plombier pour la maison
+Pronom; Vous
 -> Modifie la tâche
 ID; T20260001
 Date de modification; 27/08/2026
@@ -314,6 +317,7 @@ Téléphone; 0707070707
 Email;
 Lien;
 Alias;
+Pronom; Vous
 
 13
 Fonction "Message Reçu" - 08/09/2026
@@ -333,21 +337,23 @@ ID; C2026002
 Nom; Pierre
 Prénom; Aurélie
 Fonction; Directrice Financière
-Organisation; Société Roche
+Organisation; Roche
 Téléphone; 0707070707
 Email; apierre@roche.fr
 Lien;
 Alias;
+Pronom; Tu
 -> Crée un contact (On rempli les conditions permettant la création d'un contact)
 ID; C2026003
 Nom; Pallot
 Prénom; Christophe
 Fonction; 
-Organisation; Société Tecmotec
+Organisation; Tecmotec (Même que moi)
 Téléphone; 
 Email; cpallot@tecmotec.fr
 Lien;
 Alias;
+Pronom; Tu
 -> Crée une tâche
 ID; T20260005
 Date de modification; 08/09/2026
@@ -387,11 +393,12 @@ ID; C2026004
 Nom; Parent
 Prénom; Rémi
 Fonction; Directeur de production
-Organisation; Société Stox
+Organisation; Stox
 Téléphone; 
 Email; rparent@stox.fr
 Lien;
 Alias;
+Pronom; Tu
 -> Modifie la tâche
 ID; T20260004
 Date de modification; 08/09/2026
@@ -424,6 +431,7 @@ Téléphone;
 Email; 
 Lien; www.doctolib.fr/123
 Alias; Pédiatre de ma fille
+Pronom; Vous
 
 17
 Fonction "Assistant" - 09/09/2026
