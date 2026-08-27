@@ -6,6 +6,7 @@ import { Nav } from "./nav";
 export const metadata = {
   title: "Panda",
   description: "Suivi d’actions + contacts",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -17,9 +18,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <a className="brand" href="/parametres">
               Panda
             </a>
+            <a className="only-pc muted" href="/contacts">
+              Carnet
+            </a>
             <Gauge />
           </header>
-          {children}
+          <div className="page">{children}</div>
           <Nav />
         </div>
       </body>

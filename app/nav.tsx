@@ -18,7 +18,15 @@ export function Nav() {
         <Link
           key={it.href}
           href={it.href}
-          className={path === it.href ? "is-active" : undefined}
+          className={
+            it.href === "/"
+              ? path === "/"
+                ? "is-active"
+                : undefined
+              : path === it.href || path.startsWith(`${it.href}/`)
+                ? "is-active"
+                : undefined
+          }
         >
           {it.label}
         </Link>
