@@ -1,10 +1,8 @@
-# 1 — Toi — **répondu** (stocké dans l’app, pas dans Git)
-
-Modifiable plus tard dans **Paramètres**.
-
-Valeurs de départ proto :
+# 1 — Toi (seed `config/identite.yml`, éditable dans l’app)
 
 - Nom affiché : Lee Sin
 - On m’adresse : Lee, L. Sin, M. Sin, Mr Sin
 - Organisations : Tecmotec
-- Brouillons : champ contact **`tutoiement`** (`tu` / `vous` / `auto`). `auto` = tu si org Tecmotec, sinon vous.
+- **tokens_par_mois :** 2000000 (à ajuster)
+- **jour_reset :** 1 (jour du mois)
+- Pronom contacts : défaut **vous** ; **tu** si org ∈ Tecmotec ou tu le mets sur la fiche
