@@ -1,0 +1,15 @@
+# Identité Panda (seed → table settings, modifiable dans l’app)
+
+display_name: Lee Sin
+aliases:
+  - Lee
+  - L. Sin
+  - M. Sin
+  - Mr Sin
+organizations:
+  - Tecmotec
+
+# Jauge : cumul des tokens des appels API Panda (pas le solde claude.ai)
+# Renseigne le plafond mensuel. jour_reset = jour du mois (1–28) où on remet le compteur à 0.
+tokens_par_mois: 2000000
+jour_reset: 1

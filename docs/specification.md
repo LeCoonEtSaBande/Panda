@@ -21,7 +21,9 @@ Source métier : [`definition_initiale_projet_panda.txt`](../definition_initiale
 | Fermeture page | **Annule** la requête en cours |
 | Plusieurs actions | **Une carte par action**, à la suite (Valider ou Non), ou Tout annuler |
 | Identité | **Paramètres** dans l’app. Proto : Lee Sin ; Lee, L. Sin, M. Sin, Mr Sin ; org **Tecmotec**. |
-| Tutoiement | Champ contact `tutoiement` : `tu` \| `vous` \| `auto`. `auto` = tu si org ∈ tes organisations, sinon vous. Ceux que tu tutoies déjà → `tu` sur la fiche. |
+| Tutoiement | Champ contact **`pronom`** : `tu` \| `vous`, **défaut `vous`**. `tu` si org ∈ tes organisations à la création, ou si tu le règles (ceux que tu tutoies déjà). |
+| Visuel | gabin-météo + Cursor Night HC : fond `#0e0e0e`, accent beige `#b29f84`, **monospace** |
+| Jauge | Table `token_usage` + `tokens_par_mois` / `jour_reset` dans [`config/identite.yml`](../config/identite.yml) |
 | Rédaction mail/SMS | Zones `mailto:` / `smsto:` + texte éditable + copier ; **C’est envoyé** = enchaîne comme un **Message envoyé** ; **Annuler** = rien |
 | Ordre du jour | Texte simple, pas le flux mailto |
 
@@ -65,7 +67,7 @@ Clic contact (sur une carte) → coords, puis `tel:` / `mailto:` / `sms:`.
 
 ### `contacts`
 
-id, display_id, nom, prénom, fonction, organisation, tél, email, lien, alias, **`tutoiement`** (`tu` \| `vous` \| `auto`, défaut `auto`).
+id, display_id, nom, prénom, fonction, organisation, tél, email, lien, alias, **`pronom`** (`tu` \| `vous`, défaut `vous`).
 
 Création si `(nom ∪ prénom ∪ org) ∩ (tél ∪ email ∪ lien)`.
 
