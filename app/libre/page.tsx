@@ -22,6 +22,7 @@ export default function LibrePage() {
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mode: "libre",

@@ -61,7 +61,14 @@ export async function middleware(request: NextRequest) {
       home.pathname = "/";
       return NextResponse.redirect(home);
     }
-    return withSupabase(request);
+    if (path.startsWith("/api")) {
+      return NextResponse.next({ request });
+    }
+    try {
+      return await withSupabase(request);
+    } catch {
+      return NextResponse.next({ request });
+    }
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
