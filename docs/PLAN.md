@@ -67,7 +67,7 @@ Nav bas iPhone : Assistant · Tâches · Courses · Libre.
 - `contacts` — + **`pronom`** `tu` \| `vous`, **défaut `vous`**. À la création : `tu` si organisation ∈ tes orgs, sinon `vous`. Tu forces `tu` pour ceux que tu tutoies déjà.
 - `tasks` — `depends_on_ids uuid[]` (liste, toutes sur la tâche principale)
 - `grocery_items`
-- `pending_proposals` — file de validation (perdue si onglet fermé)
+- `pending_proposals` — file de validation **dans l’onglet** (perdue si page fermée)
 
 RLS : `user_id = auth.uid()`.
 

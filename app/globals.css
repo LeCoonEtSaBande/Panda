@@ -99,17 +99,31 @@ main { padding: 16px 12px 24px; max-width: 720px; margin: 0 auto; width: 100%; }
   border-bottom-color: var(--beige);
 }
 
-textarea, input, button {
+textarea, input, button, select {
   font: inherit;
   color: var(--text);
 }
 
-textarea, input[type="text"] {
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"] {
   width: 100%;
   background: var(--elev);
   border: 1px solid var(--line);
   padding: 12px;
   min-height: 44px;
+  margin-top: 8px;
+}
+
+select {
+  width: 100%;
+  background: var(--elev);
+  border: 1px solid var(--line);
+  padding: 12px;
+  min-height: 44px;
+  margin-top: 8px;
 }
 
 textarea { min-height: 140px; resize: vertical; }
@@ -125,7 +139,53 @@ textarea { min-height: 140px; resize: vertical; }
   text-transform: uppercase;
   font-size: 12px;
   cursor: pointer;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
 }
+
+.btn:disabled, .mode:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--beige);
+  border: 1px solid var(--line);
+}
+
+.btn-link { color: #111; }
+
+.btn-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.card-validate {
+  border: 1px solid var(--line);
+  background: var(--elev);
+  padding: 16px 12px;
+}
+
+.reply, .thread {
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.thread { list-style: none; padding: 0; }
+
+.bubble-user, .bubble-panda {
+  padding: 10px 12px;
+  margin: 0 0 8px;
+  border: 1px solid var(--line);
+}
+
+.bubble-user { color: var(--muted); }
+.bubble-panda { background: var(--elev); }
 
 .muted { color: var(--muted); font-size: 12px; line-height: 1.5; }
 
@@ -219,5 +279,6 @@ h1 { font-size: 16px; font-weight: 500; letter-spacing: 0.04em; }
   .archive-pc { display: flex; gap: 8px; margin: 8px 0; color: var(--muted); font-size: 12px; }
   .filters { grid-template-columns: 1fr 1fr 1fr; }
   main, .ptr { max-width: 960px; }
+  .btn-row { grid-template-columns: 1fr 1fr 1fr; }
 }
 

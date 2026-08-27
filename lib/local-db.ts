@@ -1,49 +1,21 @@
-export type TaskStatus = "a_faire" | "en_attente" | "fait";
-export type TaskContext = "pro" | "perso";
-export type Pronom = "tu" | "vous";
+import { DEFAULT_IDENTITE } from "@/lib/identite-defaults";
+import type { Contact, Db, Grocery, Task } from "@/lib/types";
 
-export type Contact = {
-  id: string;
-  displayId: string;
-  lastName: string;
-  firstName: string;
-  role: string;
-  organization: string;
-  phone: string;
-  email: string;
-  url: string;
-  alias: string;
-  pronom: Pronom;
-};
-
-export type Task = {
-  id: string;
-  displayId: string;
-  action: string;
-  status: TaskStatus;
-  actorIsMe: boolean;
-  interlocutorId: string | null;
-  interlocutorText: string;
-  dueAt: string | null;
-  context: TaskContext;
-  history: { date: string; action: string }[];
-  dependsOnIds: string[];
-  archivedAt: string | null;
-  updatedAt: string;
-};
-
-export type Grocery = { id: string; label: string; checked: boolean };
-
-export type Db = {
-  tasks: Task[];
-  contacts: Contact[];
-  grocery: Grocery[];
-};
+export type { Contact, Db, Grocery, Task, Pronom, TaskContext, TaskStatus } from "@/lib/types";
 
 const KEY = "panda.local.v1";
 
 function empty(): Db {
-  return { tasks: [], contacts: [], grocery: [] };
+  return {
+    tasks: [],
+    contacts: [],
+    grocery: [],
+    settings: {
+      displayName: DEFAULT_IDENTITE.display_name,
+      aliases: DEFAULT_IDENTITE.aliases,
+      organizations: DEFAULT_IDENTITE.organizations,
+    },
+  };
 }
 
 function read(): Db {
@@ -87,8 +59,11 @@ function nid(prefix: string) {
   return `${prefix}-${Date.now()}-${seq}`;
 }
 
-export function nextDisplayId(kind: "T" | "C"): string {
-  const db = read();
+export function allocateId() {
+  return crypto.randomUUID();
+}
+
+export function nextDisplayId(kind: "T" | "C", db: Db = read()): string {
   const year = new Date().getFullYear();
   const ids =
     kind === "T"

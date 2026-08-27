@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import "./globals.css";
-import { Nav } from "./nav";
+import { Chrome } from "./chrome";
 
 export const metadata = {
   title: "Panda",
@@ -12,18 +12,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr">
       <body>
-        <div className="shell">
-          <header className="top">
-            <a className="brand" href="/parametres">
-              Panda
-            </a>
-            <a className="only-pc muted" href="/contacts">
-              Carnet
-            </a>
-          </header>
-          <div className="page">{children}</div>
-          <Nav />
-        </div>
+        <Chrome>{children}</Chrome>
       </body>
     </html>
   );

@@ -1,6 +1,8 @@
 "use client";
 
-import { upsertContact, nextDisplayId, type Pronom } from "@/lib/local-db";
+import { autoPronom, canCreateContact } from "@/lib/contact-rules";
+import { nextDisplayId, upsertContact } from "@/lib/store";
+import type { Pronom } from "@/lib/types";
 import { useDb } from "@/lib/use-db";
 import { useState } from "react";
 
@@ -23,9 +25,7 @@ export default function ContactsPage() {
               {c.phone ? ` · ${c.phone}` : ""}
               {c.email ? ` · ${c.email}` : ""}
             </span>
-            {c.phone ? (
-              <a href={`tel:${c.phone}`}>appeler</a>
-            ) : null}{" "}
+            {c.phone ? <a href={`tel:${c.phone}`}>appeler</a> : null}{" "}
             {c.email ? <a href={`mailto:${c.email}`}>mail</a> : null}
           </li>
         ))}
@@ -33,12 +33,20 @@ export default function ContactsPage() {
       <button type="button" className="btn" onClick={() => setOpen(true)}>
         Nouveau contact
       </button>
-      {open ? <NewContact onClose={() => setOpen(false)} /> : null}
+      {open ? (
+        <NewContact orgs={db.settings.organizations} onClose={() => setOpen(false)} />
+      ) : null}
     </main>
   );
 }
 
-function NewContact({ onClose }: { onClose: () => void }) {
+function NewContact({
+  orgs,
+  onClose,
+}: {
+  orgs: string[];
+  onClose: () => void;
+}) {
   const [firstName, setFirst] = useState("");
   const [lastName, setLast] = useState("");
   const [organization, setOrg] = useState("");
@@ -53,17 +61,20 @@ function NewContact({ onClose }: { onClose: () => void }) {
       style={{ marginTop: 16 }}
       onSubmit={(e) => {
         e.preventDefault();
-        const ok =
-          (firstName || lastName || organization) && (phone || email || url);
-        if (!ok) {
+        if (
+          !canCreateContact({
+            firstName,
+            lastName,
+            organization,
+            phone,
+            email,
+            url,
+          })
+        ) {
           alert("Il faut (nom ou prénom ou org) et (tél ou email ou lien).");
           return;
         }
-        const orgs = ["Tecmotec"];
-        const autoTu = orgs.some(
-          (o) => o.toLowerCase() === organization.trim().toLowerCase(),
-        );
-        upsertContact({
+        void upsertContact({
           id: crypto.randomUUID(),
           displayId: nextDisplayId("C"),
           firstName,
@@ -74,14 +85,18 @@ function NewContact({ onClose }: { onClose: () => void }) {
           email,
           url,
           alias: "",
-          pronom: autoTu ? "tu" : pronom,
+          pronom: autoPronom(organization, orgs, pronom),
         });
         onClose();
       }}
     >
       <input placeholder="Prénom" value={firstName} onChange={(e) => setFirst(e.target.value)} />
       <input placeholder="Nom" value={lastName} onChange={(e) => setLast(e.target.value)} />
-      <input placeholder="Organisation" value={organization} onChange={(e) => setOrg(e.target.value)} />
+      <input
+        placeholder="Organisation"
+        value={organization}
+        onChange={(e) => setOrg(e.target.value)}
+      />
       <input placeholder="Téléphone" value={phone} onChange={(e) => setPhone(e.target.value)} />
       <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <input placeholder="Lien" value={url} onChange={(e) => setUrl(e.target.value)} />

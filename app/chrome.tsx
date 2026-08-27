@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 
 const ITEMS = [
   { href: "/", label: "Assistant" },
@@ -10,7 +11,7 @@ const ITEMS = [
   { href: "/libre", label: "Libre" },
 ];
 
-export function Nav() {
+function Nav() {
   const path = usePathname();
   return (
     <nav className="nav">
@@ -32,5 +33,26 @@ export function Nav() {
         </Link>
       ))}
     </nav>
+  );
+}
+
+export function Chrome({ children }: { children: ReactNode }) {
+  const path = usePathname();
+  const hide = path === "/login";
+  return (
+    <div className="shell">
+      {hide ? null : (
+        <header className="top">
+          <a className="brand" href="/parametres">
+            Panda
+          </a>
+          <a className="only-pc muted" href="/contacts">
+            Carnet
+          </a>
+        </header>
+      )}
+      <div className="page">{children}</div>
+      {hide ? null : <Nav />}
+    </div>
   );
 }
