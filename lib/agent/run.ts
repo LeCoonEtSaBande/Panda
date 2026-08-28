@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { autoPronom, canCreateContact } from "@/lib/contact-rules";
 import { systemPrompt } from "@/lib/agent/prompt";
 import { toolsFor } from "@/lib/agent/tools";
+import { coerceDueAt, todayISO } from "@/lib/dates";
 import type {
   ChatMode,
   ChatResponse,
@@ -42,6 +43,7 @@ export async function runAgent(opts: {
   mode: ChatMode;
   message: string;
   db: Db;
+  today?: string;
 }): Promise<ChatResponse> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) {
@@ -54,6 +56,10 @@ export async function runAgent(opts: {
       error: "missing_key",
     };
   }
+
+  const today = opts.today && /^\d{4}-\d{2}-\d{2}$/.test(opts.today)
+    ? opts.today
+    : todayISO();
 
   const client = new Anthropic({ apiKey: key, timeout: 45_000 });
   const tools = toolsFor(opts.mode);
@@ -71,7 +77,7 @@ export async function runAgent(opts: {
       const res = await client.messages.create({
         model: MODEL,
         max_tokens: 2048,
-        system: systemPrompt(opts.mode, opts.db),
+        system: systemPrompt(opts.mode, opts.db, today),
         tools,
         messages,
       });
@@ -91,7 +97,7 @@ export async function runAgent(opts: {
         const input = asRecord(block.input);
         let result = "ok";
         try {
-          result = handleTool(block.name, input, opts.db, {
+          result = handleTool(block.name, input, opts.db, today, {
             groceryLabels,
             proposals,
             setDraft: (d) => {
@@ -139,6 +145,7 @@ function handleTool(
   name: string,
   input: Record<string, unknown>,
   db: Db,
+  today: string,
   acc: {
     groceryLabels: string[];
     proposals: Proposal[];
@@ -249,7 +256,7 @@ function handleTool(
         actorIsMe: input.actor_is_me !== false,
         interlocutorId: str(input.interlocutor_id) || null,
         interlocutorText: str(input.interlocutor_text),
-        dueAt: str(input.due_at) || null,
+        dueAt: coerceDueAt(str(input.due_at), today),
         context: input.context === "pro" ? "pro" : "perso",
         history: [],
         dependsOnIds: Array.isArray(input.depends_on_ids)
@@ -284,7 +291,9 @@ function handleTool(
         ...(input.interlocutor_text !== undefined
           ? { interlocutorText: str(input.interlocutor_text) }
           : {}),
-        ...(input.due_at !== undefined ? { dueAt: str(input.due_at) || null } : {}),
+        ...(input.due_at !== undefined
+          ? { dueAt: coerceDueAt(str(input.due_at), today) }
+          : {}),
         ...(input.context === "pro" || input.context === "perso"
           ? { context: input.context }
           : {}),

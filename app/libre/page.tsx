@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { addGrocery, getCachedDb } from "@/lib/store";
+import { todayISO } from "@/lib/dates";
 import type { ChatResponse } from "@/lib/types";
 
 export default function LibrePage() {
@@ -28,6 +29,7 @@ export default function LibrePage() {
           mode: "libre",
           message: payload,
           db: getCachedDb(),
+          today: todayISO(),
         }),
       });
       const data = (await res.json()) as ChatResponse;
