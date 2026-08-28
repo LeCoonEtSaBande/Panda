@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       mode?: string;
       message?: string;
       db?: Db;
+      today?: string;
     };
     if (gateConfigured()) {
       const ok = await gateTokenOk(
@@ -44,7 +45,12 @@ export async function POST(req: Request) {
     if (!body.db) {
       return NextResponse.json({ error: "no_db" }, { status: 400 });
     }
-    const result = await runAgent({ mode, message, db: body.db });
+    const result = await runAgent({
+      mode,
+      message,
+      db: body.db,
+      today: body.today,
+    });
     return NextResponse.json(result);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "erreur";

@@ -10,6 +10,7 @@ import {
   getCachedDb,
 } from "@/lib/store";
 import { useDb } from "@/lib/use-db";
+import { todayISO } from "@/lib/dates";
 import type { ChatMode, ChatResponse, DraftMessage, Proposal } from "@/lib/types";
 
 const MODES = [
@@ -99,7 +100,12 @@ export default function AssistantPage() {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: m, message: payload, db: getCachedDb() }),
+        body: JSON.stringify({
+          mode: m,
+          message: payload,
+          db: getCachedDb(),
+          today: todayISO(),
+        }),
       });
       if (!res.ok && res.headers.get("content-type")?.includes("text/html")) {
         setNote("Session expirée. Recharge la page et reconnecte-toi.");
@@ -250,6 +256,9 @@ export default function AssistantPage() {
           >
             {busy ? "…" : "Envoyer"}
           </button>
+          {busy ? (
+            <p className="muted">Claude réfléchit, ça peut prendre quelques secondes.</p>
+          ) : null}
         </>
       )}
 

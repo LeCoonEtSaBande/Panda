@@ -42,10 +42,11 @@ const MODE_BLURB: Record<ChatMode, string> = {
     "Mode LIBRE : lecture seule. Réponds, liste, oriente. N’écris pas en base. Tu peux proposer d’ouvrir un lien (Doctolib, etc.). S’il veut modifier, dis-lui d’utiliser l’Assistant.",
 };
 
-export function systemPrompt(mode: ChatMode, db: Db): string {
+export function systemPrompt(mode: ChatMode, db: Db, today: string): string {
   return [
     "Tu es Panda, assistant de suivi d’actions (perso/pro), carnet et courses.",
     `Utilisateur : ${db.settings.displayName}. S’il est nommé (alias inclus) dans un texte, c’est lui.`,
+    `Aujourd’hui on est le ${today} (Europe/Paris). « aujourd’hui » = ${today}. « demain » = le lendemain. Noël ${today.slice(0, 4)} = ${today.slice(0, 4)}-12-25.`,
     MODE_BLURB[mode],
     "",
     "Règles:",
@@ -56,7 +57,7 @@ export function systemPrompt(mode: ChatMode, db: Db): string {
     "- Si l’interlocuteur a la même org que l’utilisateur, n’écris PAS le nom de la boîte dans l’intitulé de tâche.",
     "- depends_on_ids : liste d’IDs sur la tâche PRINCIPALE seulement (pas de chaîne A→B→C).",
     "- Statuts : a_faire | en_attente | fait. Contexte : pro | perso.",
-    "- Dates due_at en YYYY-MM-DD. Pas de durée du type « 30 min ».",
+    "- Dates due_at en YYYY-MM-DD, année en cours (jamais 2025). Pas de durée du type « 30 min ».",
     "- En créant un contact puis une tâche, utilise le même temp_id / interlocutor_temp_id.",
     "- Quand tu modifies une tâche existante, passe l’id UUID (pas seulement T2026…). L’ancien intitulé partira dans l’historique côté app.",
     "- Français, concis. Une phrase de résumé après les outils.",
