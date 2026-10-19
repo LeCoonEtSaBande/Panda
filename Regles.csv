@@ -1,0 +1,15 @@
+﻿Libellé;Définition;Styles autorisés;Tank, Carry, Split
+Style principal;le travail qu’il fait presque chaque partie. Vide s’il n’ouvre pas, ne punit pas, ne peel pas, ne poke pas et ne tue pas seul.;Pick;oui
+Style secondaire;un deuxième travail réel, plus faible. Vide s’il n’y en a pas. Un seul.;Engage;non
+Pick;il peut tuer un squishy en une rotation de sorts. Un CC ou un kidnap sans mise à mort n’est pas un pick.;Counter-engage;
+Engage;il rentre dans l’autre équipe et ouvre le fight.;Disengage;
+Counter-engage;il punit ceux qui sont déjà rentrés. Un ult d’engage mauvais ne compte pas comme engage (Maokai, K’Sante, Skarner).;Poke;
+Disengage;il empêche l’engage d’aboutir.;;
+Poke;dégâts d’avant-fight, d’assez loin pour que l’autre équipe soit trop basse pour entrer. Jinx n’est pas poke.;;
+Tank;l’équipe peut se mettre derrière lui et il survit au focus. Un build crit ne compte pas (Garen).;;
+Carry;une compo « protect the carry » peut marcher. Il reste derrière le peel.;;
+Split;le plan de draft est la side lane (Fiora, Tryndamere, Garen, et la même famille).;;
+Kayn;deux lignes, Kayn bleu et Kayn rouge.;;
+Dr. Mundo;aucun style. Tank oui. Carry non. Split non.;;
+Fiddlesticks;Counter-engage, secondaire engage.;;
+Malphite, Amumu;Engage, secondaire counter-engage.;;
