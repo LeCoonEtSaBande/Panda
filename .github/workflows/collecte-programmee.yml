@@ -1,0 +1,56 @@
+name: Collecte programmée
+
+# GitHub ne lance les tâches programmées que depuis la branche par défaut :
+# ce fichier sert de minuterie, la collecte tourne sur la branche de collecte.
+# Heures en UTC : une collecte d'une heure toutes les deux heures, du 21/10 18 h 15 au 22/10 12 h 15.
+on:
+  schedule:
+    - cron: "15 18,20,22 21 10 *"
+    - cron: "15 0,2,4,6,8,10,12 22 10 *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collecte
+  cancel-in-progress: false
+
+env:
+  BRANCHE: cursor/analyse-6da8
+  FIN: "2026-10-22T14:00:00Z"
+
+jobs:
+  collecte:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Vérifier la période
+        id: periode
+        run: |
+          if [ "$(date -u +%s)" -lt "$(date -u -d "$FIN" +%s)" ]; then
+            echo "active=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Période de collecte terminée."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.periode.outputs.active == 'true'
+        with:
+          ref: ${{ env.BRANCHE }}
+          fetch-depth: 0
+
+      - name: Collecter
+        if: steps.periode.outputs.active == 'true'
+        timeout-minutes: 55
+        env:
+          COMMANDE_SAUVEGARDE: bash analyse/enregistrer.sh
+        run: python3 analyse/collecte.py
+
+      - name: Rapport
+        if: always() && steps.periode.outputs.active == 'true'
+        run: python3 analyse/rapport.py
+
+      - name: Enregistrer
+        if: always() && steps.periode.outputs.active == 'true'
+        run: bash analyse/enregistrer.sh
