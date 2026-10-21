@@ -5,6 +5,7 @@ import csv
 import json
 import os
 import random
+import subprocess
 import sys
 import time
 import urllib.error
@@ -195,16 +196,24 @@ def lire_config():
         "joueurs_par_page": section.getint("joueurs_par_page"),
         "parties_par_joueur": section.getint("parties_par_joueur"),
         "pages_max": section.getint("pages_max"),
+        "cle_api": section.get("cle_api", "").strip(),
+        "sauvegarde_minutes": section.getint("sauvegarde_minutes", 0),
     }
 
 
-def collecter(riot, reglages, noms, parties, ecartees, vus, fin):
+def collecter(riot, reglages, noms, parties, ecartees, vus, fin, sauvegarder=None):
     debut = int(time.time()) - reglages["jours"] * 86400
     divisions = [(palier, division) for palier in reglages["paliers"] for division in reglages["divisions"]]
     pages_max = dict.fromkeys(divisions, reglages["pages_max"])
     compte = {"parties": 0, "ecartees": 0}
+    intervalle = reglages.get("sauvegarde_minutes", 0) * 60
+    prochaine = time.monotonic() + intervalle
 
     def temps_restant():
+        nonlocal prochaine
+        if sauvegarder and intervalle and time.monotonic() >= prochaine:
+            sauvegarder()
+            prochaine = time.monotonic() + intervalle
         return time.monotonic() < fin
 
     while temps_restant():
@@ -254,12 +263,18 @@ def collecter(riot, reglages, noms, parties, ecartees, vus, fin):
 
 
 def main():
-    cle = os.environ.get("RIOT_API_KEY", "").strip()
+    reglages = lire_config()
+    cle = os.environ.get("RIOT_API_KEY", "").strip() or reglages["cle_api"]
     if not cle:
-        print("::error::RIOT_API_KEY absente. Ajouter la clé dans Settings > Secrets and variables > Actions.")
+        print("::error::Clé Riot absente. La mettre dans « cle_api » de analyse/collecte.ini.")
         return 1
 
-    reglages = lire_config()
+    commande = os.environ.get("COMMANDE_SAUVEGARDE", "").strip()
+
+    def sauvegarder():
+        if subprocess.run(commande, shell=True).returncode != 0:
+            print("::warning::Sauvegarde intermédiaire en échec, nouvel essai au prochain intervalle.", flush=True)
+
     noms = noms_des_champions()
     DONNEES.mkdir(exist_ok=True)
     vus = deja_vus()
@@ -269,9 +284,9 @@ def main():
     fin = time.monotonic() + reglages["minutes"] * 60
     print(f"Collecte pendant {reglages['minutes']} min. Déjà vues : {len(vus)} parties.", flush=True)
     try:
-        compte = collecter(riot, reglages, noms, parties, ecartees, vus, fin)
+        compte = collecter(riot, reglages, noms, parties, ecartees, vus, fin, sauvegarder if commande else None)
     except CleRefusee as erreur:
-        print(f"::error::{erreur} Une clé de développement expire au bout de 24 heures : la régénérer, puis mettre à jour le secret RIOT_API_KEY.")
+        print(f"::error::{erreur} Une clé de développement expire au bout de 24 heures : coller la nouvelle dans « cle_api » de analyse/collecte.ini.")
         return 1
     finally:
         parties.fermer()
