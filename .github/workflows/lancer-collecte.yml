@@ -1,0 +1,40 @@
+name: Lancer une collecte
+
+# Le bouton « Run workflow » n'existe que pour les fichiers de la branche par défaut :
+# celui-ci lance la collecte de la branche de collecte et y enregistre les données.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collecte
+  cancel-in-progress: false
+
+env:
+  BRANCHE: cursor/analyse-6da8
+
+jobs:
+  collecte:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCHE }}
+          fetch-depth: 0
+
+      - name: Collecter
+        timeout-minutes: 55
+        env:
+          COMMANDE_SAUVEGARDE: bash analyse/enregistrer.sh
+        run: python3 analyse/collecte.py
+
+      - name: Rapport
+        if: always()
+        run: python3 analyse/rapport.py
+
+      - name: Enregistrer
+        if: always()
+        run: bash analyse/enregistrer.sh
