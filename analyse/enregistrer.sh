@@ -4,7 +4,9 @@ set -u
 cd "$(git rev-parse --show-toplevel)"
 git config user.name "github-actions[bot]"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-git add analyse/donnees analyse/resultats 2>/dev/null || true
+for dossier in analyse/donnees analyse/resultats; do
+  if [ -e "$dossier" ]; then git add "$dossier"; fi
+done
 if git diff --cached --quiet; then
   echo "Rien de nouveau à enregistrer."
   exit 0
