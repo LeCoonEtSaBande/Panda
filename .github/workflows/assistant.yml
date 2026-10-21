@@ -1,0 +1,42 @@
+name: Page d'assistant
+
+on:
+  push:
+    branches: [cursor/assistant-draft-6da8]
+    paths: [Catalogue.csv, assistant/**]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: assistant
+  cancel-in-progress: false
+
+jobs:
+  page:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tester la règle
+        run: node --test assistant/tests/regle.test.js
+
+      - name: Générer la page
+        run: python3 assistant/construire.py
+
+      - name: Enregistrer
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Assistant_draft.html
+          if git diff --cached --quiet; then
+            echo "Page déjà à jour."
+            exit 0
+          fi
+          git commit -m "Page d'assistant régénérée."
+          for essai in 1 2 3; do
+            git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
+            sleep 5
+          done
+          exit 1
