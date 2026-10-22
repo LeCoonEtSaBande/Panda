@@ -1,11 +1,12 @@
 import copy
 import sys
+import time
 import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from collecte import COLONNES, Limiteur, convertir  # noqa: E402
+from collecte import COLONNES, Limiteur, collecter, convertir  # noqa: E402
 
 NOMS = {1: "Annie", 2: "Olaf", 3: "Galio", 22: "Ashe", 12: "Alistar", 266: "Aatrox", 64: "Lee Sin", 103: "Ahri", 51: "Caitlyn", 412: "Thresh"}
 POSTES = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]
@@ -67,6 +68,61 @@ class ConvertirTest(unittest.TestCase):
         ligne, raison = convertir(match, "P1", NOMS)
         self.assertIsNone(raison)
         self.assertEqual(ligne[4], "?999")
+
+
+class FauxRiot:
+    """Diamant : que des parties déjà vues. Émeraude : une partie neuve à chaque joueur."""
+
+    def __init__(self):
+        self.appels = 0
+        self.ligues = []
+        self.compteur = 0
+
+    def get(self, base, chemin, params=None):
+        time.sleep(0.002)
+        if "/entries/" in chemin:
+            self.ligues.append(chemin.split("/")[-2])
+            return [{"puuid": f"j{i}"} for i in range(8)]
+        if chemin.endswith("/ids"):
+            if self.ligues[-1] == "DIAMOND":
+                return ["EUW1_1", "EUW1_2"]
+            self.compteur += 1
+            return [f"EUW1_9{self.compteur:06d}"]
+        match = partie()
+        match["metadata"]["matchId"] = chemin.rsplit("/", 1)[-1]
+        return match
+
+
+class Journal:
+    def __init__(self):
+        self.lignes = []
+
+    def ecrire(self, ligne):
+        self.lignes.append(ligne)
+
+
+class PassageDePalierTest(unittest.TestCase):
+    def reglages(self, tour_min):
+        return {"jours": 14, "paliers": ["DIAMOND", "EMERALD"], "divisions": ["I"], "pages_max": 1,
+                "joueurs_par_page": 5, "parties_par_joueur": 20, "sauvegarde_minutes": 0, "tour_min": tour_min}
+
+    def lancer(self, tour_min):
+        riot, parties = FauxRiot(), Journal()
+        collecter(riot, self.reglages(tour_min), NOMS, parties, Journal(), {"1", "2"}, time.monotonic() + 0.6)
+        return riot, parties
+
+    def test_diamant_epuise_on_passe_a_emeraude(self):
+        riot, parties = self.lancer(tour_min=3)
+        self.assertEqual(riot.ligues[0], "DIAMOND")
+        self.assertEqual(riot.ligues[1], "EMERALD")
+        self.assertNotIn("DIAMOND", riot.ligues[1:])
+        self.assertGreater(len(parties.lignes), 0)
+        self.assertTrue(all(ligne[2] == "E1" for ligne in parties.lignes))
+
+    def test_sans_seuil_on_reste_en_diamant(self):
+        riot, parties = self.lancer(tour_min=0)
+        self.assertEqual(set(riot.ligues), {"DIAMOND"})
+        self.assertEqual(parties.lignes, [])
 
 
 class LimiteurTest(unittest.TestCase):

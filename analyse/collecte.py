@@ -198,13 +198,15 @@ def lire_config():
         "pages_max": section.getint("pages_max"),
         "cle_api": section.get("cle_api", "").strip(),
         "sauvegarde_minutes": section.getint("sauvegarde_minutes", 0),
+        "tour_min": section.getint("tour_min", 0),
     }
 
 
 def collecter(riot, reglages, noms, parties, ecartees, vus, fin, sauvegarder=None):
     debut = int(time.time()) - reglages["jours"] * 86400
-    divisions = [(palier, division) for palier in reglages["paliers"] for division in reglages["divisions"]]
-    pages_max = dict.fromkeys(divisions, reglages["pages_max"])
+    paliers = reglages["paliers"]
+    pages_max = {(palier, division): reglages["pages_max"] for palier in paliers for division in reglages["divisions"]}
+    niveau = 0
     compte = {"parties": 0, "ecartees": 0}
     intervalle = reglages.get("sauvegarde_minutes", 0) * 60
     prochaine = time.monotonic() + intervalle
@@ -217,7 +219,9 @@ def collecter(riot, reglages, noms, parties, ecartees, vus, fin, sauvegarder=Non
         return time.monotonic() < fin
 
     while temps_restant():
+        divisions = [(paliers[niveau], division) for division in reglages["divisions"]]
         random.shuffle(divisions)
+        avant = compte["parties"]
         for palier, division in divisions:
             if not temps_restant():
                 break
@@ -259,6 +263,10 @@ def collecter(riot, reglages, noms, parties, ecartees, vus, fin, sauvegarder=Non
                     else:
                         ecartees.ecrire([court, raison])
                         compte["ecartees"] += 1
+        nouvelles = compte["parties"] - avant
+        if temps_restant() and niveau + 1 < len(paliers) and nouvelles < reglages.get("tour_min", 0):
+            print(f"{paliers[niveau]} : {nouvelles} nouvelles parties sur un tour complet, passage à {paliers[niveau + 1]}.", flush=True)
+            niveau += 1
     return compte
 
 
