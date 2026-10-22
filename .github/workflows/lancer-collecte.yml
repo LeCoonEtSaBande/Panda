@@ -1,8 +1,11 @@
 name: Lancer une collecte
 
-# Le bouton « Run workflow » n'existe que pour les fichiers de la branche par défaut :
-# celui-ci lance la collecte de la branche de collecte et y enregistre les données.
+# Bouton « Run workflow », ou modification de analyse/collecte.ini sur main.
+# La clé Riot est celle de « cle_api » dans analyse/collecte.ini.
 on:
+  push:
+    branches: [main]
+    paths: [analyse/collecte.ini]
   workflow_dispatch:
 
 permissions:
@@ -12,9 +15,6 @@ concurrency:
   group: collecte
   cancel-in-progress: false
 
-env:
-  BRANCHE: cursor/analyse-6da8
-
 jobs:
   collecte:
     runs-on: ubuntu-latest
@@ -22,7 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.BRANCHE }}
           fetch-depth: 0
 
       - name: Préparer le rapport
