@@ -60,6 +60,8 @@ match;patch;palier;gagnant;b_top;b_jgl;b_mid;b_adc;b_sup;r_top;r_jgl;r_mid;r_adc
 
 `analyse/donnees/ecartees.csv` : `match;raison` (remake, postes, kayn_sans_forme, etc.). Une partie écartée n'est jamais retéléchargée.
 
+`archives/` : copies figées des données et des résultats, une par dossier daté (par exemple `archives/2026-10-22_avant_details/`, les 21 484 parties d'avant les fichiers de détails). Aucun script ne les lit ni ne les écrit ; ne jamais les modifier.
+
 ### Détails des parties
 
 Quatre dossiers dans `analyse/donnees/`, un par type de fichier. Chaque dossier est découpé en tranches de 2 000 parties (`joueurs/joueurs_0001.csv`, `joueurs_0002.csv`…) pour rester loin de la limite de 100 Mo de GitHub, puisque chaque sauvegarde recommite la tranche en cours. Séparateur `;`, en-têtes fixes (listés dans `analyse/collecte.py`), case vide quand une valeur est absente. Mêmes noms de champions que `parties.csv` (Kayn rouge / Kayn bleu) ; postes `top`, `jgl`, `mid`, `adc`, `sup` ; équipes `b` et `r`.
