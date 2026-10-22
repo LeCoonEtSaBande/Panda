@@ -23,7 +23,8 @@ jobs:
           fetch-depth: 0
 
       - name: Préparer le rapport
-        run: python3 -m pip install -q --break-system-packages statsmodels pandas || python3 -m pip install -q statsmodels pandas || echo "statsmodels indisponible : régression sautée."
+        run: |
+          python3 -m pip install -q --break-system-packages statsmodels pandas || python3 -m pip install -q statsmodels pandas || echo "statsmodels indisponible : régression sautée."
 
       - name: Collecter
         timeout-minutes: 52
