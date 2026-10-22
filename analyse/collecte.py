@@ -155,22 +155,22 @@ def convertir(match, palier, noms):
 
 
 class Journal:
-    """Ajout ligne à ligne, écrit sur disque avant l'appel suivant."""
+    """Ajout ligne à ligne, écrit sur disque avant l'appel suivant.
+
+    Le fichier est rouvert à chaque ligne : une sauvegarde intermédiaire (pull --rebase)
+    peut remplacer le fichier sur disque, et un descripteur gardé ouvert écrirait dans le vide.
+    """
 
     def __init__(self, chemin, entete):
-        neuf = not chemin.exists() or chemin.stat().st_size == 0
-        self.fichier = open(chemin, "a", encoding="utf-8", newline="")
-        self.ecrivain = csv.writer(self.fichier, delimiter=";", lineterminator="\n")
-        if neuf:
+        self.chemin = chemin
+        if not chemin.exists() or chemin.stat().st_size == 0:
             self.ecrire(entete)
 
     def ecrire(self, ligne):
-        self.ecrivain.writerow(ligne)
-        self.fichier.flush()
-        os.fsync(self.fichier.fileno())
-
-    def fermer(self):
-        self.fichier.close()
+        with open(self.chemin, "a", encoding="utf-8", newline="") as fichier:
+            csv.writer(fichier, delimiter=";", lineterminator="\n").writerow(ligne)
+            fichier.flush()
+            os.fsync(fichier.fileno())
 
 
 def deja_vus():
@@ -296,9 +296,6 @@ def main():
     except CleRefusee as erreur:
         print(f"::error::{erreur} Une clé de développement expire au bout de 24 heures : coller la nouvelle dans « cle_api » de analyse/collecte.ini.")
         return 1
-    finally:
-        parties.fermer()
-        ecartees.fermer()
     print(f"Terminé : {compte['parties']} parties ajoutées, {compte['ecartees']} écartées, {riot.appels} appels.")
     return 0
 
