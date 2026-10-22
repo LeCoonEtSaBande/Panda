@@ -11,10 +11,18 @@ rapport=false
 if [ "${1:-}" = "--rapport" ]; then rapport=true; fi
 
 total() { echo $(($(wc -l < analyse/donnees/parties.csv) - 1)); }
+# Lignes de details_parties (approximatif : une partie reprise après interruption compte deux fois).
+details() {
+  local n=0 f
+  for f in analyse/donnees/details_parties/details_parties_*.csv; do
+    if [ -e "$f" ]; then n=$((n + $(wc -l < "$f") - 1)); fi
+  done
+  echo "$n"
+}
 
 if [ -e analyse/donnees ]; then git add analyse/donnees; fi
 if ! git diff --cached --quiet; then
-  git commit -q -m "Collecte : $(total) parties au total."
+  git commit -q -m "Collecte : $(total) parties au total, $(details) avec détails."
 elif ! $rapport && [ -z "$(git log "origin/$branche..HEAD" --oneline 2>/dev/null)" ]; then
   echo "Rien de nouveau à enregistrer."
   exit 0

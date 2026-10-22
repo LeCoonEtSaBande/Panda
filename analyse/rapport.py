@@ -70,6 +70,20 @@ def ecrire_csv(chemin, entete, lignes):
         ecrivain.writerows(lignes)
 
 
+def volume_details(donnees=None):
+    """Parties de parties.csv avec détails et avec timeline. Ne fait jamais échouer le rapport."""
+    try:
+        import lecture
+
+        donnees = donnees or lecture.DONNEES
+        avec_details = lecture.matchs_avec_details(donnees)
+        avec_timeline = avec_details & lecture.matchs_presents("timeline_joueurs", donnees)
+        return [["avec_details", len(avec_details)], ["avec_timeline", len(avec_timeline)]]
+    except Exception as erreur:  # noqa: BLE001
+        print(f"Volume des détails : sauté ({type(erreur).__name__} : {erreur}).")
+        return []
+
+
 def main():
     if not PARTIES.exists():
         print("Aucune partie collectée pour l'instant.")
@@ -144,6 +158,7 @@ def main():
         with open(ECARTEES, encoding="utf-8", newline="") as fichier:
             raisons = Counter(l["raison"] for l in csv.DictReader(fichier, delimiter=";"))
         volume += [[f"ecartee {r}", n] for r, n in sorted(raisons.items())]
+    volume += volume_details()
     ecrire_csv(RESULTATS / "volume.csv", ["mesure", "nombre"], volume)
     print(f"Rapport : {len(lignes)} parties, {len(obs)} observations, {len(scenarios)} scénarios.")
 
