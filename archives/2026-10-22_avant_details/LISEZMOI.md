@@ -6,7 +6,7 @@ Copie figée de `analyse/donnees/` et `analyse/resultats/` au commit `753b699`, 
 - `ecartees.csv` : 437 parties écartées.
 - `resultats/` : le rapport produit sur ces 21 484 parties.
 
-Les originaux restent en place dans `analyse/donnees/` : la collecte continue d'y ajouter des lignes. Cette archive ne doit jamais être modifiée ; aucun script ne la lit ni ne l'écrit.
+Après l'archivage, `analyse/donnees/parties.csv` a été vidé (en-tête gardé) pour repartir avec des données neuves ; `ecartees.csv` y est resté. Cette archive ne doit jamais être modifiée ; aucun script ne la lit ni ne l'écrit.
 
 Empreintes SHA-256 au moment de l'archivage :
 

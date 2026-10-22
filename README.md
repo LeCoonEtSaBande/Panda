@@ -34,7 +34,7 @@ Ne pas créer d'autre branche, ne pas en supprimer, ne pas fusionner sans demand
 
 ## Ce que Claude Code ne doit pas faire
 
-- **Données** : ne jamais modifier, trier, dédoublonner, réécrire ni supprimer `analyse/donnees/parties.csv` et `analyse/donnees/ecartees.csv`. Seule la collecte y écrit, en ajout.
+- **Données** : ne jamais modifier, trier, dédoublonner, réécrire ni supprimer `analyse/donnees/parties.csv` et `analyse/donnees/ecartees.csv`. Seule la collecte y écrit, en ajout. Seule exception : le propriétaire peut demander de repartir de zéro ; on archive alors d'abord dans `archives/`, puis on vide le fichier en gardant sa ligne d'en-tête (fait le 22/10/2026).
 - **Résultats** : ne pas éditer `analyse/resultats/` à la main. Ces fichiers sont régénérés et écrasés à la fin de chaque collecte : changer le script qui les produit.
 - **Catalogue** : ne pas modifier `Catalogue.csv` ni l'Excel, ne reclasser aucun champion. Seul le propriétaire décide du catalogue.
 - **Règle de compo** : ne pas changer `analyse/regle.py` sans accord du propriétaire. Elle doit rester identique à `assistant/regle.js` sur la branche de l'assistant ; toute modification validée se fait dans les deux.
@@ -60,7 +60,9 @@ match;patch;palier;gagnant;b_top;b_jgl;b_mid;b_adc;b_sup;r_top;r_jgl;r_mid;r_adc
 
 `analyse/donnees/ecartees.csv` : `match;raison` (remake, postes, kayn_sans_forme, etc.). Une partie écartée n'est jamais retéléchargée.
 
-`archives/` : copies figées des données et des résultats, une par dossier daté (par exemple `archives/2026-10-22_avant_details/`, les 21 484 parties d'avant les fichiers de détails). Aucun script ne les lit ni ne les écrit ; ne jamais les modifier.
+`archives/` : copies figées des données et des résultats, une par dossier daté. Aucun script ne les lit ni ne les écrit ; ne jamais les modifier.
+
+Le 22/10/2026, `parties.csv` a été vidé (en-tête gardé) pour repartir avec des données neuves, collectées avec tous leurs détails. Les 21 484 parties d'avant, sans détails, sont dans `archives/2026-10-22_avant_details/`. `ecartees.csv` a été gardé : les parties déjà écartées ne sont pas retéléchargées. Les parties archivées peuvent, elles, être recollectées, cette fois avec leurs détails.
 
 ### Détails des parties
 
