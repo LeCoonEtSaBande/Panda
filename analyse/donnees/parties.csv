@@ -6837,3 +6837,407 @@ EUN1_4015030278;16.20;E3;r;Yorick;Karthus;Orianna;Draven;Lulu;Olaf;Morgana;Vikto
 8009243955;16.20;E3;b;Malphite;Qiyana;Malzahar;Caitlyn;Blitzcrank;Mordekaiser;Rammus;Tristana;Ezreal;Thresh
 8009202743;16.20;E3;r;Olaf;Briar;Aurora;Sivir;Braum;Tryndamere;Cho'Gath;Vladimir;Smolder;Bard
 8019539469;16.20;E2;r;Gwen;Lillia;Talon;Varus;Janna;Tristana;Volibear;Vladimir;Yunara;Milio
+8008238147;16.20;E2;b;Vi;Amumu;Diana;Jinx;Nami;Gwen;Cho'Gath;Talon;Zeri;Seraphine
+8009556993;16.20;E2;r;Sylas;Kindred;Smolder;Caitlyn;Gragas;Malphite;Master Yi;Xerath;Seraphine;Sona
+8018568252;16.20;P4;r;Malphite;Shyvana;Xerath;Yunara;Lulu;Garen;Wukong;Mel;Kai'Sa;Nasus
+8018526231;16.20;P4;r;Sett;Mordekaiser;Yasuo;Caitlyn;Vel'Koz;Ornn;Wukong;Xerath;Jhin;Thresh
+8018465583;16.20;P4;b;Gangplank;Viego;Lux;Kai'Sa;Thresh;Garen;Cho'Gath;Volibear;Xayah;Xerath
+8018416206;16.20;P4;r;Ornn;Lee Sin;Ekko;Vayne;Zyra;Jayce;Malphite;Yasuo;Lucian;Ashe
+8017263704;16.20;P4;r;Gragas;Jarvan IV;Pantheon;Jinx;Caitlyn;Cho'Gath;Nocturne;Ryze;Nilah;Lulu
+8016207505;16.20;P4;r;Swain;Nocturne;Galio;Yunara;Lulu;Shen;Fizz;Lux;Caitlyn;Nasus
+8016162411;16.20;P4;r;Cho'Gath;Shen;Lux;Kai'Sa;Nautilus;Sion;Briar;Ekko;Jinx;Soraka
+8016136789;16.20;P4;r;Karma;Kindred;Veigar;Jinx;Pantheon;Mordekaiser;Briar;Zilean;Yasuo;Nautilus
+8016089592;16.20;P4;r;Ornn;Sylas;Lux;Vayne;Bard;Darius;Master Yi;Yone;Jhin;Vel'Koz
+8015898399;16.20;P4;r;Singed;Lillia;Syndra;Smolder;Soraka;Jhin;Pantheon;Ahri;Tristana;Tahm Kench
+8015898157;16.20;P4;r;Sett;Kha'Zix;Yone;Twitch;Poppy;Kayle;Talon;Mel;Draven;Leona
+8015896071;16.20;P4;r;Riven;Qiyana;Syndra;Smolder;Zyra;Sett;Shyvana;LeBlanc;Aphelios;Caitlyn
+8015811522;16.20;P4;b;Nasus;Graves;Diana;Jhin;Twitch;Shen;Cho'Gath;Mel;Caitlyn;Leona
+8015775557;16.20;P4;r;Volibear;Lee Sin;Ahri;Veigar;Bard;Singed;Kha'Zix;Vex;Jinx;Xerath
+8015724876;16.20;P4;r;Irelia;Lee Sin;Katarina;Jinx;Nautilus;Jax;Fiddlesticks;Yasuo;Viktor;Rakan
+8014276974;16.20;P4;b;Urgot;Quinn;Lux;Veigar;Morgana;Volibear;Kha'Zix;Zed;Jhin;Blitzcrank
+8014244762;16.20;P4;r;Garen;Kayn rouge;Yasuo;Caitlyn;Nautilus;Fiora;Rammus;Orianna;Jinx;Braum
+8012543073;16.20;P4;r;Yorick;Zyra;Twisted Fate;Veigar;Karma;Sion;Qiyana;Viktor;Tristana;Blitzcrank
+8012508570;16.20;P4;b;Ezreal;Amumu;Yone;Syndra;Morgana;Yorick;Darius;Qiyana;Jinx;Nami
+8009802503;16.20;P4;b;Teemo;Amumu;Yone;Miss Fortune;Lux;Ornn;Graves;Sylas;Jinx;Lulu
+8019083054;16.20;P4;b;Mordekaiser;Fiddlesticks;Yasuo;Jinx;Vel'Koz;Yone;Warwick;Diana;Samira;Maokai
+8018130284;16.20;P4;b;Renekton;Fiddlesticks;Locke;Samira;Thresh;Akali;Shaco;Yasuo;Hwei;Nami
+8018117265;16.20;P4;r;Wukong;Kayn rouge;Akali;Lucian;Alistar;Ambessa;Diana;Katarina;Kai'Sa;Vi
+8017473579;16.20;P4;r;Heimerdinger;Zed;K'Sante;Mel;Brand;Mordekaiser;Qiyana;Nasus;Zeri;Leona
+8017396852;16.20;P4;r;Teemo;Vi;Lux;Caitlyn;Seraphine;Illaoi;Graves;Aurora;Hwei;Zyra
+8016877349;16.20;P4;r;Olaf;Lee Sin;Locke;Vayne;Lulu;Heimerdinger;Viego;Viktor;Lucian;Rakan
+8016741781;16.20;P4;b;Rumble;Rengar;Locke;Tristana;Nautilus;Olaf;Bel'Veth;Ryze;Kai'Sa;Zilean
+8016685295;16.20;P4;b;Olaf;Kha'Zix;K'Sante;Caitlyn;Lux;Zed;Cho'Gath;Katarina;Kai'Sa;Thresh
+8016633123;16.20;P4;b;Teemo;Master Yi;Galio;Yasuo;Shaco;Camille;Naafiri;Katarina;Caitlyn;Skarner
+8016600911;16.20;P4;b;Sett;Fiddlesticks;Akali;Ezreal;Nami;Malphite;Xin Zhao;Katarina;Lucian;Janna
+8015831226;16.20;P4;b;Ambessa;Sejuani;Locke;Miss Fortune;Yuumi;Renekton;Zed;Katarina;Samira;Blitzcrank
+8015805383;16.20;P4;b;Irelia;Shyvana;Garen;Smolder;Nautilus;Teemo;Lillia;Katarina;Caitlyn;Soraka
+8013909380;16.20;P4;b;Sett;Nocturne;Veigar;Yasuo;Janna;Fiora;Singed;Kassadin;Lucian;Nami
+8012966907;16.20;P4;b;Fiora;Ekko;Renekton;Senna;Seraphine;Gangplank;Malphite;Yasuo;Miss Fortune;Leona
+8011093855;16.20;P4;r;Akali;Kindred;Ekko;Udyr;Soraka;Briar;Sejuani;Irelia;Tristana;Lux
+8011072272;16.20;P4;r;Qiyana;Trundle;Syndra;Vayne;Pyke;Nasus;Viego;Sylas;Caitlyn;Miss Fortune
+8010388972;16.20;P4;b;Yone;Vi;Locke;Ashe;Pantheon;Irelia;Jarvan IV;Xerath;Tristana;Camille
+8010012899;16.20;P4;b;Teemo;Warwick;Naafiri;Kai'Sa;Twisted Fate;Cho'Gath;Master Yi;Katarina;Caitlyn;Morgana
+8017557037;16.20;P4;b;Yorick;Hecarim;Yasuo;Varus;Senna;Wukong;Lillia;LeBlanc;Kai'Sa;Nami
+8017496344;16.20;P4;r;Garen;Rammus;Vex;Jinx;Poppy;Malphite;Lillia;Yasuo;Yunara;Janna
+8017462062;16.20;P4;r;Yorick;Garen;Sylas;Kog'Maw;Thresh;Mordekaiser;Wukong;Yasuo;Aphelios;Blitzcrank
+8017412261;16.20;P4;r;Sion;Diana;Galio;Jhin;Pyke;Yorick;Kha'Zix;Zed;Draven;Lux
+8017360379;16.20;P4;r;Ekko;Qiyana;Jax;Hwei;Milio;Garen;Briar;Mel;Caitlyn;Xerath
+8017295270;16.20;P4;b;Zaahen;Qiyana;LeBlanc;Xayah;Braum;Tahm Kench;Wukong;Ahri;Caitlyn;Senna
+8017264504;16.20;P4;b;Lillia;Qiyana;Yasuo;Samira;Alistar;Mordekaiser;Viego;LeBlanc;Jhin;Ashe
+8014824638;16.20;P4;b;Heimerdinger;Zac;Galio;Vayne;Soraka;Teemo;Olaf;Yasuo;Jhin;Xerath
+8014800200;16.20;P4;b;Mordekaiser;Sion;Sylas;Nilah;Thresh;Yorick;Locke;Vex;Yunara;Lulu
+8013883499;16.20;P4;r;Jax;Quinn;Locke;Jhin;Swain;Dr. Mundo;Kindred;Yasuo;Caitlyn;Zilean
+8013860648;16.20;P4;r;Tahm Kench;Shaco;Vladimir;Tristana;Thresh;K'Sante;Cho'Gath;Sylas;Aphelios;Pyke
+8012158321;16.20;P4;r;Urgot;Lillia;Sett;Annie;Karma;Yorick;Kha'Zix;Hwei;Ashe;Seraphine
+8012159526;16.20;P4;b;Fiora;Shyvana;Sylas;Samira;Thresh;Kayle;Cho'Gath;Yasuo;Ziggs;Alistar
+8011320678;16.20;P4;b;Teemo;Rengar;Swain;Miss Fortune;Leona;Dr. Mundo;Ekko;Quinn;Caitlyn;Pyke
+8011022047;16.20;P4;r;Ambessa;Kha'Zix;Lissandra;Caitlyn;Morgana;Ornn;Talon;Malzahar;Vayne;Syndra
+8010443534;16.20;P4;r;Mordekaiser;Zaahen;Vladimir;Kai'Sa;Thresh;Volibear;Kha'Zix;Twisted Fate;Ezreal;Alistar
+8020216705;16.21;E4;r;Volibear;Graves;Annie;Aurora;Senna;Fiora;Udyr;LeBlanc;Miss Fortune;Amumu
+8016452766;16.20;E4;b;Camille;Wukong;Ahri;Ashe;Rakan;Garen;Briar;Veigar;Caitlyn;Nami
+8016388259;16.20;E4;r;Zed;Hecarim;Lissandra;Jinx;Braum;K'Sante;Zac;Yasuo;Sivir;Zoe
+8016150404;16.20;E4;b;Fiora;Trundle;Locke;Caitlyn;Fiddlesticks;Cho'Gath;Lee Sin;Kassadin;Twitch;Milio
+8016127760;16.20;E4;r;Fiora;Wukong;Lux;Kai'Sa;Thresh;Volibear;Hecarim;Ziggs;Draven;Milio
+8020906688;16.21;E4;r;Tahm Kench;Naafiri;Diana;Brand;Vel'Koz;Ambessa;Qiyana;Katarina;Ekko;Xerath
+8020840308;16.21;E4;b;Darius;Kha'Zix;Katarina;Jinx;Lulu;Tahm Kench;Talon;Ahri;Ashe;Milio
+8020699894;16.21;E4;b;Garen;Jhin;Kassadin;Kai'Sa;Leona;Tahm Kench;Shaco;Twitch;Vayne;Thresh
+8020199546;16.21;E4;b;Zaahen;Ekko;Syndra;Jinx;Karma;Urgot;Graves;Katarina;Seraphine;Tahm Kench
+8019907877;16.20;E4;r;Tahm Kench;Locke;Akshan;Smolder;Zilean;Jax;Warwick;Sylas;Kog'Maw;Soraka
+8019865413;16.20;E4;b;Darius;Evelynn;Irelia;Tristana;Milio;Tahm Kench;Ekko;Talon;Ashe;Senna
+8019693249;16.20;E4;b;Garen;Viego;Aurelion Sol;Karthus;Soraka;Tahm Kench;Wukong;Akali;Yunara;Thresh
+8017927341;16.20;E4;r;Gangplank;Nunu & Willump;Yone;Jinx;Lux;Tahm Kench;Volibear;Zed;Kai'Sa;Lulu
+8017749344;16.20;E4;r;Quinn;Zac;Lux;Aphelios;Blitzcrank;Tahm Kench;Jarvan IV;Viktor;Kalista;Taric
+8017711774;16.20;E4;b;Tahm Kench;Nocturne;Lissandra;Veigar;Pyke;Teemo;Hecarim;Syndra;Jhin;Nami
+8017648422;16.20;E4;r;Tahm Kench;Kha'Zix;Lissandra;Sivir;Lulu;Jayce;Warwick;Ekko;Lucian;Senna
+8017606233;16.20;E4;b;Ornn;Qiyana;Katarina;Tristana;Nautilus;Tahm Kench;Hecarim;Cassiopeia;Kai'Sa;Yuumi
+8016293133;16.20;E4;b;Nasus;Shyvana;Zoe;Xayah;Brand;Tahm Kench;Talon;Vladimir;Miss Fortune;Blitzcrank
+8016274611;16.20;E4;r;Urgot;Sylas;Hwei;Smolder;Nami;Gragas;Talon;Zed;Jinx;Leona
+8016241483;16.20;E4;b;Olaf;Naafiri;Taliyah;Jinx;Braum;Tahm Kench;Mordekaiser;Xerath;Jhin;Zilean
+8015982325;16.20;E4;b;Tahm Kench;Rammus;Zed;Jinx;Milio;Jax;Bel'Veth;Aurora;Vayne;Senna
+8015657199;16.20;E4;r;Urgot;Kayn rouge;Viktor;Xerath;Illaoi;Tahm Kench;Zac;Yasuo;Xayah;Thresh
+8015624459;16.20;E4;r;Tahm Kench;Jarvan IV;Viktor;Kai'Sa;Camille;Mordekaiser;Wukong;Yasuo;Caitlyn;Lux
+8015351553;16.20;E4;b;Tahm Kench;Graves;Orianna;Smolder;Thresh;Ambessa;Kayn rouge;LeBlanc;Caitlyn;Pantheon
+8017041746;16.20;E1;r;Gangplank;Lillia;Hwei;Ashe;Senna;Sejuani;Lee Sin;Sylas;Miss Fortune;Blitzcrank
+8015999987;16.20;E1;b;Aatrox;Warwick;Vex;Malzahar;Lissandra;Malphite;Lillia;LeBlanc;Miss Fortune;Blitzcrank
+8020918430;16.21;P1;r;Darius;Ekko;Zed;Miss Fortune;Rell;Yorick;Wukong;Ziggs;Smolder;Leona
+8020880571;16.21;P1;b;Darius;Warwick;Ziggs;Ezreal;Zyra;Irelia;Sylas;Yone;Aphelios;Shaco
+8020810739;16.21;P1;r;Jax;Jarvan IV;Ahri;Jinx;Rakan;Kled;Sylas;Lux;Aphelios;Seraphine
+8020714189;16.21;P1;r;Anivia;Talon;Vex;Twitch;Leona;Yone;Wukong;Aurora;Caitlyn;Lux
+8017224597;16.20;P1;b;Fiora;Zyra;Viktor;Kai'Sa;Taric;Warwick;Lee Sin;Ahri;Jhin;Alistar
+8015792105;16.20;P1;r;Mordekaiser;Talon;Kayle;Tristana;Nami;Wukong;Kha'Zix;Syndra;Twitch;Soraka
+8015032119;16.20;P1;b;Gwen;Sylas;Yone;Lucian;Brand;Tahm Kench;Riven;Ekko;Jinx;Lulu
+8014077216;16.20;P1;b;Kennen;Jax;Ekko;Viktor;Nami;Galio;Sylas;Irelia;Zeri;Bard
+8014068334;16.20;P1;b;Yone;Nunu & Willump;Aurelion Sol;Jinx;Blitzcrank;Nasus;Vi;Malzahar;Swain;Brand
+8014052412;16.20;P1;r;Mordekaiser;Cho'Gath;Neeko;Kog'Maw;Blitzcrank;Fiora;Lillia;Viktor;Jhin;Morgana
+8013880862;16.20;P1;r;Gnar;Master Yi;Katarina;Jhin;Bard;Malphite;Vayne;Kassadin;Caitlyn;Pyke
+8017044698;16.20;P1;b;Fiora;Nunu & Willump;Malphite;Caitlyn;Vel'Koz;Mordekaiser;Talon;Quinn;Kalista;Ashe
+8017017154;16.20;P1;r;Mordekaiser;Naafiri;Syndra;Smolder;Senna;Camille;Kayn bleu;Malzahar;Viktor;Lulu
+8017015898;16.20;P1;r;Zed;Kha'Zix;Locke;Anivia;Nautilus;Dr. Mundo;Elise;Varus;Jhin;Rell
+8017004736;16.20;P1;r;Sett;Nidalee;Viktor;Caitlyn;Senna;Volibear;Wukong;Qiyana;Jinx;Lulu
+8016987637;16.20;P1;r;Yasuo;Wukong;Locke;Syndra;Seraphine;Corki;Aatrox;Zoe;Kai'Sa;Renata Glasc
+8016966241;16.20;P1;b;Lissandra;Ekko;Irelia;Yunara;Nautilus;Mordekaiser;Qiyana;Yone;Jinx;Braum
+8016092847;16.20;P1;r;Jayce;Karthus;Ahri;Yunara;Milio;Mordekaiser;Rengar;Lissandra;Smolder;Karma
+8015804049;16.20;P1;r;Mordekaiser;Kindred;Yasuo;Lucian;Nami;Sett;Lillia;Zed;Zeri;Alistar
+8015751354;16.20;P1;b;Mordekaiser;Briar;Kennen;Sivir;Nautilus;Garen;Master Yi;Qiyana;Kai'Sa;Pyke
+8014887781;16.20;P1;b;Mordekaiser;Qiyana;Yone;Jinx;Milio;Volibear;Cho'Gath;Zed;Smolder;Xerath
+8014874243;16.20;P1;r;Warwick;Shyvana;Ekko;Ezreal;Janna;Mordekaiser;Master Yi;Lissandra;Jinx;Leona
+8014865389;16.20;P1;b;Mordekaiser;Kha'Zix;Vex;Jhin;Hwei;Jayce;Qiyana;Katarina;Kai'Sa;Bard
+8014874603;16.20;P1;r;Tahm Kench;Naafiri;Sylas;Yunara;Twitch;Mordekaiser;Viego;Veigar;Kalista;Rell
+8014853455;16.20;P1;r;Tryndamere;Briar;Qiyana;Aphelios;Thresh;Malphite;Aatrox;Kassadin;Miss Fortune;LeBlanc
+8014857489;16.20;P1;r;Mordekaiser;Xin Zhao;Zed;Yunara;Braum;Singed;Jayce;Mel;Jhin;Tahm Kench
+8014412057;16.20;P1;r;Mordekaiser;Aatrox;Ziggs;Jhin;Sona;Riven;Kha'Zix;Kassadin;Caitlyn;Seraphine
+8013945077;16.20;P1;r;Nasus;Lee Sin;Ekko;Kai'Sa;Blitzcrank;Garen;Rammus;Qiyana;Ezreal;Pyke
+8013938110;16.20;P1;r;Malphite;Cho'Gath;Malzahar;Jinx;Thresh;Quinn;Wukong;Kassadin;Lucian;Milio
+8013937707;16.20;P1;r;Sett;Fiddlesticks;Ekko;Kai'Sa;Nautilus;Illaoi;Briar;Orianna;Jhin;Lux
+8013926836;16.20;P1;b;Cho'Gath;Graves;Akshan;Lucian;Lux;Mordekaiser;Nunu & Willump;Ekko;Viktor;Camille
+8019435060;16.20;P2;r;Ornn;Sylas;Viktor;Samira;Pantheon;Master Yi;Naafiri;Ziggs;Miss Fortune;Gragas
+8019354867;16.20;P2;r;Ornn;Lillia;Naafiri;Smolder;Zilean;Kassadin;Viego;Ahri;Ashe;Rakan
+8019323841;16.20;P2;b;Gragas;Xin Zhao;Vladimir;Caitlyn;Lux;Renekton;Briar;Akali;Twitch;Brand
+8018948028;16.20;P2;b;Quinn;Kayn rouge;Ahri;Ashe;Thresh;Kennen;Nidalee;Cho'Gath;Smolder;Lux
+8018887330;16.20;P2;b;Kayle;Cho'Gath;Yone;Yunara;Nautilus;Yorick;Lee Sin;Orianna;Jinx;Nami
+8017838651;16.20;P2;b;Tryndamere;Xin Zhao;Katarina;Jinx;Rell;Illaoi;Rumble;Sylas;Viktor;Soraka
+8017769230;16.20;P2;b;Darius;Sylas;Qiyana;Jinx;Nautilus;Malphite;Gwen;Katarina;Lucian;Thresh
+8017719434;16.20;P2;b;Teemo;Vi;Yone;Kai'Sa;Janna;Malphite;Jarvan IV;Syndra;Caitlyn;Bard
+8017190247;16.20;P2;r;Heimerdinger;Briar;Morgana;Ziggs;Pyke;Garen;Rammus;LeBlanc;Jinx;Braum
+8017147411;16.20;P2;r;Olaf;Zac;Fizz;Sivir;Milio;Teemo;Lillia;Nasus;Draven;Thresh
+8016262176;16.20;P2;r;Yone;Jarvan IV;Viktor;Smolder;Brand;Kled;Lillia;Zed;Aphelios;Lulu
+8016224664;16.20;P2;r;Kled;Briar;Yone;Jinx;Annie;Rengar;Vi;LeBlanc;Malzahar;Leona
+8016175194;16.20;P2;b;Gragas;Nocturne;Yasuo;Smolder;Tahm Kench;Garen;Ivern;Twisted Fate;Caitlyn;Nautilus
+8015300327;16.20;P2;b;Cho'Gath;Qiyana;Ekko;Yunara;Nami;Teemo;Rammus;Yone;Aphelios;Nautilus
+8012782316;16.20;P2;r;Fiora;Graves;Irelia;Samira;Qiyana;Olaf;Vi;Garen;Xerath;Nautilus
+8012731413;16.20;P2;b;Malphite;Warwick;Kassadin;Caitlyn;Ashe;Darius;Zed;Twisted Fate;Xayah;Morgana
+8012328907;16.20;P2;r;Mordekaiser;Graves;Ezreal;Viktor;Lux;Yone;Ekko;Syndra;Aphelios;Thresh
+8012312676;16.20;P2;b;Gwen;Shyvana;Yasuo;Jinx;Alistar;Sion;Naafiri;Katarina;Jhin;Soraka
+8012288786;16.20;P2;r;Jax;Lee Sin;Ahri;Smolder;Vel'Koz;Yone;Zyra;Yasuo;Kalista;Lux
+8020459788;16.21;P2;r;Mordekaiser;Vi;Kog'Maw;Xayah;Swain;Darius;Evelynn;Ziggs;Tristana;Pyke
+8020354796;16.21;P2;b;Nasus;Teemo;Yasuo;Kai'Sa;Rell;Kog'Maw;Xin Zhao;Zed;Ezreal;Poppy
+8020320831;16.21;P2;b;Kog'Maw;Lee Sin;Ahri;Jhin;Zoe;Yasuo;Malphite;Akali;Lucian;Seraphine
+8020270237;16.21;P2;r;Jax;Lee Sin;Ahri;Ziggs;Nautilus;Kennen;Master Yi;Kog'Maw;Jinx;Braum
+8020219238;16.21;P2;r;Malzahar;Volibear;Ahri;Caitlyn;Sona;Smolder;Udyr;Kog'Maw;Jinx;Lux
+8020208922;16.21;P2;b;Darius;Master Yi;Kog'Maw;Aphelios;Morgana;Jax;Zac;Fiddlesticks;Sivir;Nautilus
+8020196904;16.21;P2;r;Illaoi;Kindred;Lissandra;Smolder;Lulu;Kog'Maw;Lee Sin;Sylas;Xayah;Rakan
+8018463242;16.20;P2;b;Jayce;Amumu;Yone;Kalista;Renata Glasc;Darius;Master Yi;Lissandra;Jinx;Fiddlesticks
+8018256415;16.20;P2;b;Renekton;Kindred;Kog'Maw;Tristana;Brand;Darius;Jarvan IV;Syndra;Miss Fortune;Blitzcrank
+8018232305;16.20;P2;b;Jax;Master Yi;Syndra;Kai'Sa;Thresh;Pantheon;Amumu;Anivia;Miss Fortune;Leona
+8016264435;16.20;P2;r;Zed;Cho'Gath;Garen;Smolder;Seraphine;Vayne;Volibear;Sylas;Varus;Lux
+8015069460;16.20;P2;r;Darius;Qiyana;Ekko;Ashe;Zyra;Pantheon;Evelynn;Yone;Vayne;Thresh
+8015026289;16.20;P2;b;Nasus;Fiddlesticks;Xerath;Aphelios;Lulu;Jax;Amumu;Miss Fortune;Kai'Sa;Seraphine
+8014999172;16.20;P2;b;Corki;Nocturne;Syndra;Caitlyn;Lux;Dr. Mundo;Rengar;Twisted Fate;Vayne;Nami
+8013265109;16.20;P3;r;Darius;Xin Zhao;Brand;Kai'Sa;Rell;Yorick;Fiddlesticks;Veigar;Jhin;Blitzcrank
+8010873542;16.20;P3;b;Urgot;Cho'Gath;Viktor;Caitlyn;Leona;Akshan;Evelynn;Anivia;Yasuo;Janna
+8010817523;16.20;P3;b;Gragas;Vi;Lissandra;Kog'Maw;Leona;Irelia;Master Yi;Orianna;Caitlyn;Alistar
+8010751431;16.20;P3;r;Sett;Bel'Veth;Lux;Yunara;Janna;Shen;Shyvana;Malzahar;Jhin;Nautilus
+8010445716;16.20;P3;r;Darius;Volibear;Katarina;Jinx;Swain;Renekton;Bel'Veth;Syndra;Jhin;Seraphine
+8009358803;16.20;P3;b;Tryndamere;Zac;Yasuo;Kai'Sa;Thresh;Irelia;Shyvana;Veigar;Ezreal;Fiddlesticks
+8009317085;16.20;P3;r;Yone;Master Yi;Xerath;Seraphine;Amumu;Jax;Qiyana;Gangplank;Jhin;Lux
+8009285970;16.20;P3;b;Volibear;Kha'Zix;Lux;Jhin;Nautilus;Dr. Mundo;Master Yi;Naafiri;Kai'Sa;Zoe
+8007160193;16.20;P3;b;Ryze;Zed;Galio;Xayah;Rakan;Garen;Shyvana;Katarina;Jhin;Maokai
+8007109447;16.20;P3;r;Viego;Lillia;Lissandra;Yunara;Pyke;Mordekaiser;Evelynn;Yasuo;Jhin;Pantheon
+8007102668;16.20;P3;r;Yasuo;Shaco;Ziggs;Miss Fortune;Zyra;Irelia;Diana;Yone;Caitlyn;Teemo
+8019256793;16.20;P2;b;Camille;Wukong;Azir;Kai'Sa;Braum;Vayne;Cho'Gath;Sylas;Jhin;Nautilus
+8012452354;16.20;P2;r;Akali;Talon;Yasuo;Jinx;Nami;Renekton;Nocturne;Locke;Kai'Sa;Lulu
+8012407948;16.20;P2;r;Kled;Kindred;Anivia;Katarina;Soraka;Nasus;Qiyana;Aurora;Jinx;Xerath
+8019644306;16.20;P2;r;Sett;Shyvana;Akali;Sivir;Milio;Teemo;Locke;Yasuo;Kai'Sa;Rell
+8018415460;16.20;P2;r;Ambessa;Cho'Gath;LeBlanc;Lucian;Nami;Yone;Qiyana;Yasuo;Veigar;Zoe
+8018377151;16.20;P2;b;Vi;Udyr;Qiyana;Twitch;Nami;Cho'Gath;Lillia;Ahri;Jinx;Pantheon
+8018130396;16.20;P2;b;Renekton;Graves;Annie;Xerath;Lulu;Sett;Talon;Zed;Draven;Seraphine
+8018122067;16.20;P2;b;Qiyana;Xin Zhao;Katarina;Ziggs;Zilean;Teemo;Wukong;Kai'Sa;Yunara;Nami
+8018108815;16.20;P2;r;Garen;Jarvan IV;Wukong;Jhin;Zilean;Tryndamere;Cho'Gath;Kog'Maw;Smolder;Syndra
+8018074566;16.20;P2;r;Riven;Zyra;LeBlanc;Ezreal;Nami;Sett;Wukong;Lux;Yunara;Senna
+8017807198;16.20;P2;r;Garen;Jarvan IV;Locke;Kai'Sa;Thresh;Corki;Zac;Syndra;Lux;Nami
+8017527209;16.20;P2;b;Anivia;Master Yi;Zed;Jhin;Janna;Rammus;Bel'Veth;Veigar;Kai'Sa;Nami
+8016180079;16.20;P2;r;Renekton;Wukong;Fizz;Jinx;Lissandra;Teemo;Elise;Vex;Lucian;Nami
+8016149727;16.20;P2;b;Irelia;Warwick;Ahri;Twitch;Thresh;Sett;Kayn rouge;Malzahar;Smolder;Nami
+8016103194;16.20;P2;r;Gangplank;Graves;Akali;Yunara;Lulu;Yone;Diana;Ahri;Lucian;Nami
+8016075121;16.20;P2;r;Shen;Viego;Azir;Veigar;Nami;Tahm Kench;Kai'Sa;Vladimir;Draven;Blitzcrank
+8016053725;16.20;P2;b;Gnar;Kha'Zix;Locke;Jhin;Nami;Gwen;Viego;Twisted Fate;Yunara;Vel'Koz
+8016002163;16.20;P2;r;Nasus;Cho'Gath;Yone;Ziggs;Rakan;Master Yi;Kha'Zix;Syndra;Miss Fortune;Pyke
+8015972206;16.20;P2;b;Cho'Gath;Nunu & Willump;Ekko;Miss Fortune;Rakan;Sylas;Viego;Syndra;Yunara;Milio
+8015734807;16.20;P2;r;Jax;Vi;Mel;Jhin;Syndra;Garen;Amumu;Yone;Ezreal;Braum
+8015690815;16.20;P2;b;Nasus;Kha'Zix;Viktor;Samira;Senna;Malphite;Amumu;Fizz;Jinx;Lux
+8015637164;16.20;P2;r;Camille;Viego;Yone;Alistar;Blitzcrank;Cho'Gath;Qiyana;Vladimir;Jhin;Mel
+8014858917;16.20;P2;b;Singed;Lee Sin;Viktor;Jhin;Zyra;Ambessa;Cho'Gath;Aurelion Sol;Caitlyn;Seraphine
+8013950412;16.20;E2;r;Zaahen;Kha'Zix;Cho'Gath;Caitlyn;Camille;Kled;Bel'Veth;Sylas;Jinx;Lulu
+8013951945;16.20;E2;b;Yone;Nidalee;Veigar;Caitlyn;Karma;Cho'Gath;Vi;Ahri;Jhin;Morgana
+8013941309;16.20;E2;r;Malphite;Briar;Sylas;Caitlyn;Soraka;Mordekaiser;Wukong;Qiyana;Karthus;Alistar
+8013940916;16.20;E2;b;Yone;Briar;Aurora;Aphelios;Rammus;Camille;Sett;Katarina;Ezreal;Janna
+8013931723;16.20;E2;r;Gnar;Zac;Irelia;Zeri;Yuumi;Kayle;Kha'Zix;Locke;Jinx;Braum
+8013920511;16.20;E2;r;Trundle;Warwick;Ahri;Varus;Swain;Jayce;Elise;Yone;Caitlyn;Morgana
+8013889384;16.20;E2;b;Kayle;Lee Sin;Viktor;Varus;Lulu;Jax;Xin Zhao;Locke;Kai'Sa;Thresh
+8013866347;16.20;E2;b;Tryndamere;Viego;LeBlanc;Ashe;Milio;Yasuo;Lee Sin;Katarina;Syndra;Seraphine
+8013836660;16.20;E2;b;Yone;Kha'Zix;Annie;Twitch;Yuumi;Shen;Kayn bleu;LeBlanc;Jinx;Janna
+8013084029;16.20;E2;b;Kled;Lee Sin;Hwei;Jinx;Lulu;Jax;Ivern;Aurora;Caitlyn;Nami
+8013072730;16.20;E2;b;Camille;Taliyah;Pantheon;Caitlyn;Morgana;Rek'Sai;Rengar;Ahri;Kai'Sa;Alistar
+8013059106;16.20;E2;r;Gwen;Sylas;Lissandra;Ezreal;Amumu;Irelia;Fizz;Yone;Kai'Sa;Leona
+8013055860;16.20;E2;b;Warwick;Hecarim;Morgana;Ezreal;Shaco;Illaoi;Nidalee;Akali;Xayah;Nami
+8013031679;16.20;E2;r;Ambessa;Talon;Ekko;Aphelios;Karma;Irelia;Kayn rouge;Yasuo;Smolder;Lulu
+8013024793;16.20;E2;b;Sett;Master Yi;Vex;Kai'Sa;Leona;Kayle;Cho'Gath;Mel;Tristana;Blitzcrank
+8013022609;16.20;E2;b;Renekton;Briar;Heimerdinger;Jinx;Zilean;Yone;Sylas;Yasuo;Samira;Thresh
+8013006083;16.20;E2;r;Gragas;Lillia;Yasuo;Caitlyn;Lulu;Kayle;Kha'Zix;Katarina;Ezreal;Brand
+8013001839;16.20;E2;b;Gwen;Lee Sin;Yasuo;Varus;Hwei;Warwick;Nidalee;Syndra;Jinx;Rammus
+8012997585;16.20;E2;r;Garen;Rengar;Xerath;Caitlyn;Thresh;Sett;Hecarim;Twitch;Jinx;Braum
+8012971424;16.20;E2;b;Kayle;Qiyana;Sylas;Jinx;Lulu;Ahri;Nocturne;Malzahar;Akshan;Karma
+8009418938;16.20;E2;b;Volibear;Viego;Irelia;Jinx;Bard;Urgot;Kayn rouge;Fizz;Veigar;Nautilus
+8009378500;16.20;E2;r;Illaoi;Qiyana;Diana;Jhin;Zoe;Kled;Fiddlesticks;Akali;Kai'Sa;Karma
+8008744344;16.20;E2;r;Udyr;Aatrox;Locke;Yunara;Braum;Teemo;Fiddlesticks;Tristana;Jhin;Lux
+8012694678;16.20;E2;r;Garen;Diana;Yasuo;Aphelios;Leona;Darius;Maokai;Locke;Yunara;Lulu
+8012609075;16.20;E2;b;Dr. Mundo;Rengar;Vex;Aphelios;Brand;Yorick;Graves;Swain;Viktor;Poppy
+8017437339;16.20;P1;b;Darius;Shaco;Yone;Draven;Nami;Jax;Graves;Viktor;Kalista;Morgana
+8017418286;16.20;P1;r;Tahm Kench;Shyvana;Ahri;Kalista;Alistar;Akali;Kha'Zix;Galio;Draven;Nami
+8016772794;16.20;P1;b;Urgot;Viego;Vel'Koz;Draven;Lux;Garen;Wukong;Syndra;Jinx;Thresh
+8016722622;16.20;P1;r;Kennen;Fizz;Yasuo;Yunara;Zaahen;Mordekaiser;Taliyah;Pantheon;Kai'Sa;Zilean
+8016692482;16.20;P1;b;Olaf;Viego;Kennen;Caitlyn;Rell;Karthus;Qiyana;Twisted Fate;Kai'Sa;Bard
+8016651754;16.20;P1;b;Malphite;Evelynn;Xerath;Smolder;Rell;Darius;Kha'Zix;Syndra;Jinx;Braum
+8016607735;16.20;P1;b;Darius;Lee Sin;LeBlanc;Ezreal;Bard;Jax;Rengar;Yasuo;Tristana;Leona
+8016565598;16.20;P1;r;Aatrox;Jarvan IV;Annie;Kalista;Blitzcrank;Volibear;Jax;Vladimir;Miss Fortune;Nautilus
+8012699507;16.20;P1;r;Darius;Ivern;Locke;Ashe;Soraka;Sett;Warwick;Zed;Varus;Seraphine
+8010387159;16.20;P1;r;Darius;Naafiri;Syndra;Smolder;Tahm Kench;Sett;Kayn bleu;Locke;Kog'Maw;Lulu
+8010341201;16.20;P1;r;Malphite;Rek'Sai;LeBlanc;Jinx;Leona;Sylas;Qiyana;Locke;Kai'Sa;Rakan
+8009427941;16.20;P1;b;Malphite;Lillia;Swain;Jinx;Janna;Yasuo;Amumu;Riven;Lux;Senna
+8009316765;16.20;P1;r;Garen;Qiyana;Syndra;Yunara;Camille;Riven;Lillia;Yasuo;Aphelios;Elise
+8020753459;16.21;P1;b;Teemo;Rengar;Yone;Ezreal;Viego;Jax;Jarvan IV;Xerath;Kai'Sa;Nami
+8020682395;16.21;P1;r;Zaahen;Ekko;Yasuo;Kai'Sa;Rell;Sett;Kha'Zix;Katarina;Jhin;Mel
+8017773980;16.20;P1;r;Sion;Briar;Katarina;Jhin;Blitzcrank;Teemo;Nocturne;Ahri;Twitch;Thresh
+8017716748;16.20;P1;b;Shen;Nunu & Willump;Locke;Kai'Sa;Bard;Xin Zhao;Qiyana;Veigar;Yunara;Nautilus
+8017668725;16.20;P1;r;Jayce;Master Yi;Katarina;Yunara;Renata Glasc;Teemo;Udyr;Malzahar;Samira;Tahm Kench
+8017616943;16.20;P1;r;Irelia;Warwick;Katarina;Lucian;Morgana;Malphite;Kindred;Yorick;Kai'Sa;Thresh
+8017352239;16.20;P1;b;Renekton;Evelynn;Katarina;Ashe;Thresh;Jax;Wukong;Locke;Miss Fortune;Xerath
+8013765700;16.20;P1;b;Malphite;Talon;Yasuo;Zeri;Fizz;Bel'Veth;Lee Sin;Twisted Fate;Jhin;Thresh
+8013710797;16.20;P1;b;Gwen;Amumu;Yone;Jhin;Poppy;Sett;Wukong;Katarina;Yasuo;Alistar
+8010592991;16.20;P1;b;Ambessa;Qiyana;Tristana;Xayah;Brand;Gnar;Xin Zhao;Sylas;Miss Fortune;Nautilus
+8010548327;16.20;P1;r;Renekton;Kayn rouge;Vel'Koz;Lucian;Yuumi;Aatrox;Nocturne;Katarina;Zeri;Braum
+8010523231;16.20;P1;b;Sett;Wukong;Yasuo;Miss Fortune;Nami;Yone;Vi;Syndra;Jinx;Alistar
+8010486893;16.20;P1;r;Gangplank;Hecarim;Ziggs;Caitlyn;Alistar;Volibear;Trundle;Ahri;Tristana;Rell
+8010265206;16.20;P1;r;Elise;Qiyana;Yasuo;Jhin;Senna;Rumble;Ekko;Zed;Jinx;Brand
+8010218395;16.20;P1;b;Malphite;Nocturne;LeBlanc;Jhin;Milio;Gangplank;Sylas;Yasuo;Viktor;Ashe
+8009328693;16.20;P1;b;Sett;Jarvan IV;Katarina;Smolder;Mel;Ornn;Quinn;Olaf;Veigar;Lulu
+8008444752;16.20;P1;b;Gnar;Master Yi;Lux;Caitlyn;Zyra;Darius;Kha'Zix;Katarina;Miss Fortune;Seraphine
+8020823006;16.21;P1;b;Jhin;Jarvan IV;Cho'Gath;Samira;Swain;Varus;Xin Zhao;Fizz;Miss Fortune;Leona
+8020759377;16.21;P1;r;Ornn;Viego;Kassadin;Katarina;Yuumi;Jax;Elise;Fizz;Jhin;Lux
+8018529020;16.20;P1;r;Irelia;Xin Zhao;Viego;Xayah;Rakan;Volibear;Nocturne;Veigar;Corki;Galio
+8018490001;16.20;P1;b;Camille;Xin Zhao;Ahri;Tristana;Thresh;Tahm Kench;Jarvan IV;Veigar;Sivir;Senna
+8016651999;16.20;P1;r;Teemo;Skarner;Ezreal;Jinx;Galio;Cassiopeia;Diana;Ahri;Varus;Milio
+8016599285;16.20;P1;b;Warwick;Elise;Qiyana;Kai'Sa;Galio;Cho'Gath;Nocturne;Ahri;Karthus;Seraphine
+8016546561;16.20;P1;b;Sett;Zac;Ziggs;Kai'Sa;Brand;Poppy;Taliyah;LeBlanc;Jinx;Galio
+8016489439;16.20;P1;b;Urgot;Kayn bleu;Malzahar;Kai'Sa;Thresh;Sett;Zed;Twisted Fate;Jinx;Galio
+8016395675;16.20;P1;r;Tryndamere;Jarvan IV;Vladimir;Tristana;Nautilus;Jax;Elise;Akali;Ezreal;Galio
+8016343424;16.20;P1;b;Swain;Elise;Garen;Yasuo;Alistar;Dr. Mundo;Master Yi;Fizz;Yunara;Jarvan IV
+8016318654;16.20;P1;b;Darius;Elise;Yasuo;Jinx;Braum;Naafiri;Ekko;Yone;Caitlyn;Rell
+8016272076;16.20;P1;r;Riven;Viego;Qiyana;Caitlyn;Pyke;Zed;Elise;Aurelion Sol;Ashe;Morgana
+8016227446;16.20;P1;b;Shen;Shyvana;Orianna;Jhin;Soraka;Darius;Hecarim;Twisted Fate;Jinx;Leona
+8016191084;16.20;P1;r;Ornn;Elise;Xerath;Ezreal;Karma;Tahm Kench;Rengar;Ekko;Twitch;Lulu
+8015423309;16.20;P1;r;Gragas;Bel'Veth;Diana;Kai'Sa;Blitzcrank;Illaoi;Viego;Katarina;Lucian;Leona
+8015300801;16.20;P1;r;Sett;Lee Sin;Aurora;Miss Fortune;Leona;Akali;Sejuani;Sylas;Tristana;Rell
+8015205070;16.20;P1;r;Aatrox;Poppy;Kayle;Miss Fortune;Seraphine;Malphite;Warwick;Aurelion Sol;Jinx;Lulu
+8014450000;16.20;P1;r;Yone;Shaco;LeBlanc;Kai'Sa;Poppy;Kayle;Sion;Galio;Zeri;Lulu
+8014278980;16.20;P1;b;Gwen;Volibear;Zed;Caitlyn;Soraka;Poppy;Kha'Zix;Syndra;Xayah;Leona
+8016628496;16.20;P4;b;Olaf;Master Yi;Tristana;Xerath;Lux;Garen;Nasus;Diana;Jhin;Senna
+8016560288;16.20;P4;r;Teemo;Volibear;Akali;Aphelios;Nami;Garen;Darius;Orianna;Kai'Sa;Swain
+8015975476;16.20;P4;r;Gangplank;Cho'Gath;Hwei;Tristana;Janna;Darius;Master Yi;Malphite;Miss Fortune;Thresh
+8015941379;16.20;P4;b;Darius;Shaco;Renekton;Jhin;Senna;Syndra;Qiyana;Yone;Smolder;Bard
+8015925368;16.20;P4;r;Tahm Kench;Nocturne;Tristana;Kai'Sa;Seraphine;Garen;Jayce;Locke;Jinx;Renata Glasc
+8008650242;16.20;P4;r;Nasus;Fiddlesticks;Aurelion Sol;Miss Fortune;Braum;Mordekaiser;Sylas;Malzahar;Aphelios;Soraka
+8008579140;16.20;P4;b;Urgot;Darius;Smolder;Lucian;Nami;Riven;Volibear;Malzahar;Tristana;Soraka
+8008414067;16.20;P4;r;Malphite;Briar;Fiddlesticks;Yasuo;Seraphine;Garen;Teemo;LeBlanc;Jhin;Nautilus
+8008380714;16.20;P4;b;Urgot;Amumu;Yasuo;Jhin;Seraphine;Sion;Shaco;Ahri;Caitlyn;Braum
+8017547546;16.20;P4;b;Irelia;Teemo;Ekko;Jhin;Blitzcrank;Malphite;Shyvana;Vel'Koz;Ezreal;Leona
+8017470191;16.20;P4;r;Ornn;Brand;Naafiri;Smolder;Yuumi;Jax;Shyvana;Yasuo;Hwei;Nautilus
+8015192021;16.20;P4;b;Cho'Gath;Trundle;Zed;Lucian;Rell;Gnar;Shyvana;Katarina;Tristana;Thresh
+8015152854;16.20;P4;b;Graves;Gwen;Katarina;Jinx;Pyke;Renekton;Shyvana;Malzahar;Caitlyn;Nami
+8014716582;16.20;P4;r;Jax;Zyra;Syndra;Miss Fortune;Amumu;Malphite;Shyvana;Viktor;Kai'Sa;Ezreal
+8014671642;16.20;P4;r;Ornn;Elise;Akali;Kalista;Thresh;Jax;Shyvana;Sylas;Caitlyn;Pantheon
+8014611863;16.20;P4;b;Yasuo;Sejuani;Mel;Yunara;Blitzcrank;Renekton;Shyvana;Vex;Xayah;Thresh
+8014394700;16.20;P4;b;Illaoi;Zac;Diana;Wukong;Pantheon;Renekton;Shyvana;LeBlanc;Brand;Alistar
+8014344080;16.20;P4;r;Urgot;Ivern;Zoe;Lucian;Qiyana;Gnar;Nautilus;Katarina;Seraphine;Lux
+8011632040;16.20;P4;b;Irelia;Shyvana;Vel'Koz;Teemo;Shaco;Trundle;Talon;Sylas;Caitlyn;Morgana
+8011581378;16.20;P4;b;Mordekaiser;Gragas;Veigar;Caitlyn;Leona;Jax;Shyvana;Lissandra;Lucian;Morgana
+8011369746;16.20;P4;b;Fiora;Amumu;Fizz;Aphelios;Rakan;Jax;Shyvana;Lissandra;Tristana;Janna
+8011340831;16.20;P4;r;Pantheon;Vi;Katarina;Kai'Sa;Braum;Jax;Lillia;Vladimir;Vayne;Soraka
+8011322872;16.20;P4;b;Jax;Kha'Zix;Yasuo;Jhin;Lux;Gnar;Shyvana;Syndra;Tristana;Milio
+8011295001;16.20;P4;b;Trundle;Shyvana;Yone;Miss Fortune;Karma;Renekton;Talon;Syndra;Jinx;Braum
+8007232329;16.20;P4;b;Renekton;Shyvana;Katarina;Jinx;Bard;Sett;Jarvan IV;Yone;Yunara;Morgana
+8020877077;16.21;P3;b;Tryndamere;Briar;Lux;Twitch;Yuumi;Fiora;Viego;Katarina;Miss Fortune;Malzahar
+8020765362;16.21;P3;r;Nasus;Kha'Zix;Kai'Sa;Draven;Senna;Mordekaiser;Lee Sin;Galio;Smolder;Janna
+8018944235;16.20;P3;b;Mordekaiser;Quinn;Malzahar;Kai'Sa;Tahm Kench;Darius;Viego;Yone;Smolder;Leona
+8010200216;16.20;P3;r;Gnar;Ekko;Yasuo;Yunara;Nautilus;Cho'Gath;Jhin;Singed;Samira;Amumu
+8017087609;16.20;E3;r;Dr. Mundo;Graves;Anivia;Twitch;Lulu;Zaahen;Elise;Zed;Varus;Alistar
+8014082964;16.20;E3;r;Fiora;Nocturne;Ahri;Miss Fortune;Zilean;Yone;Quinn;Twisted Fate;Jhin;Twitch
+8013154521;16.20;E3;b;Jayce;Ekko;Syndra;Kai'Sa;Rakan;Yorick;Olaf;Aurora;Sivir;Tahm Kench
+8013123084;16.20;E3;b;Trundle;Warwick;Akshan;Twitch;Vel'Koz;Renekton;Udyr;Zed;Jinx;Milio
+8013113476;16.20;E3;r;Mordekaiser;Amumu;Zed;Caitlyn;Morgana;Jax;Evelynn;Yasuo;Renata Glasc;Milio
+8013078358;16.20;E3;r;Camille;Amumu;Ziggs;Draven;Brand;Cho'Gath;Fiddlesticks;Zed;Twitch;Maokai
+8013078613;16.20;E3;b;Yorick;Shaco;Jax;Tristana;Thresh;Darius;Viego;Lissandra;Caitlyn;Lulu
+8013057231;16.20;E3;r;Kled;Ambessa;Volibear;Tristana;Lux;Zaahen;Quinn;Zed;Ziggs;Janna
+8012790356;16.20;E3;r;Sylas;Kayn rouge;Malphite;Lucian;Milio;Yone;Zed;Viktor;Caitlyn;Leona
+8012731474;16.20;E3;b;Gragas;Cho'Gath;Zed;Viktor;Veigar;Shen;Zyra;Volibear;Ezreal;Nami
+8011277955;16.20;E3;r;Jax;Naafiri;Twisted Fate;Tristana;Nami;Garen;Evelynn;Yone;Ashe;Thresh
+8011266543;16.20;E3;r;Yone;Kindred;Syndra;Draven;Tahm Kench;Riven;Jax;Akali;Miss Fortune;Thresh
+8011227025;16.20;E3;b;Heimerdinger;Cho'Gath;Yone;Tristana;Yuumi;Gragas;Jarvan IV;Ahri;Viktor;Leona
+8019462196;16.20;E3;b;Ambessa;Lillia;Qiyana;Lucian;Braum;Gnar;Graves;Yasuo;Ziggs;Alistar
+8019452637;16.20;E3;b;Olaf;Darius;Yone;Ziggs;Poppy;Jax;Lillia;Lux;Yunara;Heimerdinger
+8019177219;16.20;E3;r;Sett;Hecarim;Zed;Kai'Sa;Blitzcrank;Akali;Nocturne;Vex;Samira;Thresh
+8018312644;16.20;E3;b;Tryndamere;Wukong;Xerath;Miss Fortune;Morgana;Volibear;Vi;Lissandra;Zeri;Milio
+8017222878;16.20;E3;r;Rengar;Briar;Veigar;Tristana;Ezreal;Swain;Cho'Gath;Ahri;Nilah;Braum
+8014190515;16.20;E3;r;Yone;Viego;Lissandra;Viktor;Annie;Yasuo;Volibear;Vladimir;Jhin;Janna
+8014147946;16.20;E3;b;Riven;Kindred;Katarina;Tristana;Blitzcrank;Ornn;Rengar;Irelia;Xayah;Lux
+8014059014;16.20;E3;b;Ornn;Wukong;Sylas;Zeri;Yuumi;Camille;Ekko;Malzahar;Tristana;Lulu
+8017667189;16.20;E3;b;Gangplank;Briar;Akali;Caitlyn;Thresh;Ambessa;Rengar;Ahri;Jhin;Xerath
+8017628655;16.20;E3;r;Nasus;Lillia;Ekko;Jinx;Senna;Camille;Qiyana;Ahri;Brand;Morgana
+8017571078;16.20;E3;r;Tahm Kench;Udyr;Ahri;Jinx;Alistar;Ambessa;Rumble;Sylas;Yunara;Renata Glasc
+8013719702;16.20;E3;b;Darius;Malphite;Ahri;Ezreal;Taliyah;Ornn;Talon;Irelia;Yunara;Milio
+8018566216;16.20;E4;b;Ornn;Diana;Qiyana;Varus;Nautilus;Sett;Kha'Zix;Ekko;Jinx;Janna
+8018534783;16.20;E4;r;Sett;Nunu & Willump;Zed;Jhin;Rakan;Cho'Gath;Rek'Sai;Ekko;Jinx;Nami
+8018494103;16.20;E4;b;Dr. Mundo;Briar;Vladimir;Varus;Lulu;Darius;Wukong;Fizz;Caitlyn;Morgana
+8010348560;16.20;E4;r;Sett;Rammus;Syndra;Varus;Thresh;Gwen;Kayn rouge;Akshan;Tristana;Elise
+8010310466;16.20;E4;r;Tahm Kench;Naafiri;Lux;Jhin;Alistar;Tryndamere;Darius;Syndra;Twitch;Blitzcrank
+8010196182;16.20;E4;b;Fiora;Graves;Vex;Samira;Leona;Gragas;Qiyana;Vel'Koz;Varus;Pyke
+8010168408;16.20;E4;r;Malphite;Warwick;Yone;Seraphine;Morgana;Volibear;Shyvana;Ahri;Jhin;Nautilus
+8010146021;16.20;E4;r;Malphite;Cho'Gath;Aurora;Jinx;Lulu;Garen;Lillia;Yone;Jhin;Bard
+8008676535;16.20;E4;r;Mordekaiser;Master Yi;Yone;Twitch;Tahm Kench;Sett;Sejuani;Akshan;Viktor;Renata Glasc
+8008630259;16.20;E4;b;Gangplank;Briar;Yone;Varus;Leona;Volibear;Viego;Sylas;Viktor;Nautilus
+8008570115;16.20;E4;r;Sion;Evelynn;Viktor;Tristana;Renata Glasc;Yorick;Talon;Yasuo;Caitlyn;Twitch
+8008529712;16.20;E4;r;Ornn;Warwick;Azir;Tristana;Nami;Garen;Sejuani;Twisted Fate;Viktor;Pyke
+8007374516;16.20;E4;r;Dr. Mundo;Sylas;Tristana;Varus;Thresh;Mordekaiser;Amumu;Jhin;Veigar;Alistar
+8007343760;16.20;E4;b;Ashe;Jax;Sylas;Varus;Thresh;Sett;Shyvana;Syndra;Lucian;Braum
+8007293441;16.20;E4;r;Volibear;Graves;Hwei;Jhin;Nautilus;Kled;Warwick;Viktor;Varus;Nami
+8007276997;16.20;E4;b;Gragas;Shyvana;Yone;Jhin;Poppy;Pantheon;Zac;Katarina;Tristana;Renata Glasc
+8007251243;16.20;E4;b;Sion;Sylas;Vladimir;Caitlyn;Morgana;Jayce;Graves;Akali;Lucian;Lulu
+8020945277;16.21;E4;b;Akali;Master Yi;Ahri;Katarina;Yuumi;Malphite;Hecarim;Sion;Draven;Seraphine
+8021028519;16.21;E1;r;Zaahen;Kayn rouge;Ekko;Miss Fortune;Briar;Jax;Kindred;Cho'Gath;Zyra;Alistar
+8020993936;16.21;E1;b;Riven;Kayn bleu;Viktor;Aphelios;Nautilus;Malphite;Kha'Zix;Aurelion Sol;Kai'Sa;Karma
+8020954707;16.21;E1;b;K'Sante;Naafiri;LeBlanc;Caitlyn;Zyra;Riven;Briar;Qiyana;Hwei;Nami
+8020574284;16.21;E1;r;Gangplank;Wukong;Locke;Ezreal;Karma;Urgot;Vi;Akshan;Vel'Koz;Leona
+8020500528;16.21;E1;r;Gragas;Qiyana;Ryze;Kai'Sa;Soraka;Fiora;Nocturne;Veigar;Miss Fortune;Blitzcrank
+8020460733;16.21;E1;r;Yasuo;Shyvana;Gragas;Kai'Sa;Alistar;Fiora;Viego;Ekko;Nilah;Thresh
+8020407417;16.21;E1;b;Darius;Kha'Zix;Annie;Yunara;Zilean;Jax;Lillia;Akshan;Jhin;Milio
+8019635756;16.20;E1;r;Trundle;Viego;Locke;Lucian;Soraka;Fiddlesticks;Jarvan IV;Hwei;Yunara;Taric
+8019598820;16.20;E1;b;Kayle;Malphite;LeBlanc;Kai'Sa;Nautilus;Fiora;Qiyana;Viktor;Hwei;Seraphine
+8018638282;16.20;E1;b;Yone;Lillia;Fizz;Jhin;Milio;Renekton;Zed;Mel;Zeri;Nami
+8017962788;16.20;E1;b;Gwen;Lee Sin;Syndra;Ezreal;Senna;Sion;Ekko;Katarina;Jhin;Sylas
+8017283602;16.20;E1;r;Shen;Qiyana;Viktor;Caitlyn;Senna;Malphite;Master Yi;Hwei;Twitch;Lulu
+8017226402;16.20;E1;b;Yasuo;Vi;Malzahar;Caitlyn;Braum;Malphite;Qiyana;Katarina;Lucian;Yuumi
+8017164025;16.20;E1;b;Nasus;Vi;Alistar;Ezreal;Thresh;Gangplank;Lee Sin;Syndra;Yasuo;Nautilus
+8016008917;16.20;E1;r;Gragas;Briar;Master Yi;Jinx;Lulu;Nasus;Zac;LeBlanc;Aphelios;Renata Glasc
+8014246921;16.20;E1;b;Yorick;Teemo;Yone;Kalista;Braum;Sion;Zyra;Vladimir;Lucian;Pyke
+8014204157;16.20;E1;r;Fiddlesticks;Udyr;Akshan;Jinx;Yuumi;Jax;Zac;LeBlanc;Twitch;Lulu
+8013625081;16.20;E1;b;Malphite;Fiddlesticks;Galio;Caitlyn;Zyra;Sylas;Udyr;Kog'Maw;Twitch;Lulu
+8013390404;16.20;E1;b;Shen;Qiyana;Ahri;Jhin;Elise;Zaahen;Kayn bleu;Anivia;Samira;Amumu
+8019856378;16.20;P3;r;Fiora;Jarvan IV;Galio;Caitlyn;Leona;Akali;Diana;Yone;Sivir;Blitzcrank
+8019811895;16.20;P3;r;Jhin;Qiyana;Tryndamere;Xayah;Vex;Yone;Diana;Ekko;Kai'Sa;Janna
+8019756151;16.20;P3;r;Garen;Bel'Veth;LeBlanc;Jhin;Milio;Sett;Qiyana;Ryze;Kalista;Nami
+8019719796;16.20;P3;r;Ambessa;Vi;Twisted Fate;Kai'Sa;Blitzcrank;Diana;Amumu;Xin Zhao;Smolder;Braum
+8019652118;16.20;P3;b;Kled;Diana;Gwen;Smolder;Nami;Corki;Nocturne;Lissandra;Kai'Sa;Alistar
+8019590903;16.20;P3;b;Yone;Nocturne;Vex;Caitlyn;Leona;Talon;Zac;Xerath;Sivir;Nami
+8019162687;16.20;P3;b;Malphite;Kha'Zix;Ahri;Yunara;Zyra;Twisted Fate;Nidalee;LeBlanc;Ezreal;Thresh
+8019146305;16.20;P3;r;Tryndamere;Volibear;Annie;Yunara;Janna;Cho'Gath;Lillia;Zed;Kai'Sa;Renata Glasc
+8019152659;16.20;P3;r;Zaahen;Briar;Locke;Ezreal;Bard;Malphite;Volibear;Vex;Aphelios;Thresh
+8019133417;16.20;P3;r;Garen;Jarvan IV;Katarina;Jinx;Neeko;Shen;Zed;Kog'Maw;Ziggs;Senna
+8019123340;16.20;P3;b;Renekton;Evelynn;Karthus;Smolder;Milio;Jax;Briar;Fizz;Jhin;Swain
+8018646236;16.20;P3;b;Gangplank;Wukong;Ahri;Caitlyn;Morgana;Dr. Mundo;Kindred;Hwei;Seraphine;Senna
+8018141685;16.20;P3;b;Gwen;Master Yi;Hwei;Caitlyn;Blitzcrank;Jax;Nocturne;Ahri;Ezreal;Nami
+8018125210;16.20;P3;r;Garen;Lee Sin;Locke;Jinx;Thresh;Fiora;Jarvan IV;LeBlanc;Ezreal;Nami
+8018123689;16.20;P3;b;Camille;Talon;Twisted Fate;Corki;Lux;Volibear;Kha'Zix;Kassadin;Tristana;Maokai
+8018098097;16.20;P3;r;Sett;Hecarim;Tahm Kench;Yunara;Milio;Camille;Talon;Annie;Corki;Nautilus
+8017257212;16.20;P3;b;Twisted Fate;Graves;Xerath;Smolder;Thresh;Gangplank;Amumu;Zoe;Kai'Sa;Blitzcrank
+8016989171;16.20;P3;r;Garen;Gragas;Irelia;Aphelios;Pyke;Teemo;Volibear;Twisted Fate;Kalista;Mel
+8016982011;16.20;P3;b;Ekko;Qiyana;Aurora;Zeri;Karma;Jayce;Shaco;Locke;Aphelios;Lulu
+8011217288;16.20;P3;b;Malphite;Wukong;Lux;Jhin;Karma;Mordekaiser;Viego;Twisted Fate;Lucian;Yuumi
+8011198498;16.20;P3;r;Teemo;Kindred;Vladimir;Twitch;Nami;Darius;Shyvana;Malzahar;Jhin;Lux
+8010075923;16.20;P3;r;Sion;Karthus;Viktor;Caitlyn;Blitzcrank;Yone;Master Yi;Fizz;Yunara;Janna
+8009174144;16.20;P3;b;K'Sante;Ekko;LeBlanc;Ezreal;Lux;Ornn;Wukong;Xerath;Caitlyn;Nautilus
+8012918461;16.20;E2;b;Naafiri;Hecarim;Diana;Jinx;Thresh;Darius;Jarvan IV;Karthus;Yunara;Lulu
+8012875574;16.20;E2;r;Jarvan IV;Zed;Azir;Miss Fortune;Braum;Kayle;Shaco;Orianna;Jinx;Leona
+8012819988;16.20;E2;r;Yasuo;Kindred;Ahri;Ezreal;Soraka;Naafiri;Kayn bleu;Akali;Xayah;Seraphine
+8012762341;16.20;E2;r;Kennen;Jarvan IV;Katarina;Yunara;Shen;Teemo;Cho'Gath;Talon;Jinx;Yuumi
+8011570014;16.20;E2;b;Olaf;Cho'Gath;Pantheon;Yasuo;Nautilus;Nocturne;Jarvan IV;Sylas;Lux;Janna
+8011530120;16.20;E2;b;Yorick;Lee Sin;Twisted Fate;Jinx;Brand;Ekko;Sejuani;Yone;Kai'Sa;Leona
+8011508647;16.20;E2;r;Yasuo;Elise;Smolder;Jhin;Vel'Koz;Garen;Viego;Kassadin;Sivir;Pyke
+8010796850;16.20;E2;r;Mordekaiser;Briar;Mel;Twitch;Alistar;Jax;Lillia;Yasuo;Caitlyn;Vel'Koz
+8010745458;16.20;E2;b;Nasus;Graves;Katarina;Twitch;Seraphine;Trundle;Shaco;Galio;Kog'Maw;Nami
+8010683232;16.20;E2;b;Kai'Sa;Ekko;Katarina;Jhin;Alistar;Darius;Vi;Aurelion Sol;Miss Fortune;Pantheon
+8010643998;16.20;E2;b;Ekko;Lee Sin;Akshan;Jinx;Milio;Riven;Kindred;Kled;Caitlyn;Zyra
+8010606874;16.20;E2;b;Garen;Amumu;Irelia;Jhin;Thresh;Darius;Qiyana;Volibear;Yasuo;Sylas
+8010552772;16.20;E2;r;Renekton;Qiyana;Vel'Koz;Caitlyn;Nami;Kai'Sa;Jax;Twisted Fate;Tristana;Zyra
+8008232306;16.20;E2;r;Yone;Viego;Viktor;Tristana;Janna;Tahm Kench;Quinn;Ahri;Ezreal;Sona
+8007819617;16.20;E2;b;Urgot;Ivern;Lux;Jinx;Seraphine;Yunara;Zac;Akali;Caitlyn;Nautilus
+8007772412;16.20;E2;b;Yone;Diana;Vladimir;Draven;Leona;Gangplank;Zac;Lissandra;Smolder;Morgana
+8007713842;16.20;E2;b;Tahm Kench;Viego;Taliyah;Ekko;Leona;Vayne;Ambessa;Yunara;Veigar;Janna
+8007662465;16.20;E2;b;Gangplank;Viego;Ekko;Katarina;Pantheon;Fiora;Shaco;Anivia;Caitlyn;Morgana
+8007607640;16.20;E2;b;Teemo;Zac;Yunara;Vayne;Morgana;Darius;Ivern;Syndra;Corki;Sylas
+8007544899;16.20;E2;b;Renekton;Ambessa;Diana;Twitch;Braum;Volibear;Qiyana;Viktor;Yunara;Karma
+8012805418;16.20;E2;r;Tristana;Hecarim;Viktor;Swain;Poppy;Cho'Gath;Vi;Syndra;Varus;Zac
+8011894309;16.20;E2;r;Malphite;Lee Sin;Brand;Aphelios;Swain;Cho'Gath;Vi;Yone;Syndra;Lux
+8018266158;16.20;E2;b;Singed;Fiddlesticks;Viktor;Jhin;Miss Fortune;Dr. Mundo;Amumu;Ahri;Yunara;Pantheon
+8020875912;16.21;E2;r;Ornn;Talon;Lissandra;Caitlyn;Lulu;Tahm Kench;Kha'Zix;Diana;Xayah;Janna
+8020835637;16.21;E2;b;Fiora;Talon;Ahri;Tristana;Yuumi;Camille;Wukong;Syndra;Kog'Maw;Soraka
+8010951228;16.20;E2;b;Tahm Kench;Master Yi;Kassadin;Jinx;Yuumi;Anivia;Zed;Lissandra;Smolder;Vel'Koz
+8010914703;16.20;E2;b;Gangplank;Hecarim;Gragas;Kalista;Tahm Kench;Wukong;Talon;Yone;Jhin;Janna
+8010869008;16.20;E2;r;Garen;Hecarim;Yone;Viktor;Amumu;Mordekaiser;Talon;Akali;Jhin;Thresh
+8008795074;16.20;E2;r;Jax;Evelynn;Ahri;Tristana;Leona;Teemo;Talon;Lux;Jhin;Senna
+8008754692;16.20;E2;r;Yorick;Quinn;Akali;Yone;Seraphine;Riven;Bel'Veth;Galio;Ahri;Lissandra
+8016094665;16.20;P2;r;Kayle;Nocturne;Sylas;Miss Fortune;Veigar;Kled;Evelynn;Fizz;Tristana;Thresh
+8016067836;16.20;P2;b;Mordekaiser;Wukong;Zed;Xayah;Senna;Udyr;Bel'Veth;Ekko;Kai'Sa;Alistar
+8008945611;16.20;P2;b;Renekton;Kha'Zix;Diana;Caitlyn;Blitzcrank;Yorick;Volibear;Annie;Jhin;Zilean
+8008928895;16.20;P2;b;Trundle;Viego;Zed;Draven;Blitzcrank;Garen;Vi;Kassadin;Jhin;Karma
+8008922483;16.20;P2;r;Fiora;Kayn rouge;Yasuo;Lux;Morgana;Renekton;Lillia;Jax;Smolder;Pyke
+8008898577;16.20;P2;r;Sett;Graves;Hwei;Sivir;Ashe;Darius;Rammus;Xerath;Aphelios;Renata Glasc
