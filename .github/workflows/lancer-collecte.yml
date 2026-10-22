@@ -18,7 +18,7 @@ env:
 jobs:
   collecte:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 330
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,7 +30,7 @@ jobs:
           python3 -m pip install -q --break-system-packages statsmodels pandas || python3 -m pip install -q statsmodels pandas || echo "statsmodels indisponible : régression sautée."
 
       - name: Collecter
-        timeout-minutes: 52
+        timeout-minutes: 295
         env:
           COMMANDE_SAUVEGARDE: bash analyse/enregistrer.sh
         run: python3 analyse/collecte.py
