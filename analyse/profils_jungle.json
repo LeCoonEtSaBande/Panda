@@ -1,0 +1,61 @@
+[
+  {
+    "id": "tank-engage",
+    "description": "Engage avec un gros front (HP+) : Amumu, Zac, Sejuani, Rammus, Malphite, Sion.",
+    "condition": {
+      "principal": "Engage",
+      "tanky": "HP+"
+    }
+  },
+  {
+    "id": "bruiser-engage",
+    "description": "Engage solide (HP) : Wukong, Lee Sin, Jarvan IV, Vi, Kayn rouge, Hecarim, Xin Zhao.",
+    "condition": {
+      "principal": "Engage",
+      "tanky": "HP"
+    }
+  },
+  {
+    "id": "engage-fragile",
+    "description": "Engage sans front : Lillia, Sylas, Diana.",
+    "condition": {
+      "principal": "Engage",
+      "tanky": ""
+    }
+  },
+  {
+    "id": "assassin",
+    "description": "Pick : Viego, Kayn bleu, Kha'Zix, Qiyana, Master Yi, Talon, Shaco, Evelynn, Rengar.",
+    "condition": {
+      "principal": "Pick"
+    }
+  },
+  {
+    "id": "counter-engage",
+    "description": "Punit ceux qui engagent : Fiddlesticks, Maokai, Skarner, Kindred, Poppy, Mordekaiser, Shen.",
+    "condition": {
+      "principal": "Counter-engage"
+    }
+  },
+  {
+    "id": "disengage",
+    "description": "Repousse ou protège : Ivern, Morgana, Gragas, Singed.",
+    "condition": {
+      "principal": "Disengage"
+    }
+  },
+  {
+    "id": "poke",
+    "description": "Mages à distance : Nidalee, Karthus, Zyra, Teemo, Taliyah, Jayce.",
+    "condition": {
+      "principal": "Poke"
+    }
+  },
+  {
+    "id": "sans-style",
+    "description": "Pas de style de teamfight : Graves, Cho'Gath, Dr. Mundo, Darius.",
+    "condition": {
+      "principal": ""
+    }
+  }
+]
