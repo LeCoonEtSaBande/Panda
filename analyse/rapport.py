@@ -147,10 +147,12 @@ def main():
     ecrire_csv(RESULTATS / "volume.csv", ["mesure", "nombre"], volume)
     print(f"Rapport : {len(lignes)} parties, {len(obs)} observations, {len(scenarios)} scénarios.")
 
-    import compos
-    import profils
-    profils.main()
-    compos.main()
+    # Les analyses par profil ne doivent jamais faire échouer le rapport.
+    for nom in ("profils", "compos"):
+        try:
+            __import__(nom).main()
+        except Exception as erreur:  # noqa: BLE001
+            print(f"{nom} : analyse sautée ({type(erreur).__name__} : {erreur}).")
     return 0
 
 
