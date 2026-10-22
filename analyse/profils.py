@@ -76,6 +76,8 @@ def observations(lignes, catalogue, profils):
                 "victoire": ligne["gagnant"] == cote,
                 "adverse": resume_compo(equipes[autre], catalogue),
                 "allie": resume_compo(coequipiers, catalogue),
+                "degats_jungle": catalogue[jungle]["degats"],
+                "ap_coequipiers": sum(catalogue[nom]["degats"] in ("AP", "Hybride") for nom in coequipiers),
             })
     return resultat
 
@@ -214,6 +216,41 @@ def regression(obs):
     return sortie, modele.nobs
 
 
+def equilibre_degats(obs, seuil=1):
+    """Un jungler AD dans une équipe qui a au plus « seuil » coéquipier AP perd-il plus qu'un autre ?
+
+    Logit : victoire ~ champion + rang + peu_ap + peu_ap × jungler AD.
+    Le terme d'interaction est l'effet propre au jungler AD, au-delà de la force du champion.
+    """
+    import pandas as pd
+    import statsmodels.formula.api as smf
+
+    effectifs = Counter(o["jungle"] for o in obs)
+    table = pd.DataFrame([{
+        "match": o["match"],
+        "jungle": o["jungle"] if effectifs[o["jungle"]] >= JUNGLE_MIN_REGRESSION else "rare",
+        "rang": o["rang"],
+        "victoire": int(o["victoire"]),
+        "ad": int(o["degats_jungle"] == "AD"),
+        "peu_ap": int(o["ap_coequipiers"] <= seuil),
+    } for o in obs])
+    modele = smf.logit("victoire ~ C(jungle) + C(rang) + peu_ap + peu_ap:ad", table).fit(
+        disp=False, cov_type="cluster", cov_kwds={"groups": pd.factorize(table["match"])[0]}
+    )
+    lignes = []
+    for degats in ("AD", "AP", "Hybride"):
+        for peu in (True, False):
+            liste = [o["victoire"] for o in obs if o["degats_jungle"] == degats and (o["ap_coequipiers"] <= seuil) == peu]
+            if liste:
+                cas = f"<= {seuil} coequipier AP" if peu else f"> {seuil} coequipier AP"
+                lignes.append(["tableau", f"jungle {degats}, {cas}", len(liste), pourcent(sum(liste) / len(liste)), "", ""])
+    for terme, nom in (("peu_ap", "peu d'AP, jungler non AD"), ("peu_ap:ad", "surcoût si le jungler est AD")):
+        b, e = modele.params[terme], modele.bse[terme]
+        lignes.append(["regression", nom, int(modele.nobs), f"{25 * b:+.1f}",
+                       f"{25 * (b - 1.96 * e):+.1f} / {25 * (b + 1.96 * e):+.1f}", f"{modele.pvalues[terme]:.4f}"])
+    return lignes
+
+
 # --- Sortie -------------------------------------------------------------------------------
 
 def ecrire_csv(chemin, entete, lignes):
@@ -254,6 +291,9 @@ def main(minimum=100):
             sortie,
         )
         print(f"Profils : régression sur {int(n)} observations.")
+        ecrire_csv(
+            RESULTATS / "degats_equilibre.csv", ["type", "cas", "parties", "valeur", "ic_95", "p"], equilibre_degats(obs)
+        )
     print(f"Profils : {len(obs)} observations, {len(profils)} profils.")
     return 0
 

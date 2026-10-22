@@ -147,8 +147,10 @@ def main():
     ecrire_csv(RESULTATS / "volume.csv", ["mesure", "nombre"], volume)
     print(f"Rapport : {len(lignes)} parties, {len(obs)} observations, {len(scenarios)} scénarios.")
 
+    import compos
     import profils
     profils.main()
+    compos.main()
     return 0
 
 

@@ -14,7 +14,7 @@ PROFILS = charger_profils()
 class ProfilsTest(unittest.TestCase):
     def test_profils_du_pool(self):
         attendus = {
-            "Fiddlesticks": "reaction", "Ivern": "reaction", "Maokai": "reaction", "Skarner": "reaction",
+            "Fiddlesticks": "counter-engage", "Ivern": "disengage", "Maokai": "counter-engage", "Skarner": "counter-engage", "Morgana": "disengage",
             "Kayn rouge": "bruiser-engage", "Kayn bleu": "assassin", "Viego": "assassin",
             "Dr. Mundo": "sans-style", "Sejuani": "tank-engage", "Lillia": "engage-fragile", "Karthus": "poke",
         }
