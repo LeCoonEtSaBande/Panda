@@ -31,7 +31,9 @@ jobs:
 
       - name: Rapport
         if: always()
-        run: python3 analyse/rapport.py
+        run: |
+          python3 -m pip install -q --break-system-packages statsmodels pandas || python3 -m pip install -q statsmodels pandas || echo "statsmodels indisponible : régression sautée."
+          python3 analyse/rapport.py
 
       - name: Enregistrer
         if: always()

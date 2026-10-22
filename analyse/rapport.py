@@ -146,6 +146,9 @@ def main():
         volume += [[f"ecartee {r}", n] for r, n in sorted(raisons.items())]
     ecrire_csv(RESULTATS / "volume.csv", ["mesure", "nombre"], volume)
     print(f"Rapport : {len(lignes)} parties, {len(obs)} observations, {len(scenarios)} scénarios.")
+
+    import profils
+    profils.main()
     return 0
 
 
