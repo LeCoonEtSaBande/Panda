@@ -25,18 +25,16 @@ jobs:
           ref: ${{ env.BRANCHE }}
           fetch-depth: 0
 
+      - name: Préparer le rapport
+        run: |
+          python3 -m pip install -q --break-system-packages statsmodels pandas || python3 -m pip install -q statsmodels pandas || echo "statsmodels indisponible : régression sautée."
+
       - name: Collecter
-        timeout-minutes: 55
+        timeout-minutes: 52
         env:
           COMMANDE_SAUVEGARDE: bash analyse/enregistrer.sh
         run: python3 analyse/collecte.py
 
-      - name: Rapport
+      - name: Rapport et enregistrement
         if: always()
-        run: |
-          python3 -m pip install -q --break-system-packages statsmodels pandas || python3 -m pip install -q statsmodels pandas || echo "statsmodels indisponible : régression sautée."
-          python3 analyse/rapport.py
-
-      - name: Enregistrer
-        if: always()
-        run: bash analyse/enregistrer.sh
+        run: bash analyse/enregistrer.sh --rapport
