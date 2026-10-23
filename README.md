@@ -5,9 +5,10 @@ On collecte des parties classées solo EUW avec l'API Riot, puis on cherche des 
 
 Tout se fait en français : code, commentaires, messages de commit, réponses.
 
-## Une seule branche : `main`
+## Branches
 
-Depuis le 22/10/2026, tout est sur `main` (les anciennes branches `cursor/analyse-6da8` et `cursor/assistant-draft-6da8` y ont été fusionnées puis supprimées).
+- `main` reçoit les collectes : les commits de données et le rapport de fin de collecte y arrivent automatiquement.
+- Le travail d'analyse peut se faire sur d'autres branches (par exemple `analyse-iterative`). Une branche de travail ne touche jamais aux fichiers de données ; elle est fusionnée dans `main` quand le propriétaire le décide.
 
 | Dossier ou fichier | Rôle |
 |---|---|
@@ -20,7 +21,7 @@ Depuis le 22/10/2026, tout est sur `main` (les anciennes branches `cursor/analys
 | `.github/workflows/lancer-collecte.yml` | **Lancer une collecte** : bouton « Run workflow », ou modification de `analyse/collecte.ini`. |
 | `.github/workflows/assistant.yml` | **Page d'assistant** : régénère `Assistant_draft.html` quand `Catalogue.csv` ou `assistant/` change. |
 
-Pendant une collecte, des commits de données arrivent sur `main` toutes les 10 minutes : toujours faire `git pull --rebase` avant de pousser. Ne pas créer d'autre branche, ne pas en supprimer, ne pas fusionner sans demande explicite du propriétaire.
+Pendant une collecte, des commits de données arrivent sur `main` toutes les 10 minutes : toujours faire `git pull --rebase` avant de pousser sur `main`.
 
 ## Comment tourne une collecte
 
@@ -37,20 +38,23 @@ Pendant une collecte, des commits de données arrivent sur `main` toutes les 10 
 
 - Ajouter ou modifier des scripts d'analyse dans `analyse/` (`rapport.py`, `profils.py`, `compos.py`, nouveaux fichiers) et leurs tests dans `analyse/tests/`.
 - Ajouter des fichiers de sortie dans `analyse/resultats/`, à condition qu'ils soient produits par `rapport.py` (directement ou par un script qu'il appelle).
-- Lire toutes les données et tous les résultats, lancer les analyses en local.
+- Lire toutes les données, les résultats et les archives, lancer les analyses en local, y compris des calculs longs et des bibliothèques en plus (scikit-learn, réseaux de neurones…) pour les analyses locales.
+- Créer des branches de travail et y pousser.
+- Créer et faire évoluer des catalogues de travail (par exemple dans `analyse/catalogues/`), y compris reclasser des champions. `Catalogue.csv` reste la version qui alimente la page d'assistant : on y reporte une version de travail quand le propriétaire la valide.
+- Faire évoluer la règle de compo, en gardant `analyse/regle.py` et `assistant/regle.js` identiques.
 - Committer et pousser pendant une collecte : c'est prévu. Les changements de `collecte.py` et `enregistrer.sh` ne serviront qu'à partir de la collecte suivante ; ceux de `rapport.py` et des scripts qu'il appelle serviront dès la fin de la collecte en cours.
 
 ## Ce que Claude Code ne doit pas faire
 
+Le seul but de ces règles : ne pas casser ni interrompre les collectes, et ne pas abîmer les données.
+
 - **Données** : ne jamais modifier, trier, dédoublonner, réécrire ni supprimer `analyse/donnees/parties.csv`, `analyse/donnees/ecartees.csv` ni les fichiers de détails. Seule la collecte y écrit, en ajout. Seule exception : le propriétaire peut demander de repartir de zéro ; on archive alors d'abord dans `archives/`, puis on vide le fichier en gardant sa ligne d'en-tête (fait le 22/10/2026).
 - **Résultats** : ne pas éditer `analyse/resultats/` à la main. Ces fichiers sont régénérés et écrasés à la fin de chaque collecte : changer le script qui les produit.
-- **Catalogue** : ne pas modifier `Catalogue.csv` ni l'Excel, ne reclasser aucun champion. Seul le propriétaire décide du catalogue.
-- **Règle de compo** : ne pas changer `analyse/regle.py` sans accord du propriétaire. Elle doit rester identique à `assistant/regle.js` ; toute modification validée se fait dans les deux.
 - **`analyse/collecte.ini`** : le pousser lance une collecte. Ne le modifier que pour lancer une collecte demandée. Pour tout autre changement de ce fichier, mettre `[skip ci]` dans le message du dernier commit poussé. Ne pas copier la clé `cle_api` ailleurs.
-- **Collectes** : ne pas lancer de collecte sans demande, ne rien lancer qui dure plus de 5 h 30. Vérifier avec `gh run list` qu'aucune collecte ne tourne avant de toucher aux workflows.
+- **Collectes** : ne jamais annuler ni interrompre une collecte en cours ; ne pas en lancer sans demande ; rien ne doit dépasser 5 h 30 dans le workflow. Vérifier avec `gh run list` qu'aucune collecte ne tourne avant de toucher aux workflows.
 - **Durée du rapport** : `rapport.py` tourne dans le temps restant du job (environ 35 minutes, moins les sauvegardes). Une analyse lente doit pouvoir être sautée.
-- **Dépendances** : `collecte.py`, `enregistrer.sh` et `lecture.py` n'utilisent que la bibliothèque standard Python et bash. Les analyses peuvent utiliser `statsmodels` et `pandas` (installés par le workflow), mais doivent continuer sans eux et ne jamais faire échouer le rapport.
-- **Git** : pas de `push --force`, pas de réécriture d'historique, pas de changement de visibilité du dépôt, pas de suppression de branche.
+- **Dépendances** : `collecte.py`, `enregistrer.sh` et `lecture.py` n'utilisent que la bibliothèque standard Python et bash. Ce que lance `rapport.py` peut utiliser `statsmodels`, `pandas` et `scipy` (installés par le workflow), mais doit continuer sans eux et ne jamais faire échouer le rapport.
+- **Git** : pas de `push --force` ni de réécriture d'historique sur `main` (les commits de collecte en dépendent), pas de changement de visibilité du dépôt.
 - **Workflows** : vérifier que le YAML est valide avant de pousser (par exemple `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/lancer-collecte.yml'))"`).
 
 ## Format des données
@@ -68,7 +72,7 @@ match;patch;palier;gagnant;b_top;b_jgl;b_mid;b_adc;b_sup;r_top;r_jgl;r_mid;r_adc
 
 `analyse/donnees/ecartees.csv` : `match;raison` (remake, postes, kayn_sans_forme, etc.). Une partie écartée n'est jamais retéléchargée, et n'a pas de détails.
 
-`archives/` : copies figées des données et des résultats, une par dossier daté. Aucun script ne les lit ni ne les écrit ; ne jamais les modifier.
+`archives/` : copies figées des données et des résultats, une par dossier daté. On peut les lire (par exemple pour confirmer un résultat sur des parties indépendantes) ; ne jamais les modifier.
 
 Le 22/10/2026, `parties.csv` a été vidé (en-tête gardé) pour repartir avec des données neuves, collectées avec tous leurs détails. Les 21 484 parties d'avant, sans détails, sont dans `archives/2026-10-22_avant_details/`. `ecartees.csv` a été gardé : les parties déjà écartées ne sont pas retéléchargées. Les parties archivées peuvent, elles, être recollectées, cette fois avec leurs détails.
 
