@@ -15,6 +15,7 @@ Tout se fait en français : code, commentaires, messages de commit, réponses.
 | `Catalogue.csv`, `Catalogue_champions_LoL.xlsx` | Le catalogue des champions. |
 | `analyse/` | Collecte des parties (`collecte.py`, `collecte.ini`, `enregistrer.sh`), analyses (`rapport.py`, `profils.py`, `compos.py`, `regle.py`), lecture des données (`lecture.py`), tests. |
 | `analyse/iteratif/` | **Le cœur de l'analyse** : la boucle en 4 blocs (catalogue → compos → biais → recuit simulé) qui cherche des biais de draft. Voir `analyse/iteratif/README.md`. |
+| `analyse/catalogues/` | Catalogues de travail : `catalogue_mesure.py` construit des groupes mesurés « teamfight » (après 15 ou 20 min, lanes contre jungle), proposition de catalogue de départ pour le recuit. |
 | `analyse/donnees/` | Les données collectées (voir plus bas). |
 | `analyse/resultats/` | Les résultats, régénérés à la fin de chaque collecte. |
 | `archives/` | Copies figées d'anciennes données. |
