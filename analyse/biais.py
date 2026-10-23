@@ -194,6 +194,7 @@ def effets_fixes_compos(v, fiches):
 def logit(y, X, groupes=None):
     import statsmodels.api as sm
 
+    X = X.loc[:, X.abs().sum() > 0]  # un effet fixe absent du sous-échantillon ferait une colonne vide
     X = sm.add_constant(X, has_constant="add")
     modele = sm.Logit(y, X)
     if groupes is not None:
@@ -260,9 +261,9 @@ def tests(v, fiches, avec_details=True, exclure=(), seulement=None):
     def sens_ok(hid, coef):
         attendu = attendus.get(hid, "")
         if attendu.startswith("positif"):
-            return coef > 0
+            return bool(coef > 0)
         if attendu.startswith("négatif"):
-            return coef < 0
+            return bool(coef < 0)
         return None
 
     fe = effets_fixes_compos(v, fiches)
@@ -281,7 +282,7 @@ def tests(v, fiches, avec_details=True, exclure=(), seulement=None):
         autres_b = (a_b == 1) & ~dedans_b
         autres_r = (a_r == 1) & ~dedans_r
         autres = pd.concat([y[autres_b], 1 - y[autres_r]])
-        p_avec = invlogit(b / 2)
+        p_avec = invlogit(b)
         sortie.append(resultat("A1", m.nobs, b, e, m.pvalues["test"],
             f"À force de champions égale, une équipe à 2 assassins ou plus contre une compo sans peel gagne environ "
             f"{100 * p_avec:.1f} % au lieu de 50 %.",
@@ -464,7 +465,8 @@ def tests(v, fiches, avec_details=True, exclure=(), seulement=None):
         f_ = {c: (types[c] == "front").astype(float) for c in "br"}
         cycle = (d["b"] * c_["r"] - c_["b"] * d["r"]) + (c_["b"] * f_["r"] - f_["b"] * c_["r"]) + (f_["b"] * d["r"] - d["b"] * f_["r"])
         ok = longues & v["or10_top"].notna() & (types["b"] != "") & (types["r"] != "")
-        X = sm.add_constant(pd.concat([fe, pd.DataFrame({"test": cycle})], axis=1)[ok], has_constant="add")
+        X = pd.concat([fe, pd.DataFrame({"test": cycle})], axis=1)[ok]
+        X = sm.add_constant(X.loc[:, X.abs().sum() > 0], has_constant="add")
         m = sm.OLS(v.loc[ok, "or10_top"], X).fit(cov_type="HC1")
         b, e = m.params["test"], m.bse["test"]
         sortie.append(resultat("E2", m.nobs, b, e, m.pvalues["test"],
@@ -478,7 +480,7 @@ def verdicts(sortie):
     q = benjamini_hochberg([r["p"] for r in sortie])
     for r, qq in zip(sortie, q):
         r["q"] = qq
-        bon_sens = r["sens"] is not False
+        bon_sens = r["sens"] is None or bool(r["sens"])
         if qq < 0.05 and bon_sens:
             r["verdict"] = "significatif"
         elif (qq < 0.10 or r["p"] < 0.05) and bon_sens:
