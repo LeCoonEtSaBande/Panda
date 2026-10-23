@@ -164,8 +164,9 @@ def main():
 
     # Les analyses par profil ne doivent jamais faire échouer le rapport.
     # controle : contrôle des données ; categories : profils mesurés des champions (échantillon figé) ;
+    # classification : groupes de champions tous postes confondus (proposition de second catalogue) ;
     # biais : hypothèses de hypotheses.json, sur l'échantillon figé puis sur les parties suivantes.
-    for nom in ("profils", "compos", "controle", "categories", "biais"):
+    for nom in ("profils", "compos", "controle", "categories", "classification", "biais"):
         try:
             __import__(nom).main()
         except Exception as erreur:  # noqa: BLE001
