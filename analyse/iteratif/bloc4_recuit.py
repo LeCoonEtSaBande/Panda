@@ -62,13 +62,14 @@ BORNES = {
     "role_jgl": (0.5, 2.0),   # la jungle reste toujours dans l'équation
     "seuil": (0.15, 0.60),
     "lambda": (5.0, 300.0),
-    "deplacements_max": 10,
+    "deplacements_max": 60,
 }
 # Garde-fous contre un algorithme qui « triche » en faisant un groupe par champion :
 # - chaque groupe doit garder au moins TAILLE_MIN_GROUPE champions (sinon le réglage est rejeté) ;
-# - au plus 12 groupes, au plus 10 champions déplacés ;
+# - au plus 12 groupes, au plus 60 champions déplacés par rapport au catalogue de départ du réglage ;
 # - une situation n'est étudiée que si elle apparaît dans au moins 300 parties de recherche ;
-# - un champion ne peut être déplacé que vers son groupe voisin ; régularisation d'au moins 5 ;
+# - un champion peut aller dans n'importe quel groupe (une fois sur deux, on propose son groupe
+#   voisin, le plus proche du sien) ; régularisation d'au moins 5 ;
 # - le score est mesuré en 5 rotations sur toutes les parties de recherche (chaque partie sert à
 #   noter un modèle qui ne l'a pas vue) : bien moins de place pour la chance qu'un seul tas B ;
 # - le score est mesuré sur B, que l'apprentissage n'a pas vu, et comparé au score que le même recuit
@@ -84,7 +85,7 @@ def borner(x, bornes):
     return min(max(x, bornes[0]), bornes[1])
 
 
-def voisin(params, rng, champions):
+def voisin(params, rng, champions, catalogue_de_base=None):
     """Un petit changement aléatoire des paramètres. Renvoie (nouveaux paramètres, description)."""
     p = copy.deepcopy(params)
     tirage = rng.random()
@@ -104,13 +105,20 @@ def voisin(params, rng, champions):
         if len(p["deplacements"]) >= BORNES["deplacements_max"] and rng.random() < 0.5:
             p["deplacements"].pop(rng.choice(sorted(p["deplacements"])))
             return p, "retour d'un champion dans son groupe"
-        # Un champion ne peut aller que vers son groupe voisin (voir bloc 1) ; la cible est
-        # recalculée par le bloc 1, la valeur notée ici est seulement « déplacé ».
+        # Un champion peut aller dans n'importe quel groupe. Une fois sur deux, on propose son groupe
+        # voisin (le plus proche du sien), qui a le plus de chances d'avoir du sens.
         champion = rng.choice(champions)
-        if champion in p["deplacements"]:
+        if champion in p["deplacements"] and rng.random() < 0.3:
             p["deplacements"].pop(champion)
             return p, f"retour de {champion}"
-        p["deplacements"][champion] = 1
+        cat = catalogue_de_base(p) if catalogue_de_base else None
+        if cat is None or champion not in cat.groupe:
+            return p, "rien"
+        if champion in cat.voisin and rng.random() < 0.5:
+            cible = cat.voisin[champion]
+        else:
+            cible = rng.choice([g for g in range(cat.k) if g != cat.groupe[champion]])
+        p["deplacements"][champion] = int(cible)
         return p, f"déplacement de {champion}"
     # Changements du bloc 1 lui-même : les déplacements n'ont plus de sens, on les efface.
     p["deplacements"] = {}
@@ -169,6 +177,10 @@ class Machine:
         self.cache_bloc1 = {}
         self.champions = sorted(set(mesures["champion"]))
 
+    def catalogue_de_base(self, params):
+        """Catalogue du bloc 1 pour ces paramètres, sans les déplacements."""
+        return self.catalogue(dict(params, deplacements={}))
+
     def catalogue(self, params):
         cle = signature_bloc1(params)
         if cle not in self.cache_bloc1:
@@ -179,9 +191,9 @@ class Machine:
         cat = copy.copy(self.cache_bloc1[cle])
         cat.groupe = dict(cat.groupe)
         deplacements = params.get("deplacements", {})
-        for champion in deplacements:
-            if champion in cat.voisin:
-                cat.groupe[champion] = cat.voisin[champion]
+        for champion, cible in deplacements.items():
+            if champion in cat.groupe and 0 <= cible < cat.k:
+                cat.groupe[champion] = cible
         if deplacements:
             membres = {}
             for champion, g in sorted(cat.groupe.items()):
@@ -219,7 +231,7 @@ def recuit(machine, minutes, graine=1, depart=None, journal=print, t0=0.30, t_fi
         iteration += 1
         avance = (time.time() - debut) / duree if essais_max is None else iteration / essais_max
         temperature = t0 * (t_fin / t0) ** avance
-        candidat, changement = voisin(courant, rng, machine.champions)
+        candidat, changement = voisin(courant, rng, machine.champions, machine.catalogue_de_base)
         try:
             score = machine.evaluer(candidat)[0].score
         except (np.linalg.LinAlgError, ValueError):
@@ -259,8 +271,8 @@ def resume_reglage(params, cat):
     if params["mode"] == "mesure":
         texte.append("Poids des familles : " + ", ".join(f"{f} {v:.2f}" for f, v in params["familles"].items()))
     if params["deplacements"]:
-        texte.append("Champions déplacés vers leur groupe voisin : " + ", ".join(
-            f"{c} -> {cat.noms[cat.voisin[c]]}" for c in sorted(params["deplacements"]) if c in cat.voisin))
+        texte.append(f"Champions déplacés ({len(params['deplacements'])}) : " + ", ".join(
+            f"{c} -> {cat.noms[g]}" for c, g in sorted(params["deplacements"].items()) if 0 <= g < cat.k))
     return texte
 
 

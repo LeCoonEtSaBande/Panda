@@ -45,7 +45,7 @@ Pour donner un ordre de grandeur : un vrai biais de 55 % au lieu de 50 %, dans u
 
 ## Les tas de parties
 
-Émeraude et Diamant seulement : on apprend et on valide sur les mêmes rangs. Le Plat de l'archive est écarté. Le découpage est décrit dans `decoupage.json`. Il doit être **validé avec le propriétaire** (`"valide": true`) avant tout recuit ou confirmation.
+Émeraude et Diamant seulement : on apprend et on valide sur les mêmes rangs. Le Plat de l'archive est écarté. Le découpage est décrit dans `decoupage.json` ; il a été **validé avec le propriétaire le 23/10/2026** (`"valide": true`). Sans cette validation, le recuit et la confirmation refusent de tourner.
 
 | Tas | Contenu | Parties au 23/10 | Qui le lit |
 |---|---|---|---|
@@ -63,7 +63,7 @@ Un algorithme qui essaie des milliers de réglages trouve toujours des « biais 
 2. **Pas de groupe par champion.**
    - Chaque groupe garde au moins 8 champions ; sinon le réglage est rejeté.
    - Au plus 12 groupes.
-   - Au plus 10 champions déplacés, et seulement vers leur **groupe voisin** : le groupe mesuré le plus proche après le sien, ou le style secondaire dans le catalogue. Le catalogue reste lisible.
+   - Au plus 60 champions déplacés par rapport au catalogue de départ du réglage (environ un tiers). Un champion peut aller dans n'importe quel groupe ; le recuit propose une fois sur deux son groupe voisin, le plus proche du sien. Plus on déplace, plus le recuit peut coller au hasard : c'est le seuil de hasard (point 5) qui dit si ça vaut le coup.
    - Une situation (compo X contre Y, jungler J contre compo Y…) n'est étudiée que si elle apparaît dans **au moins 200 parties de A**.
 3. **Régularisation.** Les effets sont rétrécis vers 0 : lambda d'au moins 5, et plus fort pour les effets qui reposent sur peu de parties. La force des champions est réglée de la même façon, par validation croisée sur le tas d'apprentissage.
 4. **Score en rotation.** Chaque partie de recherche sert à noter un modèle qui ne l'a pas vue (5 rotations). Un seul tas B fixe se laisse « apprendre » par le recuit à force d'essais : constaté le 23/10, le recuit atteignait sur B le même score avec de vraies victoires qu'avec des victoires tirées au sort.

@@ -8,9 +8,9 @@ Deux façons de faire, choisies par le paramètre « mode » :
   paramètres variables : poids de chaque famille d'indicateurs, nombre d'axes, nombre de groupes.
 
 Dans les deux modes, le recuit peut aussi DÉPLACER des champions (paramètre « deplacements ») :
-c'est ainsi que le catalogue évolue au fil des itérations. Garde-fou : un champion ne peut aller que
-vers son groupe voisin (mesuré : le groupe le plus proche après le sien ; catalogue : son style
-secondaire). Le catalogue reste ainsi lisible (pas de Twitch « enchanteur »).
+c'est ainsi que le catalogue évolue au fil des itérations. Un champion peut aller dans n'importe quel
+groupe ; « voisin » (le groupe le plus proche du sien, ou son style secondaire dans le catalogue) est
+proposé en priorité par le recuit.
 
 Capacités de chaque champion (mesurées sur l'échantillon figé, quel que soit le mode) :
 - cc : temps de CC et immobilisations (standardisés) ;
@@ -173,9 +173,9 @@ def construire(params, mesures, catalogue=None):
         voisin = {c: s for c, s in secondaire.items() if s >= 0}
     else:
         noms, groupe, secondaire, voisin = depuis_mesures(params, mesures)
-    for champion in params.get("deplacements", {}):
-        if champion in voisin:
-            groupe[champion] = voisin[champion]
+    for champion, cible in params.get("deplacements", {}).items():
+        if champion in groupe and 0 <= cible < len(noms):
+            groupe[champion] = cible
     membres = {}
     for champion, g in sorted(groupe.items()):
         membres.setdefault(noms[g], []).append(champion)
