@@ -1,0 +1,69 @@
+{
+  "valide": false,
+  "commentaire": "Proposition. Passer « valide » à true une fois relue avec le propriétaire.",
+  "rangs": [
+    "D",
+    "E"
+  ],
+  "archive": true,
+  "part_B": 0.3333333333333333,
+  "graine": "panda-2026-10-23",
+  "regle_AB": "Échantillon figé et archive (Émeraude-Diamant) : B si sha256(graine:match) % 1000 < 1000 × part_B, sinon A.",
+  "regle_C": "Parties neuves arrivées après l'échantillon figé (echantillon_fige.json), Émeraude-Diamant.",
+  "comptes_au_moment_de_la_proposition": [
+    {
+      "tas": "A",
+      "source": "archive",
+      "rang": "D",
+      "parties": 8141
+    },
+    {
+      "tas": "A",
+      "source": "archive",
+      "rang": "E",
+      "parties": 2523
+    },
+    {
+      "tas": "A",
+      "source": "neuf",
+      "rang": "D",
+      "parties": 7198
+    },
+    {
+      "tas": "A",
+      "source": "neuf",
+      "rang": "E",
+      "parties": 2907
+    },
+    {
+      "tas": "B",
+      "source": "archive",
+      "rang": "D",
+      "parties": 4043
+    },
+    {
+      "tas": "B",
+      "source": "archive",
+      "rang": "E",
+      "parties": 1191
+    },
+    {
+      "tas": "B",
+      "source": "neuf",
+      "rang": "D",
+      "parties": 3721
+    },
+    {
+      "tas": "B",
+      "source": "neuf",
+      "rang": "E",
+      "parties": 1423
+    },
+    {
+      "tas": "C",
+      "source": "neuf",
+      "rang": "E",
+      "parties": 2431
+    }
+  ]
+}
