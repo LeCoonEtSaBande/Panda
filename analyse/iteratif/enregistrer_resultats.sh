@@ -10,7 +10,9 @@ if git diff --cached --quiet; then
   echo "Aucun résultat à enregistrer."
   exit 0
 fi
-git commit -q -m "${1:-Résultats de l'analyse itérative}"
+# (Le message par défaut est dans une variable : une apostrophe dans ${1:-...} casse bash.)
+message_defaut="Résultats de l'analyse itérative"
+git commit -q -m "${1:-$message_defaut}"
 for essai in 1 2 3; do
   if git pull -q --rebase origin "$branche" && git push -q origin "HEAD:$branche"; then
     echo "Résultats enregistrés sur $branche."

@@ -224,6 +224,7 @@ def recuit(machine, minutes, graine=1, depart=None, journal=print, t0=0.30, t_fi
     score_courant = machine.evaluer(courant)[0].score
     palmares = {signature(courant): (score_courant, courant)}
     historique = []
+    essais = []  # chaque réglage essayé : (essai, secondes, température, score, accepté, changement, paramètres)
     debut = time.time()
     duree = 60 * minutes
     iteration, sans_progres, meilleur = 0, 0, score_courant
@@ -236,8 +237,11 @@ def recuit(machine, minutes, graine=1, depart=None, journal=print, t0=0.30, t_fi
             score = machine.evaluer(candidat)[0].score
         except (np.linalg.LinAlgError, ValueError):
             continue
-        if score >= score_courant or rng.random() < math.exp((score - score_courant) / temperature):
+        accepte = score >= score_courant or rng.random() < math.exp((score - score_courant) / temperature)
+        if accepte:
             courant, score_courant = candidat, score
+        essais.append((iteration, round(time.time() - debut, 1), round(temperature, 5), round(score, 5),
+                       int(accepte), changement, json.dumps(candidat, ensure_ascii=False, sort_keys=True)))
         sig = signature(candidat)
         if len(palmares) < 5 * TAILLE_PALMARES or score > min(s for s, _ in palmares.values()):
             palmares[sig] = (score, candidat)
@@ -260,6 +264,7 @@ def recuit(machine, minutes, graine=1, depart=None, journal=print, t0=0.30, t_fi
         if iteration % 500 == 0:
             journal(f"{iteration} essais, {round(time.time() - debut)} s : meilleur {meilleur:.3f}, "
                     f"courant {score_courant:.3f} (dernier changement : {changement})")
+    recuit.essais = essais
     return palmares, historique, iteration
 
 
@@ -305,6 +310,14 @@ def rapport(machine, palmares, historique, iterations, minutes, graine, dossier=
     }
     chemin = dossier / f"recuit_{date}.json"
     chemin.write_text(json.dumps(sortie, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    # Tous les réglages essayés, un par ligne (compressé).
+    import csv
+    import gzip
+
+    with gzip.open(dossier / f"recuit_{date}_essais.csv.gz", "wt", encoding="utf-8", newline="") as fichier:
+        ecrivain = csv.writer(fichier, delimiter=";", lineterminator="\n")
+        ecrivain.writerow(["essai", "secondes", "temperature", "score", "accepte", "changement", "parametres"])
+        ecrivain.writerows(getattr(recuit, "essais", []))
     if not melange:
         (dossier / "dernier_recuit.json").write_text(json.dumps({"fichier": chemin.name}, ensure_ascii=False) + "\n", encoding="utf-8")
     lignes = [f"# Recuit simulé du {date}", "",
@@ -374,6 +387,7 @@ def main():
     palmares, historique, n = recuit(machine, args.minutes, args.graine, essais_max=args.essais)
     chemin = rapport(machine, palmares, historique, n, args.minutes, args.graine, melange=args.melanger)
     print(f"Recuit terminé : {n} essais, résultats dans {chemin}")
+    print(chemin.with_suffix(".md").read_text(encoding="utf-8"))
     return 0
 
 

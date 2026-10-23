@@ -96,7 +96,8 @@ python3 analyse/iteratif/confirmer.py
 
 ## Résultats (`resultats/`)
 
-- `recuit_<date>.json` et `.md` : réglages essayés, palmarès des 10 meilleurs (paramètres, groupes, biais avec leur taux sur A et sur B). Suffixe `_hasard` pour les recuits sur victoires mélangées.
+- `recuit_<date>.json` et `.md` : palmarès des 10 meilleurs réglages (paramètres, groupes, biais avec leur taux sur A et sur B) et l'évolution du score. Suffixe `_hasard` pour les recuits « seuil de hasard ».
+- `recuit_<date>_essais.csv.gz` : **tous** les réglages essayés, un par ligne (score, accepté ou non, changement fait, paramètres complets).
 - `dernier_recuit.json` : le dernier vrai recuit, celui que la confirmation prend par défaut.
 - `confirmation_<date>.json` et `.md` : verdict de chaque biais sur C.
 
