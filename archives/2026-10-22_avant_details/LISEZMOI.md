@@ -1,6 +1,6 @@
 # Archive du 22/10/2026 : données d'avant les fichiers de détails
 
-Copie figée de `analyse/donnees/` et `analyse/resultats/` au commit `753b699`, juste avant la première collecte avec détails de partie, joueurs, timeline et événements.
+Copie figée de `analyse/donnees/` et `analyse/resultats/` au commit `5b65852` (`753b699` avant la réécriture de l’historique du 23/10/2026), juste avant la première collecte avec détails de partie, joueurs, timeline et événements.
 
 - `parties.csv` : 21 484 parties (patch 16.20 : 18 628, patch 16.21 : 2 856), même format que `analyse/donnees/parties.csv`.
 - `ecartees.csv` : 437 parties écartées.
