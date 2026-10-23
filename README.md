@@ -47,7 +47,7 @@ Pendant une collecte, des commits de données arrivent sur `main` toutes les 10 
 - À la fin, `analyse/enregistrer.sh --rapport` récupère la branche, lance `analyse/rapport.py` (qui appelle `profils.py` et `compos.py`), committe `analyse/resultats/` et pousse.
 - Une collecte dure 4 h 50 (`minutes = 290`) ; l'étape « Collecter » est coupée à 295 minutes et le job à 5 h 30 (330 minutes). Rien ne doit dépasser 5 h 30.
 - `mode` dans `collecte.ini` : `nouvelles` (par défaut) cherche de nouvelles parties ; `rattrapage` ne cherche rien de neuf et complète les détails des parties de `parties.csv` qui n'en ont pas encore, **sans jamais écrire dans `parties.csv`**. Un match introuvable (404) est noté dans `analyse/donnees/rattrapage_echecs.csv` et n'est plus retenté.
-- La clé Riot est celle de `cle_api` dans `collecte.ini` (une clé de développement expire au bout de 24 heures). Si une variable d'environnement `RIOT_API_KEY` est définie, elle passe avant ; le workflow n'en définit pas.
+- **Clé Riot** : uniquement dans le secret `RIOT_API_KEY` du dépôt (**Settings → Secrets and variables → Actions → Repository secrets**), transmis par le workflow. Une clé de développement expire au bout de 24 heures : chaque jour, la régénérer sur [developer.riotgames.com](https://developer.riotgames.com) puis mettre à jour ce secret (bouton crayon, coller, « Update secret »). Mettre à jour le secret ne lance pas de collecte. En local : `RIOT_API_KEY=… python3 analyse/collecte.py`. Une clé `cle_api` écrite dans `collecte.ini` est ignorée, avec un avertissement.
 - Débit : la clé de développement permet environ 3 000 appels par heure. Avec la timeline, une partie coûte deux appels : compter environ 1 350 parties par heure (environ 6 500 par collecte), contre 2 550 avant.
 
 ## Ce que Claude Code peut faire
@@ -66,11 +66,12 @@ Le seul but de ces règles : ne pas casser ni interrompre les collectes, et ne p
 
 - **Données** : ne jamais modifier, trier, dédoublonner, réécrire ni supprimer `analyse/donnees/parties.csv`, `analyse/donnees/ecartees.csv` ni les fichiers de détails. Seule la collecte y écrit, en ajout. Seule exception : le propriétaire peut demander de repartir de zéro ; on archive alors d'abord dans `archives/`, puis on vide le fichier en gardant sa ligne d'en-tête (fait le 22/10/2026).
 - **Résultats** : ne pas éditer `analyse/resultats/` à la main. Ces fichiers sont régénérés et écrasés à la fin de chaque collecte : changer le script qui les produit.
-- **`analyse/collecte.ini`** : le pousser lance une collecte. Ne le modifier que pour lancer une collecte demandée. Pour tout autre changement de ce fichier, mettre `[skip ci]` dans le message du dernier commit poussé. Ne pas copier la clé `cle_api` ailleurs.
+- **`analyse/collecte.ini`** : le pousser lance une collecte. Ne le modifier que pour lancer une collecte demandée. Pour tout autre changement de ce fichier, mettre `[skip ci]` dans le message du dernier commit poussé.
+- **Clé Riot** : ne jamais l'écrire dans un fichier du dépôt, un commit, une issue ou un journal : le dépôt est public. Elle ne vit que dans le secret `RIOT_API_KEY`. Un test (`AucuneCleDansLeDepotTest`) échoue si une clé apparaît dans le code, la configuration ou la documentation. Si une clé a été poussée par erreur, la régénérer tout de suite sur le portail Riot : l'ancienne cesse de fonctionner.
 - **Collectes** : ne jamais annuler ni interrompre une collecte en cours ; ne pas en lancer sans demande ; rien ne doit dépasser 5 h 30 dans le workflow. Vérifier avec `gh run list` qu'aucune collecte ne tourne avant de toucher aux workflows.
 - **Durée du rapport** : `rapport.py` tourne dans le temps restant du job (environ 35 minutes, moins les sauvegardes). Une analyse lente doit pouvoir être sautée.
 - **Dépendances** : `collecte.py`, `enregistrer.sh` et `lecture.py` n'utilisent que la bibliothèque standard Python et bash. Ce que lance `rapport.py` peut utiliser `statsmodels`, `pandas` et `scipy` (installés par le workflow), mais doit continuer sans eux et ne jamais faire échouer le rapport.
-- **Git** : pas de `push --force` ni de réécriture d'historique sur `main` (les commits de collecte en dépendent), pas de changement de visibilité du dépôt.
+- **Git** : pas de `push --force` ni de réécriture d'historique sur `main` (les commits de collecte en dépendent), pas de changement de visibilité du dépôt (seul le propriétaire la change ; le dépôt est prévu pour être public).
 - **Workflows** : vérifier que le YAML est valide avant de pousser (par exemple `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/lancer-collecte.yml'))"`).
 
 ## Format des données
