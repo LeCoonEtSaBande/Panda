@@ -1570,3 +1570,230 @@ match;duree_s;fin_surrender;fin_surrender_precoce;b_ban1;b_ban2;b_ban3;b_ban4;b_
 8014176448;1505;0;0;Nasus;Yone;Rengar;Tristana;Sett;Zilean;Talon;Vayne;Elise;Zed;0;0;1;16;1;1;1;3;0;0;0;0;1;2;0;0;1;1;0;38;0;1;0;0;1;2;0;0;0;9;0;0
 8013156929;1386;0;0;Poppy;Morgana;Talon;Akali;Jax;Bel'Veth;Nocturne;Thresh;Locke;Illaoi;1;1;1;35;1;3;1;3;1;2;1;1;1;10;0;0;0;0;0;12;0;0;0;0;0;0;0;0;0;0;0;0
 8013132218;1656;0;0;Yunara;Qiyana;Thresh;Briar;Gwen;Nilah;Viktor;Sylas;Caitlyn;Camille;0;0;0;40;1;4;0;0;1;1;0;0;0;9;0;0;1;1;1;24;0;0;1;3;0;0;1;1;1;5;0;0
+8013126676;1333;0;0;Mel;Olaf;Shaco;Graves;Aphelios;Naafiri;Zed;Qiyana;Thresh;Urgot;0;0;0;14;0;0;0;0;0;0;0;0;0;0;0;0;1;1;1;42;1;3;1;3;1;2;0;0;1;10;0;0
+8013114541;1688;0;0;Qiyana;Sylas;Gragas;Viktor;Ambessa;Diana;Thresh;Shaco;Lulu;Akali;0;0;1;18;1;2;0;1;0;0;1;1;1;4;0;0;1;1;0;41;0;1;1;2;1;1;0;0;0;9;0;0
+8008748220;1543;0;0;Shaco;Jax;Draven;Kassadin;Leona;Anivia;Kha'Zix;Jayce;Rek'Sai;Tristana;0;0;1;18;0;0;0;0;0;0;0;0;0;1;0;0;1;1;0;43;1;4;1;3;1;1;1;1;1;9;0;0
+8008697069;1841;0;0;Talon;Draven;Kassadin;Alistar;Jax;Darius;Kassadin;Tristana;Talon;Rengar;1;1;0;37;0;3;0;0;1;1;0;0;0;7;0;0;0;0;1;25;1;1;1;3;0;0;0;0;1;3;0;0
+8021903202;1927;0;0;Alistar;Yuumi;Janna;Yasuo;Draven;Bel'Veth;Zed;Yone;Shyvana;Syndra;1;2;0;34;0;2;0;0;0;0;0;0;0;5;0;0;0;0;1;32;1;2;1;3;1;1;1;1;1;10;0;0
+8021864873;1221;1;0;Irelia;Caitlyn;Draven;Malzahar;;Viego;Jayce;Qiyana;Shaco;Yasuo;0;0;1;13;1;1;1;3;0;0;0;0;0;2;0;0;0;0;0;32;0;2;0;0;1;1;1;1;1;8;0;0
+8021798179;1925;0;0;Viktor;Sylas;Pyke;Camille;Lee Sin;Riven;Sivir;Rengar;Yasuo;Lee Sin;1;1;0;34;0;3;1;3;1;3;1;1;1;11;0;0;0;0;1;18;1;1;0;0;0;0;0;0;0;3;0;0
+8020622683;2076;0;0;Alistar;Lulu;Jax;Yasuo;Graves;Shaco;Blitzcrank;Lulu;Viktor;Camille;1;2;0;33;1;4;1;3;1;1;1;1;1;7;0;0;0;0;1;34;0;0;0;0;0;1;0;0;0;8;0;0
+8020560824;1289;0;0;Qiyana;Yasuo;Pyke;Zaahen;Zeri;Janna;Yasuo;Braum;Lillia;;0;0;1;14;0;0;1;1;0;0;0;0;0;0;0;0;0;0;0;42;1;3;0;2;1;1;1;1;1;8;0;0
+8020516155;1794;0;0;Blitzcrank;Shaco;Mel;Tryndamere;Shen;Locke;Vex;Braum;Shaco;Jax;1;1;0;36;1;4;0;0;1;1;1;1;1;9;0;0;0;0;1;25;0;1;1;3;0;0;0;0;0;3;0;0
+8019031041;2132;0;0;Yasuo;Locke;Nasus;Zed;Kai'Sa;Lulu;Elise;Locke;Teemo;Ekko;0;0;0;38;0;1;1;3;0;0;0;0;1;4;0;0;1;1;1;55;1;4;0;0;1;3;0;0;0;11;0;0
+8019006541;1856;0;0;Nautilus;;Ekko;Poppy;Malphite;Sylas;Nasus;Talon;Akshan;Caitlyn;0;0;1;21;1;1;0;0;0;0;0;0;0;5;0;0;1;1;0;43;0;3;1;3;1;2;0;0;1;10;0;0
+8018954656;1918;0;0;Cho'Gath;Yasuo;Pyke;Caitlyn;Wukong;Pantheon;Ekko;Akshan;Tristana;Caitlyn;1;1;0;32;0;3;1;3;1;2;1;1;1;8;0;0;0;0;1;26;1;1;0;0;0;0;0;0;0;6;0;0
+8018888348;1839;0;0;Caitlyn;;Blitzcrank;Graves;Sylas;Talon;Qiyana;Morgana;Jax;Viktor;0;0;0;30;0;1;1;3;0;0;0;0;1;5;0;0;1;2;1;43;1;3;0;0;1;4;1;1;0;11;0;0
+8018826452;1914;1;0;Qiyana;Yone;Locke;Rengar;Hecarim;Yone;Caitlyn;Darius;Ekko;;0;0;1;38;1;4;1;3;1;1;1;1;1;7;0;0;0;0;0;21;0;0;0;0;0;0;0;0;0;3;0;0
+8018012468;2283;0;0;Viktor;Syndra;Nasus;Blitzcrank;Graves;Yasuo;Syndra;Talon;Yorick;Shaco;1;1;0;25;1;4;1;3;1;2;0;0;0;10;0;0;0;0;1;20;0;1;0;0;0;0;1;1;1;5;0;0
+8017952693;1504;0;0;Lucian;Pyke;Graves;Locke;Quinn;Talon;Zed;Yasuo;Lulu;Malphite;0;0;0;17;0;0;1;3;0;0;0;0;0;0;0;0;1;1;1;43;1;4;0;0;1;1;1;1;1;8;0;0
+8017908664;1570;0;0;Graves;LeBlanc;Yuumi;Malphite;Draven;Caitlyn;Zed;Darius;Draven;Wukong;1;1;1;36;1;4;0;0;1;2;0;0;0;10;0;0;0;0;0;23;0;0;1;3;0;0;1;1;1;2;0;0
+8017842743;2378;0;0;Pyke;;;Gragas;Locke;Graves;Kassadin;Darius;Tristana;Ekko;0;1;1;32;1;2;1;3;1;1;1;1;1;7;0;0;1;1;0;44;0;4;0;0;0;2;0;0;0;10;0;0
+8016820328;1854;0;0;Volibear;Ahri;Locke;;Graves;Qiyana;Talon;Yasuo;Janna;Garen;1;1;0;37;0;1;0;0;0;0;0;0;0;7;0;0;0;1;1;43;1;3;1;3;1;1;0;0;1;7;0;0
+8016795466;1564;0;0;Yasuo;;Dr. Mundo;Yunara;Graves;Locke;Cho'Gath;Yunara;Akali;Fiora;0;0;0;18;0;0;1;3;0;0;0;0;0;2;0;0;1;1;1;32;1;4;0;0;1;2;1;1;1;10;0;0
+8016732296;1866;0;0;;Locke;Graves;Yasuo;Zaahen;Talon;Kha'Zix;Renata Glasc;Locke;Darius;0;0;0;26;0;1;0;0;0;0;0;0;0;3;0;0;1;1;1;41;1;3;1;3;1;2;1;1;1;10;0;0
+8016694187;1400;0;0;Draven;Pyke;Katarina;Fiora;Wukong;Talon;Vel'Koz;Locke;Graves;Darius;0;0;0;16;0;2;1;3;0;0;0;0;0;2;0;0;1;1;1;27;1;1;0;0;1;1;0;0;1;8;0;0
+8016643442;1630;0;0;Yunara;Caitlyn;Darius;Lulu;Lissandra;Blitzcrank;Lulu;;Graves;Malphite;0;0;1;28;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;31;1;4;1;3;1;1;0;0;1;9;0;0
+8016617533;1429;0;0;Rengar;Lulu;Katarina;Nocturne;Nasus;Locke;Graves;Viktor;Pyke;Syndra;0;0;0;13;1;2;1;1;0;0;0;0;0;2;0;0;1;1;1;39;0;0;0;2;1;1;1;1;1;10;0;0
+8011969142;2147;1;0;Graves;Katarina;Viktor;Tryndamere;Lulu;Malphite;Ambessa;Akali;Rengar;Dr. Mundo;0;0;0;34;0;0;1;3;0;1;0;0;0;6;0;0;1;2;1;46;1;5;0;0;1;1;0;0;1;9;0;0
+8011940045;1392;0;0;Jax;Pyke;Evelynn;Twitch;LeBlanc;Graves;K'Sante;Caitlyn;Yone;Viktor;0;0;0;16;0;1;0;0;0;0;0;0;0;1;0;0;0;0;1;39;1;2;1;3;1;1;0;0;1;8;0;0
+8011892868;2201;0;0;Caitlyn;Zoe;Viktor;Fiora;Graves;Smolder;Hecarim;Malphite;Tristana;Mel;0;0;1;48;0;2;0;0;1;1;0;0;0;6;0;0;1;2;0;53;1;3;1;3;0;1;1;1;1;8;0;0
+8011839892;1965;0;0;Lulu;Zilean;Graves;Hwei;Yone;Sylas;Teemo;Blitzcrank;Zed;Evelynn;0;0;1;39;0;2;1;3;1;2;0;0;1;11;0;0;1;1;0;35;1;3;0;0;0;0;1;1;0;6;0;0
+8021552849;1335;1;0;Draven;Fizz;Akali;Shaco;Malphite;Illaoi;Pyke;Zed;Locke;Qiyana;1;1;1;19;1;2;1;3;1;1;1;1;1;7;0;0;0;0;0;7;0;1;0;0;0;0;0;0;0;0;0;0
+8021453431;1743;0;0;Bard;Caitlyn;Draven;Locke;Aurora;Lulu;Draven;Hecarim;Yasuo;Syndra;0;0;1;32;1;2;1;3;1;1;0;0;1;6;0;0;1;1;0;38;0;2;0;0;0;0;1;1;0;4;0;0
+8021413825;1730;0;0;Soraka;Morgana;Lillia;Katarina;Irelia;Talon;Draven;Locke;Dr. Mundo;Nautilus;1;1;0;39;1;2;0;0;1;2;1;1;0;10;0;0;0;0;1;35;0;2;1;3;0;0;0;0;1;3;0;0
+8016332522;1338;1;0;Briar;Caitlyn;Irelia;LeBlanc;Riven;Nautilus;Zac;Zed;Garen;Tristana;0;0;0;7;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;24;1;3;1;3;1;1;1;1;1;9;0;0
+8016282541;2336;0;0;Twitch;Illaoi;Zac;Zed;Locke;Corki;Yasuo;Fiora;Lillia;Yone;0;1;0;35;1;3;1;3;0;1;1;1;0;9;0;0;1;2;1;45;0;3;0;0;1;4;0;0;1;9;0;0
+8015850020;910;1;0;Shaco;Sion;Zed;Draven;Rammus;Zac;Pyke;Jayce;Dr. Mundo;Zed;0;0;0;14;1;1;1;1;0;0;0;0;0;0;0;0;0;0;1;28;0;1;0;2;0;0;0;0;1;3;0;0
+8015832130;1876;1;0;Twitch;Nocturne;Pyke;Illaoi;Zed;Hwei;Locke;Darius;Zac;Zed;0;0;0;26;0;0;0;0;0;0;0;0;0;1;0;0;1;1;1;46;1;4;1;3;1;3;1;1;1;10;0;0
+8015799432;2241;0;0;Cho'Gath;Ahri;Yasuo;Garen;;Senna;Pyke;Warwick;Zac;Malphite;1;3;0;59;0;3;0;0;1;2;1;1;1;11;0;0;0;0;1;38;1;2;1;3;0;0;0;0;0;5;0;0
+8015779847;1718;0;0;Malphite;Zac;Zed;Sett;Camille;Caitlyn;Nasus;Syndra;Tristana;Gwen;0;0;1;25;0;0;1;3;0;0;1;1;1;2;0;0;1;1;0;32;1;4;0;0;1;1;0;0;0;8;0;0
+8015742231;1608;0;0;Caitlyn;Zac;Nautilus;Zed;Aatrox;Katarina;Syndra;Darius;Viego;Viktor;1;1;1;38;1;3;1;2;1;3;1;1;1;10;0;0;0;0;0;15;0;0;0;1;0;0;0;0;0;0;0;0
+8015704826;1827;0;0;Yunara;Mel;Vex;Irelia;Malphite;Pyke;Locke;Irelia;Zac;Darius;0;0;1;26;0;1;0;1;0;0;0;0;1;2;0;0;1;1;0;36;1;3;1;2;1;2;1;1;0;10;0;0
+8011612809;1158;1;0;Leona;;Irelia;Zed;Shaco;;Caitlyn;Zac;Sett;Katarina;0;0;1;21;1;1;1;3;0;0;0;0;0;1;0;0;0;0;0;28;0;2;0;0;0;0;1;1;1;3;0;0
+8011570886;1635;0;0;Cho'Gath;Yasuo;Mordekaiser;Draven;Pyke;Nocturne;Zac;Yasuo;Shaco;Sylas;0;0;0;17;1;2;0;0;0;0;0;0;0;1;0;0;1;1;1;31;0;2;1;3;1;2;1;1;1;10;0;0
+8011526160;1523;0;0;Caitlyn;Jayce;Fizz;Syndra;Yone;Viktor;Talon;Darius;Kayn;Malzahar;1;1;1;43;1;4;1;3;1;4;1;1;1;13;0;0;0;0;0;20;0;0;0;0;0;0;0;0;0;1;0;0
+8011487241;1712;0;0;Malzahar;Shaco;Darius;Lulu;Akali;Ahri;Zyra;Leona;Talon;Teemo;0;0;0;37;1;3;1;2;1;2;1;1;1;11;0;0;0;0;1;26;0;1;0;1;0;0;0;0;0;0;0;0
+8011454938;1890;0;0;Blitzcrank;Syndra;Nautilus;Camille;Kindred;Briar;Shaco;Darius;Malzahar;Draven;0;0;0;27;0;1;0;0;0;0;0;0;0;3;0;0;1;1;1;37;1;4;1;3;1;3;1;1;1;11;0;0
+8021951980;1968;0;0;Katarina;Lulu;Akali;Talon;Jayce;Darius;Akali;Zed;Yasuo;Milio;0;0;0;18;1;2;1;3;0;0;1;1;1;3;0;0;1;2;1;37;0;3;0;0;1;1;0;0;0;9;0;0
+8016474673;1494;0;0;Darius;Seraphine;Yone;;Draven;Shaco;LeBlanc;;Ambessa;Caitlyn;1;1;1;25;1;4;1;3;1;3;1;1;1;11;0;0;0;0;0;10;0;0;0;0;0;0;0;0;0;0;0;0
+8009903852;2526;0;0;LeBlanc;K'Sante;Master Yi;Lulu;Tristana;Braum;Darius;Akali;Draven;Briar;0;0;1;35;1;4;1;3;0;0;0;0;0;5;0;0;1;3;0;43;0;3;0;0;1;5;0;0;1;11;0;0
+8009842206;1616;0;0;Milio;Wukong;Caitlyn;Katarina;Yone;Mel;Braum;Darius;Graves;Fizz;0;0;1;21;0;2;1;3;0;0;0;0;1;4;0;0;1;1;0;30;1;2;0;0;1;1;1;1;0;8;0;0
+8009805047;1503;1;0;Pyke;Aurora;Shyvana;Darius;Draven;Twitch;Thresh;Kassadin;Nasus;Shyvana;0;0;0;29;1;4;0;0;0;0;1;1;1;6;0;0;0;0;1;20;0;0;1;3;0;0;0;0;0;2;0;0
+8009698418;2545;0;0;Tristana;Akali;Karthus;Caitlyn;Darius;Cho'Gath;Aatrox;Zed;Viktor;Draven;1;2;1;54;1;1;1;3;1;3;0;0;0;10;0;0;0;1;0;43;0;4;0;0;0;0;1;1;1;7;0;0
+8009241141;2021;0;0;Graves;Kog'Maw;Viktor;Caitlyn;Nocturne;Mel;Zed;Syndra;Naafiri;Sivir;0;0;1;36;1;5;1;3;0;1;0;0;1;9;0;0;1;2;0;42;0;0;0;0;1;1;0;0;0;8;0;0
+8022641817;1226;0;0;Shaco;Lee Sin;Jax;Lulu;Viktor;Draven;;Yone;Elise;Vayne;0;0;1;36;1;3;1;3;1;1;1;1;1;9;0;0;0;0;0;11;0;0;0;0;0;0;0;0;0;0;0;0
+8020752569;1501;0;0;Vayne;Sett;Yunara;Nautilus;Lulu;Master Yi;Zeri;Kassadin;Blitzcrank;Tryndamere;1;1;1;39;0;1;1;3;1;2;1;1;1;11;0;0;0;0;0;13;1;2;0;0;0;0;0;0;0;0;0;0
+8017329730;1860;0;0;Viktor;Jhin;Elise;Irelia;Lulu;Viktor;Twitch;Rengar;Katarina;Darius;1;1;1;30;1;2;0;0;1;2;1;1;0;11;0;0;0;0;0;19;0;2;1;3;0;0;0;0;1;2;0;0
+8017123537;2669;0;0;Kled;Yunara;Qiyana;Malphite;Yasuo;Master Yi;Darius;Qiyana;Jinx;Draven;0;1;1;40;1;4;1;3;0;3;1;1;1;10;0;0;1;2;0;42;0;2;0;0;1;2;0;0;0;5;0;0
+8013474369;1156;1;0;Darius;Yuumi;Braum;Irelia;Riven;Qiyana;;Yone;Draven;Darius;0;0;1;26;0;1;1;3;0;0;1;1;1;4;0;0;0;0;0;12;1;1;0;0;0;0;0;0;0;0;0;0
+8013441229;1284;0;0;Kassadin;Nocturne;Aphelios;Volibear;LeBlanc;Braum;Draven;Sylas;Jax;Qiyana;0;0;0;16;0;0;0;0;0;0;0;0;0;1;0;0;1;1;1;38;1;3;1;3;1;2;1;1;1;10;0;0
+8013414632;1504;0;0;Rengar;Twitch;Zed;Katarina;Yuumi;Lulu;Talon;Kayle;Thresh;Qiyana;0;0;1;42;1;3;0;0;1;1;1;1;1;8;0;0;0;0;0;26;0;0;1;3;0;0;0;0;0;3;0;0
+8013374064;1614;0;0;Akali;Draven;Lillia;;LeBlanc;Jax;Lulu;Katarina;Draven;Rammus;0;0;1;20;1;1;0;0;0;0;0;0;0;0;0;0;1;1;0;35;0;3;1;3;1;2;1;1;1;10;0;0
+8012157241;1918;0;0;Thresh;Jinx;Master Yi;Nasus;Qiyana;Shaco;Bel'Veth;Graves;Malzahar;Jax;0;0;1;24;0;1;1;3;0;0;1;1;1;3;0;0;1;1;0;38;1;4;0;0;1;2;0;0;0;11;0;0
+8011768356;1866;0;0;Lillia;Yasuo;Irelia;Wukong;Lulu;Rammus;Viktor;Darius;Yone;Qiyana;1;2;0;34;0;2;1;2;1;2;0;0;1;9;0;0;0;0;1;14;1;2;0;1;0;0;1;1;0;4;0;0
+8011436976;1998;0;0;Briar;Nautilus;Blitzcrank;Viktor;Darius;Blitzcrank;Qiyana;Rek'Sai;Nautilus;Nasus;0;0;0;33;1;1;1;3;0;0;0;0;0;2;0;0;1;2;1;38;0;3;0;0;1;5;1;1;1;13;0;0
+8011332635;1316;1;0;Diana;Master Yi;Vladimir;Poppy;Morgana;Leona;;Darius;Xerath;Qiyana;0;0;0;39;1;2;1;3;1;2;1;1;1;8;0;0;0;0;1;20;0;0;0;0;0;0;0;0;0;0;0;0
+8011303121;1706;0;0;Pyke;Fiora;Caitlyn;Zed;Rammus;Qiyana;Wukong;Nasus;Braum;Darius;0;0;0;27;0;1;0;0;0;0;0;0;1;3;0;0;1;1;1;42;1;3;1;3;1;1;1;1;0;7;0;0
+8011282760;2216;0;0;Darius;Syndra;Zilean;Qiyana;Elise;Viktor;Singed;Nautilus;Locke;Ambessa;1;3;0;36;1;3;1;3;1;4;0;0;0;12;0;0;0;0;1;31;0;3;0;0;0;0;1;1;1;3;0;0
+8009161179;2305;0;0;Viktor;Qiyana;Master Yi;Dr. Mundo;Thresh;Nautilus;Shyvana;Fizz;;Shaco;0;0;0;36;0;3;0;1;0;0;1;1;1;6;0;0;1;2;1;43;1;3;1;2;1;1;0;0;0;8;0;0
+8018469627;1512;0;0;Olaf;Vex;Hecarim;Evelynn;Blitzcrank;Thresh;Locke;Jax;Malphite;Zed;1;1;1;33;0;2;1;3;1;2;1;1;1;11;0;0;0;0;0;21;1;1;0;0;0;0;0;0;0;1;0;0
+8012933137;1761;0;0;Draven;Locke;Morgana;Rammus;Akali;Irelia;Hecarim;Locke;Yunara;Braum;1;1;0;36;1;4;1;3;1;2;1;1;0;11;0;0;0;0;1;34;0;0;0;0;0;0;0;0;1;4;0;0
+8012121205;1595;0;0;Locke;Zed;Thresh;Bel'Veth;Master Yi;Aatrox;Gwen;Hecarim;Zilean;Nasus;1;1;1;36;1;3;0;0;1;2;1;1;1;10;0;0;0;0;0;7;0;0;1;3;0;0;0;0;0;3;0;0
+8012116970;1300;1;0;Draven;Braum;LeBlanc;Viego;Fiora;Gwen;Zilean;Katarina;Viktor;;0;0;1;28;1;2;1;3;1;2;1;1;1;9;0;0;0;0;0;12;0;0;0;0;0;0;0;0;0;0;0;0
+8022442911;1853;0;0;Yasuo;Talon;Qiyana;Blitzcrank;Illaoi;Blitzcrank;Talon;Katarina;Akali;Thresh;1;1;0;33;0;4;1;3;1;2;1;1;1;10;0;0;0;0;1;26;1;1;0;0;0;0;0;0;0;3;0;0
+8022315513;1867;0;0;Qiyana;Morgana;Twitch;Yasuo;Dr. Mundo;Lillia;Pyke;Mel;Teemo;Qiyana;1;1;0;28;0;1;1;3;0;0;1;1;0;4;0;0;0;1;1;43;1;4;0;0;1;1;0;0;1;7;0;0
+8022297054;823;0;0;Yasuo;Bel'Veth;Karthus;Katarina;Naafiri;Kog'Maw;Qiyana;Sylas;Nasus;Talon;0;0;0;19;1;2;1;3;0;0;0;0;1;1;0;0;0;0;1;15;0;0;0;0;0;0;0;0;0;0;0;0
+8021522025;1974;1;0;Jayce;Kha'Zix;Morgana;Malphite;Nasus;Pyke;Wukong;Darius;Jax;Qiyana;0;0;1;43;0;2;1;3;1;3;0;0;0;10;0;0;1;1;0;37;1;2;0;0;0;0;1;1;1;4;0;0
+8021270312;1737;0;0;Draven;Qiyana;;Talon;Irelia;Qiyana;Yunara;Locke;Caitlyn;Sylas;1;1;1;22;1;1;0;0;0;0;0;0;1;3;0;0;0;1;0;36;0;4;1;3;1;1;1;1;0;10;0;0
+8021262795;1519;0;0;Viego;Locke;Akali;Naafiri;Caitlyn;Morgana;Viego;Qiyana;Zed;Yorick;0;0;0;18;0;0;0;0;0;0;0;0;0;0;0;0;1;1;1;26;1;4;1;3;1;3;1;1;1;11;0;0
+8021220761;1705;0;0;Zed;Darius;Yasuo;Qiyana;Nautilus;Nautilus;Rengar;Shyvana;Naafiri;;0;0;0;36;1;4;0;0;1;1;0;0;0;8;0;0;0;0;1;30;0;0;1;3;0;0;1;1;1;4;0;0
+8020421838;2290;0;0;Karma;Yorick;Aurelion Sol;Bard;Qiyana;Hecarim;Qiyana;Seraphine;Gangplank;LeBlanc;1;2;1;49;1;4;1;3;1;4;1;1;1;13;0;0;0;0;0;26;0;1;0;0;0;0;0;0;0;3;0;0
+8020183997;2054;1;0;Zed;Cho'Gath;Gangplank;Lulu;Nami;Lulu;Thresh;Ambessa;Jax;Katarina;0;0;1;42;0;2;0;1;1;1;1;1;1;6;0;0;1;1;0;32;1;3;1;2;0;0;0;0;0;4;0;0
+8020168326;1259;1;0;Pyke;Yasuo;Locke;Malphite;Amumu;Thresh;Qiyana;Kha'Zix;;Braum;0;0;1;25;1;3;1;3;0;0;1;1;1;6;0;0;0;0;0;7;0;0;0;0;0;0;0;0;0;0;0;0
+8020146883;1608;0;0;Qiyana;Karma;Gwen;Braum;Shyvana;Talon;Yone;Viego;Qiyana;Fiora;0;0;0;20;0;2;1;1;0;0;1;1;1;3;0;0;1;1;1;34;1;2;0;2;1;2;0;0;0;10;0;0
+8015344752;2063;0;0;Poppy;Naafiri;Yone;Yasuo;Qiyana;Sylas;Ahri;Jarvan IV;Renekton;Pyke;0;1;1;42;0;3;1;3;0;1;1;1;1;7;0;0;1;1;0;37;1;2;0;0;1;1;0;0;0;9;0;0
+8015248391;1696;0;0;Fiddlesticks;Braum;Akali;Malphite;Tristana;Qiyana;Lulu;Hecarim;LeBlanc;Pyke;1;2;0;38;1;1;0;0;1;2;1;1;1;10;0;0;0;0;1;29;0;2;1;3;0;0;0;0;0;4;0;0
+8015202422;2160;0;0;Thresh;Jax;Tristana;Talon;Locke;Twitch;;Talon;Qiyana;Syndra;0;0;0;37;1;3;1;3;1;2;1;1;1;10;0;0;1;2;1;41;0;2;0;0;0;1;0;0;0;7;0;0
+8015177102;1561;0;0;Olaf;Zed;Qiyana;Locke;Shaco;Yone;Draven;Karthus;Qiyana;Leona;0;0;1;16;1;1;1;3;0;0;0;0;1;3;0;0;1;1;0;41;0;3;0;0;1;1;0;0;0;9;0;0
+8014229756;1395;1;0;Tristana;Shyvana;;Talon;Katarina;Karthus;Qiyana;Pyke;Anivia;Jax;1;1;1;25;1;1;1;3;0;0;1;1;1;7;0;0;0;0;0;17;0;0;0;0;0;0;0;0;0;1;0;0
+8014206559;1562;0;0;Thresh;Akali;Graves;Seraphine;Aatrox;Lee Sin;Irelia;Qiyana;Fizz;Caitlyn;1;1;0;40;1;2;0;0;1;3;1;1;1;11;0;0;0;0;1;16;0;1;1;3;0;0;0;0;0;2;0;0
+8014141092;985;1;0;Yunara;Fiora;;Sylas;Mel;Darius;Talon;Soraka;Qiyana;Cassiopeia;0;0;1;13;0;0;1;3;0;0;0;0;0;2;0;0;0;0;0;17;1;2;0;0;0;0;1;1;1;1;0;0
+8014115336;1585;1;0;Qiyana;Janna;Nocturne;Irelia;Zac;K'Sante;Locke;Qiyana;Viktor;Janna;0;0;0;15;0;0;1;2;0;0;1;1;0;4;0;0;1;1;1;27;1;3;0;1;1;2;0;0;1;8;0;0
+8023037488;1318;1;0;Qiyana;Akshan;Locke;Viego;Yorick;Graves;Kayn;Samira;Twitch;Mel;1;1;1;26;1;3;0;0;1;1;1;1;0;9;0;0;0;0;0;11;0;0;1;3;0;0;0;0;1;1;0;0
+8022980851;1729;1;0;Viego;Locke;Yone;;Thresh;Braum;Nautilus;;Akali;Bel'Veth;0;0;0;21;0;1;0;0;0;0;1;1;1;4;0;0;1;1;1;42;1;3;1;3;1;2;0;0;0;10;0;0
+8022902383;1487;0;0;Graves;Jax;Jhin;Akali;Yasuo;Viego;Bard;Pantheon;Akali;Syndra;0;0;0;19;0;0;0;0;0;0;0;0;0;0;0;0;1;1;1;36;1;4;1;3;1;1;1;1;1;10;0;0
+8022869047;1313;0;0;Malzahar;Aatrox;Rengar;Locke;Alistar;Ezreal;Master Yi;Twitch;Qiyana;Kayle;0;0;1;22;1;1;1;3;0;0;0;0;0;1;0;0;0;0;0;32;0;2;0;0;1;1;1;1;1;9;0;0
+8022822075;1484;0;0;Hecarim;Cho'Gath;Malzahar;Mel;Kayle;Draven;Morgana;Ambessa;Camille;Master Yi;1;1;1;34;1;3;0;1;1;3;1;1;1;10;0;0;0;0;0;7;0;0;1;2;0;0;0;0;0;1;0;0
+8022524751;1964;0;0;Malzahar;Pyke;Sylas;Jax;Locke;Qiyana;Jinx;Fiora;Vladimir;Viego;1;1;0;38;0;2;0;1;1;1;0;0;0;9;0;0;0;0;1;35;1;3;1;2;0;0;1;1;1;7;0;0
+8022476965;1720;0;0;Leona;Garen;Sylas;Malzahar;Kalista;Yorick;Shaco;Zilean;Sylas;Morgana;1;2;0;55;0;2;0;0;1;1;0;0;1;10;0;0;0;0;1;36;1;2;1;3;0;0;1;1;0;4;0;0
+8022433150;2372;0;0;Briar;Janna;Locke;Braum;;Sivir;Yasuo;Jinx;Aatrox;Viego;1;1;0;43;0;3;1;2;0;0;0;0;0;4;0;0;0;0;1;43;1;4;0;1;1;3;0;0;1;11;0;0
+8022296144;2353;0;0;Malzahar;Heimerdinger;Corki;Kindred;Draven;Zed;Pyke;Teemo;Leona;Karthus;0;0;0;50;1;3;0;2;0;0;0;0;0;6;0;0;1;2;1;50;0;3;1;1;1;1;1;1;1;10;0;0
+8022272386;1938;0;0;Naafiri;Yasuo;Talon;LeBlanc;Volibear;Nasus;Malzahar;Thresh;Talon;Leona;1;2;1;51;1;4;1;3;1;1;0;0;0;9;0;0;0;0;0;36;0;0;0;0;0;0;1;1;1;2;0;0
+8022010869;1508;0;0;Master Yi;Dr. Mundo;Ahri;Braum;Draven;Ambessa;Yunara;Locke;Yorick;Shaco;0;0;1;14;0;0;0;0;0;0;0;0;0;1;0;0;1;1;0;31;1;4;1;3;1;3;1;1;1;11;0;0
+8021901428;1517;0;0;Shyvana;Yasuo;Kennen;Vladimir;Pyke;Yorick;Caitlyn;Locke;Volibear;Morgana;0;0;0;25;0;0;0;0;0;0;0;0;0;2;0;0;1;1;1;42;1;4;1;3;1;2;1;1;1;10;0;0
+8021835139;2203;0;0;Ornn;Twitch;Malzahar;Yuumi;Jinx;Shaco;Jayce;Viego;Akali;Ahri;1;1;0;47;0;4;1;3;1;2;1;1;1;10;0;0;0;0;1;29;1;1;0;0;0;0;0;0;0;2;0;0
+8021781912;1811;0;0;Malphite;Yone;Qiyana;Ahri;Caitlyn;Yorick;Braum;Shyvana;Locke;Jinx;0;0;1;27;0;0;1;3;0;0;0;0;0;5;0;0;1;1;0;37;1;3;0;0;1;1;1;1;1;8;0;0
+8021737805;1477;0;0;Malphite;Cho'Gath;Lulu;Malzahar;Vladimir;Yorick;Thresh;Cho'Gath;Hwei;Master Yi;0;0;1;48;0;2;1;3;1;2;1;1;1;11;0;0;0;0;0;22;1;1;0;0;0;0;0;0;0;1;0;0
+8021669237;1428;0;0;Akali;Rengar;Ahri;Jax;Wukong;Hecarim;Twitch;Kled;Jinx;Yorick;0;0;1;19;1;3;0;0;0;0;0;0;0;3;0;0;1;1;0;31;0;0;1;3;1;2;1;1;1;9;0;0
+8021618119;2161;0;0;Skarner;Zed;Yorick;Garen;Hecarim;Yunara;Lulu;Riven;Kha'Zix;Yasuo;1;1;1;31;0;1;0;0;0;0;0;0;0;2;0;0;0;1;0;40;1;4;1;3;1;2;1;1;1;10;0;0
+8022305677;1354;0;0;Lissandra;Lulu;Locke;Pantheon;LeBlanc;Kha'Zix;Yunara;Syndra;Gangplank;Twitch;1;1;0;32;0;1;1;3;1;1;1;1;1;9;0;0;0;0;1;9;1;1;0;0;0;0;0;0;0;1;0;0
+8022280007;1838;0;0;Draven;Yorick;Morgana;Talon;Qiyana;Shaco;Swain;Gangplank;Ahri;Tristana;0;0;1;20;0;1;1;3;0;0;0;0;0;4;0;0;1;1;0;41;1;4;0;0;1;2;1;1;1;10;0;0
+8022259101;2044;0;0;Amumu;;Sion;Malzahar;LeBlanc;Zed;Viego;Caitlyn;Locke;Malphite;1;1;0;38;0;1;0;2;1;1;1;1;1;8;0;0;0;0;1;43;1;4;1;1;0;1;0;0;0;6;0;0
+8021149929;2036;0;0;Sylas;Draven;LeBlanc;Mordekaiser;Akali;Locke;Viktor;Shen;Yunara;Ambessa;0;0;1;29;0;1;1;3;0;0;0;0;0;4;0;0;1;1;0;43;1;4;0;0;1;1;1;1;1;9;0;0
+8021154568;1142;0;0;Cho'Gath;K'Sante;Draven;Nasus;Milio;Irelia;Locke;Qiyana;Master Yi;Nautilus;0;0;1;29;1;3;1;3;1;2;1;1;1;10;0;0;0;0;0;10;0;0;0;0;0;0;0;0;0;1;0;0
+8021148558;1453;1;0;Taric;Kha'Zix;Xin Zhao;Qiyana;Akali;;Seraphine;Yasuo;Irelia;Rengar;0;0;1;16;0;0;1;3;0;0;0;0;0;1;0;0;0;0;0;35;1;3;0;0;0;0;1;1;1;6;0;0
+8021131255;2214;0;0;Nasus;Irelia;Nautilus;Draven;Darius;Syndra;Pyke;Zac;Caitlyn;Malphite;0;2;1;42;0;2;0;2;1;5;0;0;1;12;0;0;1;1;0;36;1;4;1;1;0;0;1;1;0;4;0;0
+8021137619;2503;0;0;Alistar;Camille;Blitzcrank;Briar;Viktor;Twitch;Locke;Nautilus;Urgot;Akali;1;2;1;42;1;3;1;3;1;1;0;0;0;6;0;0;0;0;0;39;0;4;0;0;0;1;1;1;1;9;0;0
+8021112392;1905;0;0;Hecarim;Rengar;Zilean;Yone;Nautilus;Yasuo;Kha'Zix;Xerath;Akali;Irelia;1;1;0;33;0;3;1;3;1;2;0;0;1;9;0;0;0;0;1;33;1;1;0;0;0;0;0;0;0;4;0;0
+8020095274;921;1;0;Locke;Viego;Nautilus;Akali;Malphite;Yasuo;Elise;Hecarim;Janna;Akali;0;0;0;11;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;29;1;1;1;3;0;0;0;0;1;2;0;0
+8020092997;1699;1;0;Tristana;Nunu & Willump;Aatrox;Akali;Wukong;Olaf;Master Yi;Akali;Zed;Shaco;1;1;1;39;0;3;1;3;1;1;1;1;0;8;0;0;0;0;0;21;1;1;0;0;0;0;0;0;1;4;0;0
+8020074320;2333;0;0;Syndra;Master Yi;Talon;Malphite;Locke;Fizz;Thresh;Corki;Twitch;Cho'Gath;1;2;0;42;1;2;1;3;1;2;0;0;0;9;0;0;0;0;1;49;0;4;0;0;0;0;1;1;1;4;0;0
+8020071991;1694;0;0;Pyke;Hecarim;LeBlanc;Malphite;Caitlyn;;Thresh;Zeri;Rengar;Darius;0;0;1;29;1;1;0;0;0;0;0;0;0;2;0;0;1;1;0;36;0;3;1;3;1;3;1;1;1;9;0;0
+8018177663;1930;0;0;Talon;Locke;Camille;Nilah;Blitzcrank;Nautilus;Talon;Sylas;Viktor;Malphite;1;2;0;34;0;1;0;0;0;1;0;0;1;9;0;0;0;0;1;33;1;4;1;3;1;1;1;1;0;5;0;0
+8018169064;1401;0;0;Pyke;Qiyana;Master Yi;Zed;Mordekaiser;Twitch;Bel'Veth;Zilean;Vex;Malphite;1;1;0;36;1;3;1;3;1;2;1;1;1;10;0;0;0;0;1;19;0;0;0;0;0;0;0;0;0;2;0;0
+8018164091;1890;0;0;Lucian;Talon;Nautilus;Malphite;Yone;Zed;Fiora;Talon;Pyke;Kha'Zix;1;1;0;38;0;3;0;0;1;1;1;1;1;9;0;0;0;0;1;34;1;1;1;3;0;0;0;0;0;3;0;0
+8018165733;1753;1;0;Irelia;;Zed;Viego;Darius;Kha'Zix;Caitlyn;Talon;Zed;Malphite;0;0;0;35;1;2;1;3;0;0;0;0;1;3;0;0;1;1;1;44;0;2;0;0;1;1;1;1;0;7;0;0
+8018151367;1552;0;0;Naafiri;Yunara;Evelynn;Zed;Malphite;Rengar;Anivia;Kindred;Lulu;Qiyana;0;0;0;24;0;0;1;3;0;0;1;1;0;2;0;0;1;1;1;41;1;4;0;0;1;1;0;0;1;8;0;0
+8021586370;1455;0;0;Locke;Syndra;Zed;Talon;Ambessa;Leona;Mel;Illaoi;Malzahar;Darius;1;1;1;41;1;4;1;3;1;2;1;1;1;10;0;0;0;0;0;8;0;0;0;0;0;0;0;0;0;1;0;0
+8021454645;1757;0;0;Malzahar;Milio;Qiyana;Samira;Malphite;Shaco;Nautilus;Tryndamere;Locke;Yasuo;0;0;0;34;1;4;0;0;1;1;1;1;1;10;0;0;0;0;1;23;0;0;1;3;0;0;0;0;0;1;0;0
+8021404451;2012;0;0;Gangplank;Yone;Akshan;Nilah;Zed;Yone;Rengar;Malzahar;Miss Fortune;Sylas;1;2;1;41;1;4;1;3;1;2;0;0;1;10;0;0;0;0;0;19;0;0;0;0;0;0;1;1;0;3;0;0
+8020969839;2247;0;0;Syndra;Twitch;Jinx;Irelia;Ezreal;Pyke;Yunara;Anivia;Malzahar;Jax;0;1;0;40;0;3;0;0;1;1;1;1;1;7;0;0;1;1;1;36;1;3;1;3;0;1;0;0;0;8;0;0
+8019931052;1971;0;0;Katarina;Talon;Viktor;Caitlyn;Bard;Katarina;Yasuo;Hecarim;Viego;Illaoi;1;1;0;45;0;3;1;3;1;4;0;0;1;11;0;0;0;0;1;26;1;1;0;0;0;0;0;0;0;2;0;0
+8019590014;1494;1;0;Nautilus;Nocturne;Yuumi;Talon;Malzahar;Swain;Renekton;Graves;Twitch;Zoe;0;0;0;10;0;0;0;0;0;0;0;0;0;1;0;0;0;0;1;22;1;4;1;3;1;1;1;1;1;8;0;0
+8019275433;1627;1;0;Talon;Kai'Sa;Katarina;Darius;Malzahar;Akali;Gangplank;Yasuo;Pyke;Nautilus;1;1;0;29;0;2;0;2;1;1;1;1;1;7;0;0;0;0;1;18;1;1;1;1;0;0;0;0;0;0;0;0
+8019268753;1560;0;0;Nocturne;Pyke;Tryndamere;Yasuo;Zed;;Braum;Lissandra;Sylas;Jax;1;1;1;26;0;2;0;0;0;1;0;0;1;8;0;0;0;0;0;20;1;2;1;3;1;1;1;1;0;7;0;0
+8019251836;1524;0;0;Bel'Veth;Aatrox;Kog'Maw;Twitch;Katarina;Rammus;Talon;Zilean;Ekko;Heimerdinger;1;1;1;31;0;2;1;3;1;2;1;1;1;11;0;0;0;0;0;3;1;1;0;0;0;0;0;0;0;2;0;0
+8019235034;1468;0;0;Camille;Malzahar;Tristana;Cho'Gath;Olaf;Vex;Nautilus;Tristana;Locke;Talon;0;0;0;18;0;0;0;0;0;0;0;0;0;1;0;0;1;1;1;36;1;3;1;3;1;1;1;1;1;9;0;0
+8018244305;1422;0;0;Zoe;Jhin;Viktor;Darius;Sylas;Tristana;Qiyana;Lulu;Malzahar;Diana;0;0;1;23;1;1;0;0;0;0;1;1;1;2;0;0;1;1;0;23;0;1;1;3;1;1;0;0;0;6;0;0
+8018242644;1237;1;0;Talon;Ambessa;Pyke;Malzahar;Master Yi;Jinx;Fizz;Rammus;Xerath;Ambessa;0;0;0;10;0;0;1;3;0;0;0;0;0;0;0;0;1;1;1;31;1;3;0;0;1;3;1;1;1;9;0;0
+8018056844;1352;0;0;Pyke;Thresh;Malzahar;K'Sante;Wukong;Twitch;Caitlyn;Wukong;Shyvana;Camille;0;0;0;20;0;1;0;0;0;0;0;0;0;2;0;0;1;1;1;30;1;2;1;3;1;1;1;1;1;7;0;0
+8018000978;1769;0;0;Draven;Blitzcrank;Akali;Fizz;Lillia;Malzahar;Wukong;Nautilus;Tristana;Jayce;0;0;1;28;1;2;0;1;0;0;0;0;1;4;0;0;1;1;0;47;0;2;1;2;1;1;1;1;0;9;0;0
+8016232976;1706;0;0;Jinx;Braum;Malzahar;Seraphine;Qiyana;Hecarim;Syndra;Ambessa;Leona;Draven;1;1;0;38;1;3;0;0;1;3;0;0;1;11;0;0;0;0;1;26;0;1;1;3;0;0;1;1;0;1;0;0
+8016149461;1530;0;0;Malzahar;Amumu;Garen;;Locke;Shaco;Anivia;Master Yi;Viego;Bel'Veth;1;1;1;29;0;2;0;0;1;2;1;1;0;9;0;0;0;0;0;19;1;2;1;3;0;0;0;0;1;3;0;0
+8015781812;1887;0;0;Rengar;Tristana;Leona;Ambessa;;Leona;Malzahar;Talon;Zed;Blitzcrank;0;0;1;31;0;1;1;3;0;0;0;0;0;3;0;0;1;2;0;34;1;4;0;0;1;2;1;1;1;10;0;0
+8015756607;1218;1;0;Malzahar;Leona;Sylas;Jax;Blitzcrank;;Dr. Mundo;Pyke;Draven;Zed;0;0;1;33;1;3;1;3;1;1;1;1;1;7;0;0;0;0;0;15;0;0;0;0;0;0;0;0;0;0;0;0
+8022129482;1930;0;0;Garen;Leona;Naafiri;Talon;Locke;Fiora;;Pyke;;Yasuo;0;1;0;44;1;4;1;3;1;1;0;0;1;7;0;0;1;1;1;38;0;0;0;0;0;0;1;1;0;4;0;0
+8022089768;2197;0;0;Viktor;Garen;Zed;;Talon;Akali;Aphelios;Sylas;Fiora;Draven;1;2;1;42;1;4;1;2;0;1;1;1;1;7;0;0;0;0;0;32;0;1;0;1;1;1;0;0;0;7;0;0
+8022049326;1473;1;0;Jayce;Locke;Zed;Caitlyn;Irelia;Garen;Rakan;Draven;Locke;Talon;1;1;0;24;1;3;0;0;1;1;0;0;1;7;0;0;0;0;1;17;0;0;1;3;0;0;1;1;0;3;0;0
+8020463502;1529;1;0;Jinx;Akshan;Yorick;Hecarim;Anivia;Gwen;Twitch;Pyke;Lissandra;Darius;1;1;0;35;1;3;1;3;1;2;1;1;1;11;0;0;0;0;1;17;0;0;0;0;0;0;0;0;0;1;0;0
+8019461437;1600;0;0;Rengar;Yuumi;Lissandra;Locke;Xin Zhao;Locke;;Caitlyn;Naafiri;;0;0;1;23;0;0;0;0;0;0;0;0;0;4;0;0;1;1;0;43;1;4;1;3;1;1;0;0;1;8;0;0
+8019458556;910;1;0;Talon;Jinx;Vayne;Lissandra;Nasus;Briar;Draven;Riven;Syndra;Kassadin;0;0;0;3;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;19;1;2;1;3;0;0;0;0;1;3;0;0
+8018442165;2033;0;0;Cho'Gath;Twitch;Bard;Locke;Ashe;Rengar;Yone;Olaf;;Viktor;1;1;1;28;1;3;1;3;1;2;0;0;1;7;0;0;0;1;0;46;0;2;0;0;0;2;0;0;0;10;0;0
+8017536016;2403;0;0;Lucian;Kayn;Locke;Malphite;Mel;Illaoi;;Yasuo;Lissandra;Pyke;0;0;0;43;1;2;1;3;0;0;0;0;0;4;0;0;1;3;1;53;0;4;0;0;1;5;1;1;1;11;0;0
+8017274662;1765;0;0;Vladimir;Tristana;Poppy;Sylas;Ambessa;Irelia;Nasus;Lissandra;Blitzcrank;Caitlyn;0;0;1;34;0;0;1;3;0;0;1;1;1;2;0;0;1;1;0;36;1;4;0;0;1;3;0;0;0;11;0;0
+8015488784;2017;0;0;Akshan;Cho'Gath;Cassiopeia;Kayle;Qiyana;Blitzcrank;Viktor;Warwick;Fiora;Leona;0;0;0;51;0;2;0;0;1;1;0;0;1;9;0;0;1;1;1;38;1;2;0;0;0;0;0;0;0;4;0;0
+8015412406;914;1;0;Talon;Diana;Jax;Sylas;Draven;Samira;Syndra;Gnar;Lulu;Shaco;0;0;1;6;1;1;0;0;0;0;0;0;0;0;0;0;0;0;0;21;0;1;1;3;0;0;0;0;1;2;0;0
+8015393672;1274;0;0;Shaco;Draven;Kassadin;Braum;Darius;Warwick;Locke;;LeBlanc;Jax;0;0;1;15;0;0;1;3;0;0;0;0;0;0;0;0;0;0;0;32;1;3;0;0;1;1;1;1;1;9;0;0
+8015245922;2039;0;0;Locke;Bel'Veth;Mel;Lulu;Jax;Hwei;Syndra;Lulu;Zed;Ambessa;1;1;0;46;1;3;0;0;1;2;1;1;1;9;0;0;0;0;1;43;0;2;1;3;0;1;0;0;0;9;0;0
+8012599430;941;1;0;Qiyana;Malphite;Blitzcrank;Syndra;Yorick;Janna;Jarvan IV;Cho'Gath;Gwen;Shaco;0;0;1;26;1;1;1;3;0;0;0;0;1;4;0;0;0;0;0;12;0;0;0;0;0;0;0;0;0;0;0;0
+8022314220;1908;0;0;Draven;Jinx;Zed;Darius;Blitzcrank;Yone;Locke;Master Yi;Illaoi;Draven;0;0;1;18;1;2;1;3;0;0;1;1;1;3;0;0;1;1;0;42;0;3;0;0;1;2;0;0;0;11;0;0
+8022298777;1910;0;0;Draven;Shen;Hecarim;;Blitzcrank;Draven;Camille;Jinx;Syndra;Xin Zhao;0;0;0;28;0;0;1;3;0;0;0;0;0;2;0;0;1;1;1;40;1;4;0;0;1;1;1;1;1;9;0;0
+8021902949;2192;0;0;Darius;Lee Sin;Pyke;Nautilus;;Elise;Fizz;Bel'Veth;Jinx;Pantheon;0;0;0;30;1;2;1;1;1;1;0;0;0;7;0;0;1;1;1;42;0;4;0;2;0;1;1;1;1;8;0;0
+8021396272;1902;0;0;Briar;LeBlanc;Tryndamere;Tristana;Zaahen;Vex;Evelynn;Nasus;Caitlyn;Nautilus;0;0;1;36;0;3;1;3;0;0;1;1;1;7;0;0;1;2;0;38;1;2;0;0;1;1;0;0;0;7;0;0
+8021336743;1840;0;0;Katarina;Nautilus;Pyke;Zilean;Mordekaiser;Nasus;Draven;Pyke;Sylas;Zed;0;0;1;41;0;2;0;1;1;1;1;1;1;8;0;0;0;0;0;27;1;3;1;2;0;0;0;0;0;2;0;0
+8019409864;1454;0;0;Teemo;Briar;Ezreal;Locke;Poppy;Zoe;LeBlanc;Mordekaiser;Viego;Ezreal;0;0;1;13;1;1;0;2;0;0;0;0;0;0;0;0;1;1;0;29;0;2;1;1;1;2;1;1;1;10;0;0
+8019309367;1945;0;0;Qiyana;Braum;Viego;Lulu;Briar;Katarina;Locke;Tristana;Yunara;;0;1;0;22;1;2;1;2;0;0;0;0;0;4;0;0;1;1;1;42;0;2;0;1;1;3;1;1;1;10;0;0
+8019285214;1549;0;0;Viego;LeBlanc;Jinx;Garen;Braum;Kayn;Caitlyn;Darius;Kassadin;Viego;1;1;1;37;1;4;1;3;1;2;1;1;1;9;0;0;0;0;0;11;0;0;0;0;0;0;0;0;0;1;0;0
+8019258492;1474;1;0;Caitlyn;Gwen;Ahri;Viego;Tristana;Locke;Pyke;Syndra;Bel'Veth;Irelia;1;1;0;30;0;1;1;3;0;0;1;1;0;3;0;0;0;0;1;12;1;2;0;0;0;0;0;0;1;3;0;0
+8019206206;1939;0;0;Nautilus;Akali;Garen;Yasuo;Master Yi;Nasus;Zed;Draven;Blitzcrank;Viktor;1;2;1;36;1;2;1;2;1;4;1;1;1;11;0;0;0;0;0;26;0;2;0;1;0;0;0;0;0;2;0;0
+8019193886;2193;0;0;Draven;Kayle;Malzahar;Blitzcrank;Shaco;Sylas;Blitzcrank;Pyke;Shyvana;Ekko;1;2;0;33;0;2;1;3;1;3;0;0;0;12;0;0;0;0;1;29;1;4;0;0;0;0;0;0;1;4;0;0
+8015681404;1587;0;0;Nautilus;Sylas;Shaco;Nasus;Yasuo;Viktor;Katarina;Leona;Qiyana;Viego;1;1;1;30;1;3;0;0;1;1;1;1;0;9;0;0;0;0;0;13;0;1;1;3;0;0;0;0;1;2;0;0
+8015592665;1568;0;0;Qiyana;Talon;Malphite;LeBlanc;Rengar;Sylas;Kassadin;Viktor;Illaoi;Talon;0;0;1;22;0;0;0;0;0;0;1;1;1;2;0;0;1;1;0;39;1;4;1;3;1;2;0;0;0;10;0;0
+8015413450;2481;0;0;Darius;Katarina;Viego;Olaf;Seraphine;Kha'Zix;Nilah;Milio;Aatrox;Locke;0;1;0;40;0;2;1;3;0;1;0;0;0;9;0;0;1;2;1;51;1;4;0;0;1;3;1;1;1;9;0;0
+8015292796;2014;0;0;Viego;Vel'Koz;Nautilus;Darius;Anivia;Caitlyn;Vayne;Cassiopeia;Rek'Sai;Fizz;1;2;0;45;0;4;1;3;1;4;1;1;1;10;0;0;0;0;1;41;1;1;0;0;0;0;0;0;0;6;0;0
+8015176347;2440;0;0;LeBlanc;Yone;Aatrox;Bard;Seraphine;Rengar;Syndra;Irelia;Locke;Draven;0;0;0;57;0;3;1;3;0;1;0;0;0;8;0;0;1;2;1;45;1;3;0;0;1;1;1;1;1;7;0;0
+8015134948;1569;1;0;Teemo;Viego;Locke;Yasuo;Caitlyn;Nasus;Shaco;Vayne;Katarina;Draven;1;1;0;26;0;1;1;2;0;0;1;1;1;6;0;0;0;0;1;21;1;2;0;1;0;0;0;0;0;2;0;0
+8015103206;1592;0;0;Sylas;Fiora;Olaf;Talon;LeBlanc;Viego;Jinx;Thresh;;Riven;0;0;0;15;0;0;1;3;0;0;0;0;0;4;0;0;1;1;1;38;1;4;0;0;1;1;1;1;1;9;0;0
+8014929280;2047;0;0;Lillia;Cho'Gath;Locke;Pyke;Renekton;Katarina;Draven;Locke;Blitzcrank;Pantheon;1;1;0;35;0;3;1;3;1;3;1;1;1;11;0;0;0;0;1;24;1;2;0;0;0;0;0;0;0;5;0;0
+8023033573;1554;0;0;Gwen;Zilean;Ornn;Bel'Veth;Draven;Draven;Malzahar;Qiyana;Yorick;Pyke;0;0;0;11;0;0;0;0;0;0;1;1;0;4;0;0;1;1;1;36;1;4;1;3;1;1;0;0;1;8;0;0
+8022978453;1291;0;0;Bel'Veth;Thresh;Kai'Sa;Vladimir;Jax;Rengar;Gnar;Locke;Sylas;Viktor;1;1;1;30;1;3;1;3;1;2;1;1;1;10;0;0;0;0;0;7;0;0;0;0;0;0;0;0;0;0;0;0
+8022929794;1966;0;0;Malphite;Qiyana;Bel'Veth;Tristana;Locke;Lillia;Thresh;Locke;Teemo;Akali;0;0;0;37;0;1;1;3;0;0;0;0;1;1;0;0;1;2;1;49;1;4;0;0;1;5;1;1;0;11;0;0
+8022864844;2217;0;0;Draven;Yone;Illaoi;Zoe;Bel'Veth;Viktor;Malzahar;Syndra;Renekton;Locke;0;0;0;36;1;4;0;0;0;1;0;0;0;9;0;0;1;2;1;38;0;2;1;3;1;2;1;1;1;6;0;0
+8022791345;1666;0;0;Evelynn;Yone;Bel'Veth;Milio;Ekko;Mordekaiser;Bel'Veth;Shaco;Blitzcrank;Viktor;0;0;0;26;1;1;0;0;0;0;0;0;1;3;0;0;1;1;1;35;0;3;1;3;1;1;0;0;0;7;0;0
+8022748263;1792;0;0;Pyke;Bel'Veth;;Locke;Gangplank;Twitch;Sylas;Pyke;Viktor;Yasuo;0;0;1;23;0;0;0;2;0;0;0;0;0;1;0;0;1;1;0;30;1;4;1;1;1;3;1;1;1;11;0;0
+8022729711;1152;1;0;Yone;Xin Zhao;Bel'Veth;Tristana;Malphite;Talon;Lulu;Shaco;Twitch;Locke;0;0;0;16;0;1;1;3;0;0;1;1;0;3;0;0;0;0;1;17;1;1;0;0;0;0;0;0;1;1;0;0
+8022672895;2295;0;0;Draven;Hecarim;Garen;Zed;Pyke;Bel'Veth;Hecarim;Akshan;Tristana;Sylas;0;0;0;45;1;3;0;2;0;1;1;1;0;7;0;0;1;2;1;32;0;3;1;1;1;3;0;0;1;9;0;0
+8022624336;1703;0;0;Draven;Syndra;Malphite;Master Yi;Akali;Viktor;Bel'Veth;Bard;Karma;Ambessa;0;0;1;18;0;0;0;0;0;0;0;0;0;1;0;0;1;1;0;38;1;4;1;3;1;3;1;1;1;11;0;0
+8022584977;1895;0;0;Draven;Bel'Veth;Irelia;Blitzcrank;Jax;Locke;Hecarim;Ambessa;Zed;Lulu;1;2;1;37;0;0;0;0;1;2;1;1;0;10;0;0;0;0;0;35;1;4;1;3;0;1;0;0;1;6;0;0
+8022553577;1515;0;0;Milio;Akali;Cassiopeia;Pyke;Bel'Veth;Pantheon;Kled;Yasuo;Draven;LeBlanc;1;1;1;29;1;4;1;3;1;1;1;1;1;10;0;0;0;0;0;14;0;0;0;0;0;0;0;0;0;2;0;0
+8022408791;2022;0;0;Mel;Camille;Locke;Bel'Veth;;Nunu & Willump;Darius;Zed;Twitch;Rengar;1;1;0;38;1;5;1;2;1;1;0;0;0;8;0;0;0;0;1;38;0;0;0;1;0;0;1;1;1;6;0;0
+8022042308;1299;1;0;Caitlyn;LeBlanc;Thresh;Bel'Veth;Sett;Vi;Yasuo;Viktor;LeBlanc;Nasus;0;0;1;17;0;1;1;3;0;0;0;0;0;1;0;0;0;0;0;44;1;2;0;0;1;1;1;1;1;7;0;0
+8021994307;1606;0;0;Qiyana;Caitlyn;;Pyke;Tryndamere;Viktor;Gangplank;Bel'Veth;;Rengar;1;1;1;37;0;3;0;1;1;2;1;1;1;10;0;0;0;0;0;22;1;1;1;2;0;0;0;0;0;2;0;0
+8021932376;1594;0;0;Kai'Sa;Shaco;Lulu;Gnar;Zed;;Aurora;Garen;Bel'Veth;Poppy;0;0;0;34;0;3;1;3;1;1;1;1;1;8;0;0;0;0;1;23;1;1;0;0;0;0;0;0;0;3;0;0
+8021883264;1582;0;0;Sivir;Wukong;Pyke;Zed;Kha'Zix;Pyke;Bel'Veth;Anivia;Jinx;Gnar;1;1;0;34;1;4;1;3;1;3;1;1;1;11;0;0;0;0;1;13;0;0;0;0;0;0;0;0;0;3;0;0
+8021869756;525;1;0;Caitlyn;Yone;Bel'Veth;Draven;Malzahar;Bel'Veth;Morgana;Diana;Blitzcrank;Pantheon;0;0;0;0;0;0;1;1;0;0;0;0;0;0;0;0;0;0;1;3;1;1;0;1;0;0;0;0;0;0;0;0
+8021707053;2324;0;0;Zed;Master Yi;Draven;Fiora;Jhin;Bel'Veth;Swain;Locke;Yasuo;Irelia;0;2;1;33;0;2;0;0;1;1;0;0;0;8;0;0;1;1;0;35;1;3;1;3;0;0;1;1;1;6;0;0
+8014424836;2153;0;0;Yone;Jayce;Lee Sin;;Cassiopeia;Bard;Pyke;Shyvana;;Darius;0;0;1;44;1;3;0;0;0;0;0;0;0;3;0;0;1;2;0;53;0;2;1;3;1;2;1;1;1;9;0;0
+8017038289;2035;0;0;Sylas;Syndra;K'Sante;Morgana;Zed;Janna;Swain;Bel'Veth;Akshan;Irelia;0;0;1;23;0;2;0;2;0;0;1;1;1;4;0;0;1;2;0;37;1;3;1;1;1;1;0;0;0;8;0;0
+8017035782;1448;0;0;Yasuo;Zed;Shyvana;Fiora;Qiyana;Zed;K'Sante;Akali;Lulu;Qiyana;0;0;0;18;0;0;0;0;0;0;0;0;0;1;0;0;1;1;1;33;1;4;1;3;1;2;1;1;1;9;0;0
+8011184964;1606;0;0;Zac;Locke;Hecarim;Kassadin;Camille;;Viktor;Ezreal;Rengar;Caitlyn;1;1;0;26;0;2;1;3;1;1;1;1;1;9;0;0;0;0;1;13;1;1;0;0;0;0;0;0;0;3;0;0
+8023019357;1949;1;0;Shaco;Yunara;Mel;;Tryndamere;Talon;Katarina;Jax;Kassadin;Caitlyn;0;1;1;39;1;3;1;3;1;3;0;0;1;10;0;0;1;1;0;36;0;2;0;0;0;0;1;1;0;2;0;0
+8022660981;1674;0;0;Sylas;Morgana;Locke;Volibear;Lulu;Sylas;Zed;Yasuo;Irelia;;0;0;1;18;0;0;0;0;0;0;0;0;1;3;0;0;1;1;0;36;1;4;1;3;1;3;1;1;0;11;0;0
+8022632736;1354;0;0;Nocturne;Hecarim;Darius;Nilah;Draven;Naafiri;Yasuo;Wukong;Akali;Syndra;1;1;1;34;0;1;1;3;1;2;1;1;1;11;0;0;0;0;0;13;1;1;0;0;0;0;0;0;0;0;0;0
+8022573794;924;1;0;Fiora;Nocturne;Briar;Akshan;Morgana;LeBlanc;Katarina;Nautilus;Tryndamere;Qiyana;0;0;0;10;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;31;1;2;1;3;0;0;0;0;1;4;0;0
+8022538467;1857;0;0;Pyke;Jinx;Gwen;Qiyana;Zoe;Lee Sin;Caitlyn;Hecarim;Katarina;Ahri;1;2;0;29;0;3;1;3;1;1;0;0;0;9;0;0;0;0;1;42;1;2;0;0;0;0;1;1;1;4;0;0
+8021587789;1750;0;0;Irelia;Tristana;Katarina;Camille;Locke;Zed;Darius;Locke;Yasuo;Naafiri;0;0;0;21;0;2;0;0;0;0;0;0;0;2;0;0;1;1;1;47;1;2;1;3;1;2;1;1;1;10;0;0
+8021392925;1865;0;0;Sylas;Locke;Katarina;Gnar;Shaco;Warwick;Gwen;Jinx;Yone;Viego;1;2;1;43;1;4;0;2;1;1;1;1;1;8;0;0;0;0;0;27;0;1;1;1;0;0;0;0;0;3;0;0
+8021294460;1849;0;0;Pyke;Malphite;Jarvan IV;Lux;Locke;Talon;Vladimir;Yasuo;Gwen;Warwick;0;0;1;18;0;2;1;3;0;0;0;0;1;3;0;0;1;2;0;36;1;3;0;0;1;3;1;1;0;11;0;0
+8021264011;1856;0;0;Yorick;Locke;Twitch;Yasuo;K'Sante;Katarina;Darius;Braum;Yasuo;;1;1;1;31;0;2;0;0;1;2;0;0;0;10;0;0;0;0;0;19;1;3;1;3;0;0;1;1;1;5;0;0
+8021101573;1683;0;0;Katarina;;Locke;Leona;Kha'Zix;Morgana;Skarner;Malphite;LeBlanc;Jinx;1;1;0;34;1;3;1;3;1;2;1;1;1;7;0;0;0;0;1;27;0;0;0;0;0;0;0;0;0;4;0;0
+8021072293;1225;0;0;Yasuo;Miss Fortune;Skarner;Shyvana;Viego;Locke;Ekko;Pyke;Malphite;Olaf;0;0;0;10;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;27;1;2;1;3;1;2;0;0;1;10;0;0
+8021052991;2035;0;0;Hecarim;;Yasuo;Lulu;Renekton;Lulu;Bel'Veth;Fiora;Taliyah;Shyvana;0;0;1;24;0;0;1;3;0;0;0;0;1;2;0;0;1;1;0;42;1;4;0;0;1;2;1;1;0;10;0;0
+8021037518;1791;0;0;Yone;Wukong;Sylas;Yunara;Draven;Malphite;Twitch;Jax;Katarina;Irelia;1;1;1;30;0;1;1;3;0;1;0;0;1;7;0;0;0;0;0;20;1;4;0;0;1;2;1;1;0;7;0;0
+8020986263;2143;0;0;Master Yi;Viktor;Irelia;Yasuo;Katarina;Yone;Talon;Lissandra;Zed;Vladimir;0;1;0;21;0;0;1;3;0;0;0;0;1;3;0;0;1;1;1;34;1;5;0;0;1;2;1;1;0;10;0;0
+8020902610;1336;1;0;Gnar;Graves;Yasuo;Thresh;Talon;;Akali;Akshan;Nasus;Pyke;0;0;1;41;1;3;1;3;0;0;1;1;1;7;0;0;0;0;0;17;0;0;0;0;0;0;0;0;0;0;0;0
+8020861552;1791;1;0;Gnar;Kha'Zix;Viktor;Leona;Shaco;Draven;Yasuo;Yone;Renekton;Graves;1;1;1;38;1;2;1;1;1;1;1;1;1;7;0;0;0;0;0;38;0;2;0;2;0;0;0;0;0;4;0;0
+8020807667;1678;0;0;Bard;Rengar;Vladimir;;Yone;Yasuo;Braum;Vladimir;Graves;Nunu & Willump;0;0;0;44;1;3;1;2;1;2;1;1;1;10;0;0;0;0;1;30;0;1;0;1;0;0;0;0;0;1;0;0
+8020730453;1809;0;0;Anivia;Katarina;Draven;Viktor;Talon;Cho'Gath;Yasuo;Malphite;Draven;Akshan;1;1;1;37;0;3;0;0;1;2;0;0;0;9;0;0;0;0;0;21;1;2;1;3;0;0;1;1;1;4;0;0
+8020318656;1749;0;0;Yasuo;Talon;Viktor;Nautilus;Darius;Renekton;Draven;Zed;Morgana;Lillia;1;1;0;39;1;4;0;0;1;2;0;0;0;9;0;0;0;0;1;24;0;0;1;3;0;0;1;1;1;3;0;0
+8019396524;1367;0;0;Zilean;Qiyana;Locke;Tryndamere;Hecarim;Cho'Gath;Blitzcrank;Katarina;Pyke;Sett;1;1;1;35;0;2;1;3;1;3;1;1;1;11;0;0;0;0;0;16;1;1;0;0;0;0;0;0;0;0;0;0
+8019190501;1544;0;0;Twitch;K'Sante;Wukong;Leona;Aurelion Sol;Milio;Fiora;Naafiri;Master Yi;Draven;0;0;0;13;0;0;1;3;0;0;0;0;0;1;0;0;1;1;1;26;1;4;0;0;1;3;1;1;1;11;0;0
+8016128649;1623;0;0;Jarvan IV;Gwen;;Ezreal;Jinx;Mel;Heimerdinger;Blitzcrank;Elise;Yasuo;0;0;1;31;1;1;1;3;0;0;0;0;1;2;0;0;1;1;0;38;0;3;0;0;1;2;1;1;0;10;0;0
+8016086327;1844;0;0;Katarina;Zed;Master Yi;Nautilus;Leona;Milio;Jinx;Fizz;Gwen;Elise;1;1;1;39;0;1;1;1;0;0;0;0;0;3;0;0;0;1;0;39;1;3;0;2;1;2;0;0;1;10;0;0
+8015633270;1190;0;0;Hecarim;Heimerdinger;Yunara;Talon;Viktor;Jinx;Vex;Viktor;Gwen;Lillia;0;0;1;32;1;2;1;3;1;1;1;1;1;9;0;0;0;0;0;18;0;0;0;0;0;0;0;0;0;0;0;0
+8013631495;1571;0;0;Graves;Akshan;Jax;Teemo;Locke;Nami;Jinx;Gwen;Viktor;Draven;1;1;1;35;1;4;0;0;1;1;0;0;1;8;0;0;0;0;0;14;0;0;1;3;0;0;1;1;0;1;0;0
+8013583829;1618;0;0;Sylas;Jinx;Gwen;Zed;Akshan;K'Sante;Braum;Nami;Akali;Nocturne;0;0;1;18;0;0;0;0;0;0;0;0;0;1;0;0;1;1;0;38;1;4;1;3;1;3;1;1;1;11;0;0
+8011469840;1493;0;0;Jinx;Zac;Viego;Sylas;Gwen;Tristana;Yunara;Nasus;Akali;Thresh;1;1;1;33;1;3;0;0;1;2;1;1;1;10;0;0;0;0;0;23;0;0;1;3;0;0;0;0;0;5;0;0
+8011427002;1440;0;0;Ashe;LeBlanc;Gwen;Shaco;Jinx;Zoe;Tristana;Master Yi;Katarina;Malphite;0;0;1;22;0;0;0;1;0;0;0;0;1;2;0;0;1;1;0;25;1;3;1;2;1;3;1;1;0;11;0;0
+8009762957;1758;0;0;Nautilus;Yone;Malphite;Milio;Yasuo;Graves;Jinx;Vel'Koz;Yone;Anivia;0;0;0;20;0;1;1;3;0;0;0;0;0;2;0;0;1;1;1;36;1;3;0;0;1;2;1;1;1;9;0;0
