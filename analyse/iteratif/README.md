@@ -50,9 +50,10 @@ Pour donner un ordre de grandeur : un vrai biais de 55 % au lieu de 50 %, dans u
 | Tas | Contenu | Parties au 23/10 | Qui le lit |
 |---|---|---|---|
 | A + B, recherche | l'échantillon figé et l'archive (A = 2/3, B = 1/3) | 31 147 | le recuit, en 5 rotations (apprendre sur 4/5, noter sur 1/5) ; les taux « sur A » et « sur B » des rapports sont donnés à part pour voir si un biais tient des deux côtés |
-| C, confirmation | parties arrivées après l'échantillon figé (`../echantillon_fige.json`) | 2 431, à compléter par les collectes suivantes (~8 000 visées) | `confirmer.py` seulement, une fois à la fin |
+| C, confirmation | parties arrivées après l'échantillon figé (`../echantillon_fige.json`), sauf celles de l'archive recollectées | 7 458 au 23/10 au soir | `confirmer.py` seulement, une fois à la fin |
 
 - **Répartition A / B** : faite au hasard par une empreinte du numéro de partie. Une partie va toujours dans le même tas, et chaque tas a les mêmes proportions de Diamant, d'Émeraude, d'archive et de parties neuves.
+- **Archive recollectée** : une partie de l'archive peut être retéléchargée par une collecte après le gel. Elle reste dans A ou B (par l'archive) et ne compte jamais dans C, sinon une partie déjà vue par le recuit servirait à le confirmer (corrigé le 23/10 au soir : 407 parties étaient concernées).
 - **Bloc 1** : il utilise les stats de l'échantillon figé (`champions_mesures.csv`). Il ne regarde jamais qui gagne.
 
 ## Garde-fous : pour qu'un biais trouvé soit vrai
@@ -79,7 +80,7 @@ Un algorithme qui essaie des milliers de réglages trouve toujours des « biais 
 
 Dans GitHub, onglet Actions :
 - **Lancer un recuit simulé** : durée, graine (une autre graine donne une autre exploration), case « hasard » pour mesurer le seuil de hasard.
-- **Confirmer les résultats du recuit** : sur le dernier recuit, ou sur un fichier donné.
+- **Confirmer les résultats du recuit** : sur le dernier recuit, ou sur un fichier donné. Par défaut, seul le premier réglage du palmarès est confirmé (les suivants en sont presque toujours des copies).
 
 Les deux prennent le code sur la branche indiquée (`analyse-iterative` par défaut) et les données à jour sur `main`. Ils ne committent que `analyse/iteratif/resultats/`.
 
@@ -92,6 +93,7 @@ python3 analyse/iteratif/bloc4_recuit.py --une-iteration   # itération 0 : cata
 python3 analyse/iteratif/bloc4_recuit.py --minutes 60 --graine 1
 python3 analyse/iteratif/bloc4_recuit.py --minutes 60 --graine 1 --melanger   # seuil de hasard
 python3 analyse/iteratif/confirmer.py
+python3 analyse/iteratif/confirmer.py --a-blanc        # essai du code sur B, ne lit pas C
 ```
 
 ## Résultats (`resultats/`)

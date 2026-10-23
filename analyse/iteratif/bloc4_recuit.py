@@ -118,6 +118,9 @@ def voisin(params, rng, champions, catalogue_de_base=None):
             cible = cat.voisin[champion]
         else:
             cible = rng.choice([g for g in range(cat.k) if g != cat.groupe[champion]])
+        if champion not in p["deplacements"] and len(p["deplacements"]) >= BORNES["deplacements_max"]:
+            # Plafond atteint : un autre champion revient dans son groupe pour faire la place.
+            p["deplacements"].pop(rng.choice(sorted(p["deplacements"])))
         p["deplacements"][champion] = int(cible)
         return p, f"déplacement de {champion}"
     # Changements du bloc 1 lui-même : les déplacements n'ont plus de sens, on les efface.

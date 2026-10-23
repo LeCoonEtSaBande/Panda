@@ -68,19 +68,25 @@ def drafts(regle=None, donnees=None):
     tas_neuf = {m: "fige" for m in fige}
     tas_neuf.update({m: "C" for m in suite})
     neuves = [l for l in _lire(donnees / "parties.csv") if l["match"] in tas_neuf]
-    tous_neufs = {l["match"] for l in _lire(donnees / "parties.csv")}
+    avec_archive = ARCHIVE.exists() and regle.get("archive", True)
+    archive = list(_lire(ARCHIVE)) if avec_archive else []
+    dans_archive = {l["match"] for l in archive}
     lignes = []
     for l in neuves:
         if l["palier"][:1] not in rangs:
             continue
         tas = tas_neuf[l["match"]]
+        if tas == "C" and l["match"] in dans_archive:
+            # Partie de l'archive recollectée après le gel : elle fait partie de la recherche (A ou B)
+            # par l'archive, elle ne doit jamais compter dans C.
+            continue
         lignes.append({**l, "source": "neuf", "tas": "C" if tas == "C" else tas_ab(l["match"], regle)})
-    if ARCHIVE.exists() and regle.get("archive", True):
-        for l in _lire(ARCHIVE):
-            # Une partie de l'archive recollectée depuis est gardée une seule fois, dans sa version neuve.
-            if l["palier"][:1] not in rangs or l["match"] in tous_neufs:
-                continue
-            lignes.append({**l, "source": "archive", "tas": tas_ab(l["match"], regle)})
+    for l in archive:
+        # Une partie à la fois dans l'échantillon figé et dans l'archive est gardée une seule fois,
+        # dans sa version neuve. Une partie de l'archive recollectée après le gel reste dans l'archive.
+        if l["palier"][:1] not in rangs or tas_neuf.get(l["match"]) == "fige":
+            continue
+        lignes.append({**l, "source": "archive", "tas": tas_ab(l["match"], regle)})
     table = pd.DataFrame(lignes)
     table["rang"] = table["palier"].str[:1]
     table["bleu_gagne"] = (table["gagnant"] == "b").astype(int)

@@ -9,7 +9,11 @@ Pour chacun des meilleurs réglages du dernier recuit (ou du fichier donné) :
 C est lu ici seulement. Une fois qu'on a regardé C pour un recuit, ces parties ne sont plus
 « neuves » pour lui : un nouveau recuit devra être confirmé sur des parties encore plus récentes.
 
-    python3 analyse/iteratif/confirmer.py [--fichier recuit_AAAAMMJJ_HHMM.json] [--reglages 5]
+    python3 analyse/iteratif/confirmer.py [--fichier recuit_AAAAMMJJ_HHMM.json] [--reglages 1]
+    python3 analyse/iteratif/confirmer.py --a-blanc    # essai du code : apprend sur A, mesure sur B, ne lit pas C
+
+Par défaut, un seul réglage (le premier du palmarès) : les suivants en sont en général des copies à un
+ou deux champions près, et les tester aussi ne ferait que répéter les mêmes biais.
 """
 
 import argparse
@@ -40,8 +44,10 @@ def p_unilaterale(taux, erreur, sens):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--fichier")
-    parser.add_argument("--reglages", type=int, default=5)
+    parser.add_argument("--reglages", type=int, default=1)
     parser.add_argument("--sans-validation", action="store_true")
+    parser.add_argument("--a-blanc", action="store_true",
+                        help="essai : apprend sur A, mesure sur B, n'écrit rien et ne lit pas C")
     args = parser.parse_args()
     regle = commun.lire_decoupage()
     if not args.sans_validation:
@@ -50,9 +56,15 @@ def main():
     recuit = json.loads((commun.RESULTATS / fichier).read_text(encoding="utf-8"))
 
     table = commun.drafts(regle)
-    nb_c = int((table["tas"] == "C").sum())
-    machine = bloc4.Machine(table, bloc1.lire_mesures(), apprentissage=("A", "B"), evaluation=("C",))
-    print(f"Confirmation de {fichier} : apprentissage A + B = {len(machine.lignes_a)} parties, C = {nb_c} parties.")
+    if args.a_blanc:
+        table = table[table["tas"] != "C"].reset_index(drop=True)
+        apprentissage, evaluation = ("A",), ("B",)
+    else:
+        apprentissage, evaluation = ("A", "B"), ("C",)
+    nb_c = int(table["tas"].isin(evaluation).sum())
+    machine = bloc4.Machine(table, bloc1.lire_mesures(), apprentissage=apprentissage, evaluation=evaluation)
+    print(f"Confirmation de {fichier}{' (à blanc, sur B)' if args.a_blanc else ''} : "
+          f"apprentissage = {len(machine.lignes_a)} parties, évaluation = {nb_c} parties.")
 
     resultats, tests = [], []
     for entree in recuit["palmares"][: args.reglages]:
@@ -75,6 +87,14 @@ def main():
     for b, qq in zip(tests, q):
         b["q"] = qq
         b["verdict"] = "confirmé" if qq < 0.05 else ("à surveiller" if b["p"] < 0.05 else "pas confirmé")
+
+    if args.a_blanc:
+        for r in resultats:
+            print(f"Réglage {r['rang']} : score {r['score_C']:.3f} sur B")
+            for b in sorted(r["biais"], key=lambda b: b["q"])[:10]:
+                print(f"  {b['verdict']} — {b['nom']} : {100 * b['taux_C']:.1f} % ({b['parties_C']} parties), q = {b['q']:.3f}")
+        print("À blanc : rien n'est écrit.")
+        return 0
 
     date = datetime.now(timezone.utc).astimezone().strftime("%Y%m%d_%H%M")
     sortie = {"date": date, "recuit": fichier, "parties_C": nb_c, "reglages": resultats}
