@@ -14,12 +14,28 @@ Tout se fait en français : code, commentaires, messages de commit, réponses.
 |---|---|
 | `Catalogue.csv`, `Catalogue_champions_LoL.xlsx` | Le catalogue des champions. |
 | `analyse/` | Collecte des parties (`collecte.py`, `collecte.ini`, `enregistrer.sh`), analyses (`rapport.py`, `profils.py`, `compos.py`, `regle.py`), lecture des données (`lecture.py`), tests. |
+| `analyse/iteratif/` | **Le cœur de l'analyse** : la boucle en 4 blocs (catalogue → compos → biais → recuit simulé) qui cherche des biais de draft. Voir `analyse/iteratif/README.md`. |
 | `analyse/donnees/` | Les données collectées (voir plus bas). |
 | `analyse/resultats/` | Les résultats, régénérés à la fin de chaque collecte. |
 | `archives/` | Copies figées d'anciennes données. |
 | `assistant/`, `Assistant_draft.html` | La page d'assistant de draft, générée par `assistant/construire.py`. |
 | `.github/workflows/lancer-collecte.yml` | **Lancer une collecte** : bouton « Run workflow », ou modification de `analyse/collecte.ini`. |
 | `.github/workflows/assistant.yml` | **Page d'assistant** : régénère `Assistant_draft.html` quand `Catalogue.csv` ou `assistant/` change. |
+| `.github/workflows/recuit.yml` | **Lancer un recuit simulé** : bouton « Run workflow » (code de la branche `analyse-iterative`, données de `main`). |
+| `.github/workflows/confirmer.yml` | **Confirmer les résultats du recuit** : mesure les meilleurs réglages sur les parties jamais vues. |
+
+### Les analyses, dans l'ordre où elles ont été faites
+
+| Fichier | Rôle |
+|---|---|
+| `analyse/lecture.py`, `analyse/tables.py` | Lire les données (toujours par là) ; `tables.py` les met en tables pandas. |
+| `analyse/echantillon.py`, `analyse/echantillon_fige.json` | L'échantillon figé : les 15 249 premières parties complètes, base de toutes les recherches. |
+| `analyse/controle.py` | Contrôle des données (rapport). |
+| `analyse/profils.py`, `analyse/compos.py`, `analyse/regle.py` | Premières analyses, avec les styles du catalogue (rapport). |
+| `analyse/categories.py`, `analyse/biais.py`, `analyse/hypotheses.json` | Profils mesurés par champion et poste, et 13 hypothèses fixées à l'avance (rapport). Résumé : `analyse/livrable_biais.md`. |
+| `analyse/classification.py` | Classification des champions tous postes confondus, 7 groupes (rapport). Résumé : `analyse/proposition_categories.md`. |
+| `analyse/iteratif/` | La recherche itérative de biais de draft (workflows recuit et confirmation). |
+| `analyse/explorations/` | Explorations lancées à la main (confirmation sur l'archive, pistes du pool). |
 
 Pendant une collecte, des commits de données arrivent sur `main` toutes les 10 minutes : toujours faire `git pull --rebase` avant de pousser sur `main`.
 

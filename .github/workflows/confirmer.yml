@@ -1,0 +1,55 @@
+name: Confirmer les résultats du recuit
+
+# Bouton « Run workflow ». Réapprend les meilleurs réglages du dernier recuit sur A + B et les mesure
+# sur C, les parties arrivées après l'échantillon figé (jamais vues par le recuit).
+on:
+  workflow_dispatch:
+    inputs:
+      fichier:
+        description: "Fichier du recuit à confirmer (vide = le dernier)"
+        default: ""
+        required: false
+      reglages:
+        description: "Nombre de meilleurs réglages à confirmer"
+        default: "5"
+        required: true
+      branche:
+        description: "Branche du code"
+        default: "analyse-iterative"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recuit
+  cancel-in-progress: false
+
+jobs:
+  confirmer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branche }}
+          fetch-depth: 0
+
+      - name: Installer numpy, pandas, scipy
+        run: python3 -m pip install -q --break-system-packages numpy pandas scipy
+
+      - name: Données à jour de main (non committées)
+        run: |
+          git fetch -q origin main
+          mkdir -p "$RUNNER_TEMP/main"
+          git archive origin/main analyse/donnees | tar -x -C "$RUNNER_TEMP/main"
+          echo "PANDA_DONNEES=$RUNNER_TEMP/main/analyse/donnees" >> "$GITHUB_ENV"
+
+      - name: Confirmer sur C
+        run: >
+          python3 analyse/iteratif/confirmer.py --reglages "${{ inputs.reglages }}"
+          ${{ inputs.fichier != '' && format('--fichier "{0}"', inputs.fichier) || '' }}
+
+      - name: Enregistrer les résultats
+        if: always()
+        run: bash analyse/iteratif/enregistrer_resultats.sh "Confirmation du recuit sur C"
