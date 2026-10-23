@@ -55,6 +55,8 @@ def tester(deux, fiches, jungler, nom, s):
 
     s = s.astype(float)
     j = (deux["nous_jgl"] == jungler).astype(float)
+    if (s * j).sum() < 30 or ((1 - s) * j).sum() < 30:
+        return None  # situation trop rare (ou toujours présente) pour ce jungler
     X = pd.concat([biais.fe_jungle(deux, fiches), biais.fe_rang(deux),
                    pd.DataFrame({"situation": s, "test": s * j})], axis=1)
     m = biais.logit(deux["victoire"].astype(float), X, pd.factorize(deux["match"])[0])
@@ -103,6 +105,8 @@ def main():
     if confirmation:
         for piste in pistes["pistes"]:
             r = tester(deux, fiches, piste["jungler"], piste["situation"], cas[piste["situation"]])
+            if r is None:
+                continue
             r["meme_sens"] = (r["coef"] > 0) == (piste["coef"] > 0)
             lignes.append(r)
     else:
@@ -112,7 +116,9 @@ def main():
                 print(f"{jungler} : {effectifs.get(jungler, 0)} parties en jungle, pas exploré (moins de {categories.MINIMUM}).")
                 continue
             for nom, s in cas.items():
-                lignes.append(tester(deux, fiches, jungler, nom, s))
+                r = tester(deux, fiches, jungler, nom, s)
+                if r is not None:
+                    lignes.append(r)
     q = biais.benjamini_hochberg([r["p"] for r in lignes]) if lignes else []
     for r, qq in zip(lignes, q):
         r["q"] = qq
