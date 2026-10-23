@@ -1,42 +1,61 @@
 profil;compo_adverse;parties;victoires;taux;taux_hors;ecart;p;q
-assassin;front HP+;1953;923;47.3;51.5;-4.2;0.005;0.190
-assassin;Engage;2139;1025;47.9;51.2;-3.3;0.025;0.278
-assassin;front HP;2097;1084;51.7;48.1;+3.6;0.014;0.278
-engage-fragile;front aucun;115;47;40.9;51.8;-10.9;0.027;0.278
-sans-style;Engage;456;223;48.9;55.5;-6.6;0.046;0.374
-counter-engage;front HP;216;117;54.2;45.9;+8.2;0.066;0.402
-counter-engage;front HP+;221;99;44.8;52.9;-8.1;0.069;0.402
-sans-style;front HP+;421;209;49.6;54.4;-4.8;0.150;0.603
-assassin;Poke;866;449;51.8;49.2;+2.6;0.161;0.603
-assassin;Pick;680;356;52.4;49.2;+3.1;0.134;0.603
-assassin;sans-style;343;158;46.1;50.0;-3.9;0.162;0.603
-sans-style;front aucun;108;62;57.4;51.5;+5.9;0.251;0.696
-poke;front HP;240;120;50.0;45.1;+4.9;0.255;0.696
-poke;front HP+;235;104;44.3;49.5;-5.3;0.223;0.696
-engage-fragile;front HP+;462;243;52.6;48.9;+3.7;0.243;0.696
-sans-style;Poke;169;94;55.6;51.5;+4.2;0.328;0.841
-assassin;Counter-engage;332;173;52.1;49.5;+2.6;0.362;0.873
-sans-style;Pick;124;67;54.0;51.9;+2.1;0.665;0.900
-sans-style;front HP;392;210;53.6;51.2;+2.3;0.482;0.900
-bruiser-engage;Poke;776;384;49.5;49.9;-0.4;0.822;0.900
-bruiser-engage;Engage;2059;1020;49.5;50.1;-0.6;0.696;0.900
-bruiser-engage;sans-style;281;143;50.9;49.8;+1.1;0.719;0.900
-bruiser-engage;Pick;675;339;50.2;49.8;+0.4;0.834;0.900
-bruiser-engage;Counter-engage;315;161;51.1;49.8;+1.4;0.642;0.900
-bruiser-engage;front HP+;1905;945;49.6;50.0;-0.4;0.776;0.900
-bruiser-engage;front HP;1938;970;50.1;49.7;+0.4;0.813;0.900
-tank-engage;Engage;389;201;51.7;52.7;-1.0;0.775;0.900
-tank-engage;Poke;142;76;53.5;51.9;+1.6;0.728;0.900
-tank-engage;front HP+;358;185;51.7;52.6;-0.9;0.793;0.900
-tank-engage;front HP;378;195;51.6;52.7;-1.1;0.747;0.900
-assassin;Disengage;284;147;51.8;49.6;+2.2;0.473;0.900
-assassin;front aucun;594;301;50.7;49.6;+1.1;0.611;0.900
-poke;Engage;244;114;46.7;47.7;-1.0;0.823;0.900
-poke;Poke;103;51;49.5;46.7;+2.8;0.610;0.900
-counter-engage;Engage;250;127;50.8;48.1;+2.7;0.540;0.900
-engage-fragile;Poke;179;86;48.0;51.1;-3.1;0.455;0.900
-engage-fragile;Pick;142;75;52.8;50.2;+2.6;0.566;0.900
-engage-fragile;front HP;453;231;51.0;50.3;+0.7;0.815;0.900
-engage-fragile;Engage;508;256;50.4;50.8;-0.4;0.905;0.951
-bruiser-engage;front aucun;522;261;50.0;49.8;+0.2;0.942;0.966
-bruiser-engage;Disengage;259;129;49.8;49.9;-0.0;0.988;0.988
+sans-style;front HP+;809;369;45.6;51.7;-6.0;0.010;0.580
+sans-style;front HP;838;431;51.4;47.1;+4.3;0.062;0.634
+tank-engage;sans-style;108;46;42.6;52.1;-9.5;0.055;0.634
+assassin;Poke;1818;954;52.5;50.1;+2.3;0.074;0.634
+assassin;sans-style;669;315;47.1;50.9;-3.8;0.060;0.634
+assassin;Counter-engage;607;329;54.2;50.3;+3.9;0.066;0.634
+disengage;Engage;174;94;54.0;44.0;+10.0;0.064;0.634
+counter-engage;front HP;447;229;51.2;46.0;+5.3;0.095;0.636
+counter-engage;front HP+;434;196;45.2;50.6;-5.4;0.086;0.636
+assassin;front HP+;4022;1996;49.6;51.3;-1.7;0.106;0.637
+sans-style;Counter-engage;116;49;42.2;49.5;-7.2;0.131;0.712
+sans-style;Poke;329;173;52.6;48.3;+4.3;0.156;0.743
+sans-style;front aucun;221;116;52.5;48.6;+3.9;0.274;0.743
+bruiser-engage;sans-style;606;311;51.3;49.5;+1.9;0.375;0.743
+bruiser-engage;Pick;1342;650;48.4;49.8;-1.4;0.362;0.743
+bruiser-engage;Disengage;507;262;51.7;49.5;+2.2;0.331;0.743
+bruiser-engage;Counter-engage;644;333;51.7;49.4;+2.3;0.262;0.743
+bruiser-engage;front aucun;1043;503;48.2;49.8;-1.5;0.351;0.743
+bruiser-engage;front HP;3993;2006;50.2;49.0;+1.2;0.262;0.743
+tank-engage;Pick;224;122;54.5;51.0;+3.5;0.334;0.743
+tank-engage;front HP;693;347;50.1;52.6;-2.5;0.320;0.743
+assassin;Disengage;591;288;48.7;50.7;-2.0;0.350;0.743
+assassin;front HP;4217;2166;51.4;50.0;+1.4;0.178;0.743
+poke;Engage;519;247;47.6;50.2;-2.6;0.384;0.743
+poke;front aucun;146;66;45.2;49.6;-4.4;0.325;0.743
+counter-engage;Engage;482;240;49.8;46.9;+2.9;0.359;0.743
+counter-engage;Pick;131;56;42.7;49.1;-6.3;0.175;0.743
+engage-fragile;Pick;298;142;47.7;50.8;-3.2;0.309;0.743
+engage-fragile;Counter-engage;166;90;54.2;50.1;+4.2;0.303;0.743
+engage-fragile;front aucun;217;102;47.0;50.8;-3.8;0.294;0.743
+disengage;front HP;145;66;45.5;51.8;-6.3;0.252;0.743
+tank-engage;front aucun;186;101;54.3;51.1;+3.2;0.412;0.748
+disengage;front HP+;153;79;51.6;47.1;+4.6;0.401;0.748
+poke;Poke;217;111;51.2;48.5;+2.6;0.485;0.856
+sans-style;Engage;900;436;48.4;49.6;-1.1;0.622;0.872
+sans-style;Pick;282;136;48.2;49.2;-1.0;0.768;0.872
+sans-style;sans-style;102;52;51.0;48.9;+2.1;0.686;0.872
+sans-style;Disengage;139;70;50.4;48.9;+1.4;0.746;0.872
+bruiser-engage;Poke;1536;757;49.3;49.6;-0.4;0.798;0.872
+bruiser-engage;Engage;4201;2068;49.2;49.9;-0.7;0.525;0.872
+bruiser-engage;front HP+;3800;1872;49.3;49.8;-0.6;0.603;0.872
+tank-engage;Engage;729;381;52.3;50.8;+1.5;0.561;0.872
+tank-engage;Disengage;109;54;49.5;51.6;-2.1;0.675;0.872
+tank-engage;front HP+;677;353;52.1;51.0;+1.2;0.646;0.872
+assassin;Engage;4367;2194;50.2;50.9;-0.7;0.526;0.872
+assassin;Pick;1400;702;50.1;50.7;-0.5;0.715;0.872
+assassin;front aucun;1213;620;51.1;50.5;+0.6;0.698;0.872
+poke;Pick;217;104;47.9;49.3;-1.3;0.722;0.872
+poke;front HP;532;264;49.6;48.5;+1.1;0.703;0.872
+poke;front HP+;489;242;49.5;48.7;+0.8;0.783;0.872
+counter-engage;Poke;186;87;46.8;48.6;-1.8;0.650;0.872
+engage-fragile;Engage;1029;522;50.7;50.0;+0.7;0.754;0.872
+engage-fragile;Disengage;109;52;47.7;50.5;-2.8;0.567;0.872
+engage-fragile;front HP+;942;479;50.8;50.0;+0.8;0.698;0.872
+engage-fragile;front HP;949;481;50.7;50.1;+0.6;0.800;0.872
+engage-fragile;sans-style;145;74;51.0;50.3;+0.7;0.870;0.932
+tank-engage;Poke;261;134;51.3;51.5;-0.2;0.961;0.978
+tank-engage;Counter-engage;125;64;51.2;51.5;-0.3;0.948;0.978
+counter-engage;front aucun;136;66;48.5;48.2;+0.3;0.950;0.978
+engage-fragile;Poke;361;182;50.4;50.4;+0.0;0.988;0.988
