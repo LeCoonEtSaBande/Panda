@@ -158,5 +158,56 @@ class BiaisTest(unittest.TestCase):
         self.assertAlmostEqual(q[3], 0.5)
 
 
+@unittest.skipUnless(AVEC_PANDAS, "pandas et statsmodels absents")
+class ClassificationTest(unittest.TestCase):
+    def test_kmeans_retrouve_trois_nuages(self):
+        import numpy as np
+
+        import classification
+
+        rng = np.random.default_rng(0)
+        X = np.vstack([rng.normal(c, 0.1, size=(20, 2)) for c in ((0, 0), (5, 5), (0, 5))])
+        etiquettes = classification.kmeans(X, 3, essais=5)
+        vrai = np.repeat([1, 2, 3], 20)
+        self.assertAlmostEqual(classification.rand_ajuste(vrai, etiquettes), 1.0)
+        self.assertEqual(sorted(set(etiquettes)), [1, 2, 3])
+
+    def test_rand_ajuste(self):
+        import classification
+
+        self.assertAlmostEqual(classification.rand_ajuste([1, 1, 2, 2], [5, 5, 7, 7]), 1.0)
+        self.assertLess(classification.rand_ajuste([1, 1, 2, 2], [1, 2, 1, 2]), 0.1)
+
+    def test_combats_ouvre_et_premier_mort(self):
+        import pandas as pd
+
+        import classification
+
+        kills = pd.DataFrame([
+            {"match": "1", "t_ms": 1000, "x": 100, "y": 100, "participant": 6, "victime": 1, "assistants": "7", "equipe": "r"},
+            {"match": "1", "t_ms": 4000, "x": 150, "y": 100, "participant": 2, "victime": 6, "assistants": "3", "equipe": "b"},
+            {"match": "1", "t_ms": 7000, "x": 200, "y": 100, "participant": 2, "victime": 7, "assistants": "", "equipe": "b"},
+        ])
+        equipe_de = {("1", p): ("b" if p <= 5 else "r") for p in range(1, 11)}
+        c = classification.combats(kills, equipe_de)
+        self.assertEqual(c[("1", 6)]["ouvre"], 1)
+        self.assertEqual(c[("1", 1)]["premier_mort"], 1)
+        self.assertEqual(c[("1", 2)]["finit"], 1)
+        self.assertEqual(c[("1", 2)]["reponse"], 2)
+        self.assertEqual(c[("1", 7)]["morts"], 1)
+
+    def test_nommer(self):
+        import numpy as np
+
+        import classification
+
+        Z = np.zeros((4, len(classification.STYLE)))
+        for ind in ("soins_allies_min", "boucliers_allies_min", "sauvetages_min"):
+            Z[:2, classification.STYLE.index(ind)] = 2
+        noms = classification.nommer(Z, np.array([1, 1, 2, 2]))
+        self.assertEqual(noms[1], "Enchanteurs")
+        self.assertIn("à nommer", noms[2])
+
+
 if __name__ == "__main__":
     unittest.main()
