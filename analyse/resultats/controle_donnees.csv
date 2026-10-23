@@ -1,7 +1,7 @@
 mesure;valeur;statut
-lignes parties.csv;19604;ok
+lignes parties.csv;23114;ok
 doublons parties.csv;0;ok
-parties completes (parties.csv et details_parties);19604;ok
+parties completes (parties.csv et details_parties);23114;ok
 parties.csv sans details;0;ok
 parties completes sans timeline;4;ok
 parties avec timeline mais sans evenement;0;ok
@@ -11,11 +11,11 @@ timelines sans 10 participants;0;ok
 durees absentes;0;ok
 duree mediane (min);28.9;ok
 duree minimale (min);5.1;ok
-duree maximale (min);61.3;ok
-parties de moins de 15 min (ecartees des analyses de timing);215;ok
-parties de plus de 60 min;2;attention
-parties finies par abandon;3772;ok
-parties dont les kills des evenements different du total Riot (avec execution);270;ok
+duree maximale (min);63.0;ok
+parties de moins de 15 min (ecartees des analyses de timing);255;ok
+parties de plus de 60 min;3;attention
+parties finies par abandon;4496;ok
+parties dont les kills des evenements different du total Riot (avec execution);317;ok
 parties dont les kills des evenements different du total Riot (sans execution);0;ok
-patchs;16.20:14928 16.21:4676;ok
-rangs;D:10919 E:8685;ok
+patchs;16.20:17411 16.21:5703;ok
+rangs;D:14429 E:8685;ok
