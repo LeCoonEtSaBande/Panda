@@ -1,4 +1,5 @@
 import copy
+import re
 import sys
 import time
 import unittest
@@ -123,6 +124,28 @@ class PassageDePalierTest(unittest.TestCase):
         riot, parties = self.lancer(tour_min=0)
         self.assertEqual(set(riot.ligues), {"DIAMOND"})
         self.assertEqual(parties.lignes, [])
+
+
+class AucuneCleDansLeDepotTest(unittest.TestCase):
+    """Le dépôt est public : la clé Riot ne vit que dans le secret RIOT_API_KEY."""
+
+    def test_pas_de_cle_riot_ecrite(self):
+        racine = Path(__file__).resolve().parents[2]
+        motifs = ("*.ini", "*.py", "*.sh", "*.md", "*.yml", "*.json", "*.js", "*.html")
+        fichiers = [
+            chemin for motif in motifs for chemin in racine.rglob(motif)
+            if ".git" not in chemin.parts and "donnees" not in chemin.parts
+        ]
+        cle = re.compile(r"RGAPI-[0-9a-f]{8}-")
+        avec_cle = []
+        for chemin in fichiers:
+            try:
+                texte = chemin.read_text(encoding="utf-8", errors="ignore")
+            except OSError:  # fichier temporaire d'un autre test, déjà supprimé
+                continue
+            if cle.search(texte):
+                avec_cle.append(str(chemin.relative_to(racine)))
+        self.assertEqual(avec_cle, [])
 
 
 class LimiteurTest(unittest.TestCase):

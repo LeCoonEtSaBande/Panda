@@ -1,7 +1,7 @@
 name: Lancer une collecte
 
 # Bouton « Run workflow », ou modification de analyse/collecte.ini sur main.
-# La clé Riot est celle de « cle_api » dans analyse/collecte.ini.
+# La clé Riot est le secret RIOT_API_KEY du dépôt (Settings > Secrets and variables > Actions).
 on:
   push:
     branches: [main]
@@ -31,6 +31,7 @@ jobs:
       - name: Collecter
         timeout-minutes: 295
         env:
+          RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
           COMMANDE_SAUVEGARDE: bash analyse/enregistrer.sh
         run: python3 analyse/collecte.py
 

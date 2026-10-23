@@ -110,6 +110,12 @@ DETAILS = {
 }
 
 
+OU_METTRE_LA_CLE = (
+    "Coller la clé dans le secret RIOT_API_KEY du dépôt (Settings > Secrets and variables > Actions), "
+    "ou la donner en variable d'environnement RIOT_API_KEY pour une collecte en local."
+)
+
+
 class CleRefusee(Exception):
     pass
 
@@ -678,9 +684,15 @@ def rattraper(riot, reglages, noms, details, echecs, fin, sauvegarder=None, part
 
 def main():
     reglages = lire_config()
-    cle = os.environ.get("RIOT_API_KEY", "").strip() or reglages["cle_api"]
+    if reglages["cle_api"]:
+        print(
+            "::warning::Une clé « cle_api » est écrite dans analyse/collecte.ini : elle est ignorée et serait "
+            "publique dans le dépôt. La retirer et la régénérer sur developer.riotgames.com.",
+            flush=True,
+        )
+    cle = os.environ.get("RIOT_API_KEY", "").strip()
     if not cle:
-        print("::error::Clé Riot absente. La mettre dans « cle_api » de analyse/collecte.ini.")
+        print(f"::error::Clé Riot absente. {OU_METTRE_LA_CLE}")
         return 1
 
     commande = os.environ.get("COMMANDE_SAUVEGARDE", "").strip()
@@ -715,7 +727,7 @@ def main():
         print(f"Collecte pendant {reglages['minutes']} min. Déjà vues : {len(vus)} parties.", flush=True)
         compte = collecter(riot, reglages, noms, parties, ecartees, vus, fin, sauvegarde, details)
     except CleRefusee as erreur:
-        print(f"::error::{erreur} Une clé de développement expire au bout de 24 heures : coller la nouvelle dans « cle_api » de analyse/collecte.ini.")
+        print(f"::error::{erreur} Une clé de développement expire au bout de 24 heures. {OU_METTRE_LA_CLE}")
         return 1
     print(
         f"Terminé : {compte['parties']} parties ajoutées ({compte['timelines']} avec timeline), "
