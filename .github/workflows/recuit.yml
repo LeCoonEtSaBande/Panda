@@ -1,11 +1,19 @@
 name: Lancer un recuit simulé
 
-# Bouton « Run workflow ». Le recuit lit seulement les tas A et B (voir analyse/iteratif/README.md).
+# Bouton « Run workflow ». Le recuit lit seulement les tas A (choix) et B (jugement), jamais C
+# (voir analyse/iteratif/README.md). Deux pistes : « scenarios » (les styles du catalogue unifié et les
+# scénarios du propriétaire) et « teamfight » (les groupes teamfight et la colonne tanky).
+# Chaque combinaison piste + hasard a sa propre file : les quatre recuits peuvent tourner en même temps.
 # Le code vient de la branche choisie dans « branche » ; les données, toujours de main (à jour),
 # sans être committées sur la branche. Seuls les résultats sont committés, sur la branche du code.
 on:
   workflow_dispatch:
     inputs:
+      piste:
+        description: "Piste : scenarios (tes styles et tes scénarios) ou teamfight (groupes teamfight + tanky)"
+        type: choice
+        options: [scenarios, teamfight]
+        default: scenarios
       minutes:
         description: "Durée du recuit, en minutes"
         default: "60"
@@ -27,7 +35,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: recuit
+  group: recuit-${{ inputs.piste }}-${{ inputs.hasard }}
   cancel-in-progress: false
 
 jobs:
@@ -53,11 +61,11 @@ jobs:
       - name: Recuit simulé
         timeout-minutes: 310
         run: >
-          python3 analyse/iteratif/bloc4_recuit.py
+          python3 analyse/iteratif/recuit_pistes.py --piste "${{ inputs.piste }}"
           --minutes "${{ inputs.minutes }}" --graine "${{ inputs.graine }}"
           ${{ inputs.hasard && '--melanger' || '' }}
 
       - name: Enregistrer les résultats
         if: always()
         run: |
-          bash analyse/iteratif/enregistrer_resultats.sh "Recuit simulé, ${{ inputs.minutes }} min, graine ${{ inputs.graine }}${{ inputs.hasard && ', seuil de hasard' || '' }}"
+          bash analyse/iteratif/enregistrer_resultats.sh "Recuit ${{ inputs.piste }}, ${{ inputs.minutes }} min, graine ${{ inputs.graine }}${{ inputs.hasard && ', seuil de hasard' || '' }}"

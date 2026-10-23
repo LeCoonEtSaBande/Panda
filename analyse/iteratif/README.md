@@ -4,6 +4,20 @@ Objectif : trouver, **à partir de la draft seule**, des situations où une équ
 
 Les timelines et les stats de jeu servent **seulement à ranger les champions** (bloc 1). Les biais se cherchent ensuite uniquement avec les 10 champions de la draft et le gagnant.
 
+> **Depuis le 24/10/2026 : recuit n° 2 (`recuit_pistes.py`)**, sur le découpage n° 2 et le catalogue unifié
+> (`../catalogues/catalogue_unifie.csv`, relu champion par champion par le propriétaire).
+> - Tas : A (29 051 parties) sert à choisir les réglages, en 5 rotations ; B (9 596) juge le meilleur réglage,
+>   une seule fois, à la fin ; C = les parties collectées après le gel du 23/10 à 23h29, pour la confirmation.
+> - Piste `scenarios` : styles principal et secondaire, tanky, carry, dégâts. Les 13 scénarios du propriétaire
+>   (avec leur sens attendu), chacun aussi vu du jungler, plus une famille « exploration ».
+> - Piste `teamfight` : groupe teamfight (7 groupes) et tanky. Tout y est exploration.
+> - Boutons : poids jungle / support / autres lanes, seuil « compo X » (en équivalents champions), poids du
+>   secondaire (scenarios), au plus 15 champions changés (inversion principal/secondaire, ou groupe voisin
+>   mesuré). Garde-fou : pas moins de scénarios étudiables qu'au départ.
+> - Workflow « Lancer un recuit simulé » : case « piste » ; chaque piste + hasard a sa propre file.
+>
+> Ce qui suit décrit le recuit n° 1 (23/10, `bloc4_recuit.py`), gardé pour l'historique.
+
 ## La boucle en 4 blocs
 
 ```

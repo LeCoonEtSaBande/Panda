@@ -13,13 +13,14 @@ fi
 # (Le message par défaut est dans une variable : une apostrophe dans ${1:-...} casse bash.)
 message_defaut="Résultats de l'analyse itérative"
 git commit -q -m "${1:-$message_defaut}"
-for essai in 1 2 3; do
+# Plusieurs recuits peuvent finir en même temps : jusqu'à 8 essais, avec une attente au hasard.
+for essai in 1 2 3 4 5 6 7 8; do
   if git pull -q --rebase origin "$branche" && git push -q origin "HEAD:$branche"; then
     echo "Résultats enregistrés sur $branche."
     exit 0
   fi
   git rebase --abort 2>/dev/null
-  sleep 5
+  sleep $((5 + RANDOM % 20))
 done
 echo "::error::Impossible de pousser les résultats."
 exit 1
