@@ -62,6 +62,8 @@ def drafts(regle=None, donnees=None):
 
     regle = regle or lire_decoupage()
     donnees = Path(donnees or dossier_donnees())
+    if regle.get("version", 1) >= 2:
+        return _drafts_v2(regle, donnees)
     rangs = set(regle["rangs"])
 
     fige, suite = echantillon.decouper(donnees)
@@ -91,6 +93,73 @@ def drafts(regle=None, donnees=None):
     table["rang"] = table["palier"].str[:1]
     table["bleu_gagne"] = (table["gagnant"] == "b").astype(int)
     return table.reset_index(drop=True)
+
+
+def _drafts_v2(regle, donnees):
+    """Découpage n° 2 (gel du 23/10 au soir) : tout ce qui était connu au gel sert à l'apprentissage.
+
+    - Apprentissage = l'archive + les parties de parties.csv jusqu'au gel inclus (position dans le
+      fichier). Partagé par empreinte en A (choix des réglages, 3/4) et B (jugement, 1/4, lu une seule
+      fois à la fin d'un recuit).
+    - C (confirmation) = les parties de parties.csv écrites après le gel, sauf les parties de
+      l'archive recollectées (elles restent dans l'apprentissage, par l'archive).
+    """
+    import pandas as pd
+
+    rangs = set(regle["rangs"])
+    gel = regle["gel"]
+    ordre = echantillon.ordre_parties(donnees)
+    position = {m: i for i, m in enumerate(ordre)}
+    n_gel = int(gel["position"])
+    if n_gel > len(ordre) or ordre[n_gel - 1] != gel["dernier_match"]:
+        raise SystemExit("decoupage.json : la partie du gel n'est pas à sa place dans parties.csv.")
+    archive = _lire(ARCHIVE) if ARCHIVE.exists() and regle.get("archive", True) else []
+    dans_archive = {l["match"] for l in archive}
+    lignes, vus = [], set()
+    for l in _lire(donnees / "parties.csv"):
+        m = l["match"]
+        if m in vus or l["palier"][:1] not in rangs:
+            continue
+        vus.add(m)
+        if position[m] < n_gel:
+            lignes.append({**l, "source": "neuf", "tas": tas_ab(m, regle)})
+        elif m not in dans_archive:
+            lignes.append({**l, "source": "neuf", "tas": "C"})
+    apprentissage_neuf = {l["match"] for l in lignes if l["tas"] != "C"}
+    for l in archive:
+        if l["palier"][:1] not in rangs or l["match"] in apprentissage_neuf:
+            continue
+        lignes.append({**l, "source": "archive", "tas": tas_ab(l["match"], regle)})
+    table = pd.DataFrame(lignes)
+    table["rang"] = table["palier"].str[:1]
+    table["bleu_gagne"] = (table["gagnant"] == "b").astype(int)
+    return table.reset_index(drop=True)
+
+
+def proposer_gel(donnees, chemin=DECOUPAGE, part_b=0.25, graine="panda-2026-10-23-gel2"):
+    """Écrit le découpage n° 2 (non validé) : gel à la dernière partie actuelle de parties.csv."""
+    from datetime import datetime, timezone
+
+    ordre = echantillon.ordre_parties(donnees)
+    regle = {
+        "version": 2,
+        "valide": False,
+        "commentaire": "Proposition. Passer « valide » à true une fois relue avec le propriétaire.",
+        "rangs": ["D", "E"],
+        "archive": True,
+        "part_B": part_b,
+        "graine": graine,
+        "gel": {"position": len(ordre), "dernier_match": ordre[-1],
+                "date": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")},
+        "regle_AB": "Apprentissage = archive + parties de parties.csv jusqu'au gel (Émeraude-Diamant). "
+                    "B (jugement) si sha256(graine:match) % 1000 < 1000 × part_B, sinon A (choix).",
+        "regle_C": "Parties de parties.csv écrites après le gel (Émeraude-Diamant), sauf les parties de l'archive recollectées.",
+        "precedent": "decoupage_2026-10-23.json (découpage n° 1, utilisé par les recuits du 23/10)",
+    }
+    table = _drafts_v2(regle, Path(donnees))
+    regle["comptes_au_moment_de_la_proposition"] = resume_tas(table)
+    Path(chemin).write_text(json.dumps(regle, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return regle, table
 
 
 def resume_tas(table):
