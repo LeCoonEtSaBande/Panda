@@ -7,8 +7,10 @@ Deux façons de faire, choisies par le paramètre « mode » :
 - « mesure » : la classification mesurée sur les timelines (comme classification.py), avec des
   paramètres variables : poids de chaque famille d'indicateurs, nombre d'axes, nombre de groupes.
 
-Dans les deux modes, le recuit peut aussi DÉPLACER des champions d'un groupe à l'autre
-(paramètre « deplacements ») : c'est ainsi que le catalogue évolue au fil des itérations.
+Dans les deux modes, le recuit peut aussi DÉPLACER des champions (paramètre « deplacements ») :
+c'est ainsi que le catalogue évolue au fil des itérations. Garde-fou : un champion ne peut aller que
+vers son groupe voisin (mesuré : le groupe le plus proche après le sien ; catalogue : son style
+secondaire). Le catalogue reste ainsi lisible (pas de Twitch « enchanteur »).
 
 Capacités de chaque champion (mesurées sur l'échantillon figé, quel que soit le mode) :
 - cc : temps de CC et immobilisations (standardisés) ;
@@ -55,6 +57,7 @@ class Catalogue:
     secondaire: dict
     capacites: dict = field(default_factory=dict)
     membres_texte: dict = field(default_factory=dict)
+    voisin: dict = field(default_factory=dict)   # groupe vers lequel un champion peut être déplacé
 
     @property
     def k(self):
@@ -151,23 +154,33 @@ def depuis_mesures(params, mesures):
         vus[nom] = True
         noms.append(nom)
     groupe = {c: int(g) - 1 for c, g in zip(mesures["champion"], etiquettes)}
-    return noms, groupe, {c: -1 for c in groupe}
+    # Voisin : le centre de groupe le plus proche après le sien (seul déplacement autorisé).
+    centres = np.array([X[etiquettes == g].mean(axis=0) for g in sorted(set(etiquettes))])
+    distances = ((X[:, None, :] - centres[None]) ** 2).sum(axis=2)
+    voisin = {}
+    for i, c in enumerate(mesures["champion"]):
+        d = distances[i].copy()
+        d[groupe[c]] = np.inf
+        voisin[c] = int(d.argmin())
+    return noms, groupe, {c: -1 for c in groupe}, voisin
 
 
 def construire(params, mesures, catalogue=None):
     """Bloc 1 : renvoie le Catalogue à l'instant T pour ces paramètres."""
     if params["mode"] == "catalogue":
         noms, groupe, secondaire = depuis_catalogue(params, catalogue)
+        # Dans le catalogue, un champion ne peut passer que vers son style secondaire.
+        voisin = {c: s for c, s in secondaire.items() if s >= 0}
     else:
-        noms, groupe, secondaire = depuis_mesures(params, mesures)
-    for champion, cible in params.get("deplacements", {}).items():
-        if champion in groupe and 0 <= cible < len(noms):
-            groupe[champion] = cible
+        noms, groupe, secondaire, voisin = depuis_mesures(params, mesures)
+    for champion in params.get("deplacements", {}):
+        if champion in voisin:
+            groupe[champion] = voisin[champion]
     membres = {}
     for champion, g in sorted(groupe.items()):
         membres.setdefault(noms[g], []).append(champion)
     return Catalogue(noms=noms, groupe=groupe, secondaire=secondaire, capacites=capacites(mesures),
-                     membres_texte={n: ", ".join(m) for n, m in membres.items()})
+                     membres_texte={n: ", ".join(m) for n, m in membres.items()}, voisin=voisin)
 
 
 def ecrire(cat, chemin):

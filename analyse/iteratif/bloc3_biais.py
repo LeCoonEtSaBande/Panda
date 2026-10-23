@@ -14,7 +14,7 @@
    - capacités (CC, front, part magique) : écart entre équipes et croisements (notre CC contre leur front...).
    Régression logistique régularisée (lambda), apprise sur A.
 3. Score = ce que les biais font gagner en prédiction sur B, des parties que le modèle n'a pas vues :
-   baisse de la perte logarithmique moyenne (en millièmes). 0 = rien de plus que la force des
+   baisse de la perte logarithmique moyenne (en millièmes), sur la PIRE des deux moitiés de B. 0 = rien de plus que la force des
    champions ; plus c'est haut, plus les biais sont réels et utiles.
    On donne aussi la liste des biais, chacun avec son taux de victoire sur A et sur B.
 """
@@ -71,6 +71,13 @@ def benjamini_hochberg(p):
     return q
 
 
+def plis(n, graine=0):
+    """Numéro de pli (0 à PLIS-1) de chaque partie, au hasard mais toujours le même."""
+    pli = np.arange(n) % PLIS
+    np.random.default_rng(graine).shuffle(pli)
+    return pli
+
+
 def perte_log(y, p):
     p = np.clip(p, 1e-9, 1 - 1e-9)
     return float(-np.mean(y * np.log(p) + (1 - y) * np.log(1 - p)))
@@ -113,14 +120,13 @@ class Force:
         beta, c = logistique(self.matrice(lignes), self.index.y[lignes], lam=lam, constante=True)
         return beta, c
 
-    def decalages(self, apprentissage, autres):
+    def decalages(self, apprentissage, autres, pli=None):
         """Décalage (logit de la force) : en validation croisée sur `apprentissage`, et appris sur tout
         `apprentissage` pour chaque tableau de `autres`. La régularisation est choisie par la
         validation croisée sur `apprentissage` seulement."""
         apprentissage = np.asarray(apprentissage)
-        pli = np.arange(len(apprentissage)) % PLIS
-        rng = np.random.default_rng(0)
-        rng.shuffle(pli)
+        if pli is None:
+            pli = plis(len(apprentissage))
         y = self.index.y[apprentissage]
         meilleur = None
         for lam in LAMBDAS_FORCE:
@@ -196,12 +202,44 @@ def evaluer(compos, index, lignes_a, lignes_b, dec_a, dec_b, lam, min_parties=50
     variables = [v for v, g in zip(variables, garder) if g]
     ya, yb = index.y[lignes_a], index.y[lignes_b]
     beta, _ = logistique(Xa, ya, dec_a, lam=lam)
-    gain_b = perte_log(yb, sigmoide(dec_b)) - perte_log(yb, sigmoide(dec_b + Xb @ beta))
+    # Score : le pire des deux moitiés de B (parties paires et impaires). Un réglage qui ne doit son
+    # score qu'à un coup de chance sur une moitié est ainsi freiné.
+    gains = []
+    for moitie in (0, 1):
+        m = np.arange(len(yb)) % 2 == moitie
+        gains.append(perte_log(yb[m], sigmoide(dec_b[m])) - perte_log(yb[m], sigmoide(dec_b[m] + Xb[m] @ beta)))
+    gain_b = min(gains)
     gain_a = perte_log(ya, sigmoide(dec_a)) - perte_log(ya, sigmoide(dec_a + Xa @ beta))
     biais = []
     if avec_biais:
         biais = liste_biais(variables, beta, Xa, Xb, ya, yb, dec_a, dec_b)
     return Evaluation(score=1000 * gain_b, score_a=1000 * gain_a, biais=biais, nb_variables=len(variables))
+
+
+def evaluer_rotation(compos, index, lignes, pli, dec, lam, min_parties=300, avec_biais=False, lignes_a=None, lignes_b=None):
+    """Score en rotation sur les parties de recherche (A + B) : 5 fois, on apprend les biais sur 4/5
+    des parties et on note sur le 1/5 restant. Score = gain moyen sur les 5 cinquièmes, en millièmes.
+    Toutes les parties servent ainsi à noter, ce qui rend le score bien moins sensible à la chance
+    qu'avec un seul tas B fixe. `dec` : force des champions en validation croisée sur les mêmes plis."""
+    X, variables = caracteristiques(compos, lignes)
+    garder = (X != 0).sum(axis=0) >= min_parties
+    X = X[:, garder]
+    variables = [v for v, g in zip(variables, garder) if g]
+    y = index.y[lignes]
+    gains = []
+    for f in range(PLIS):
+        app, note = pli != f, pli == f
+        beta, _ = logistique(X[app], y[app], dec[app], lam=lam)
+        gains.append(perte_log(y[note], sigmoide(dec[note])) - perte_log(y[note], sigmoide(dec[note] + X[note] @ beta)))
+    beta, _ = logistique(X, y, dec, lam=lam)
+    gain_interne = perte_log(y, sigmoide(dec)) - perte_log(y, sigmoide(dec + X @ beta))
+    biais = []
+    if avec_biais:
+        a = np.isin(lignes, lignes_a) if lignes_a is not None else np.ones(len(lignes), bool)
+        b = np.isin(lignes, lignes_b) if lignes_b is not None else np.ones(len(lignes), bool)
+        biais = liste_biais(variables, beta, X[a], X[b], y[a], y[b], dec[a], dec[b])
+    return Evaluation(score=1000 * float(np.mean(gains)), score_a=1000 * gain_interne, biais=biais,
+                      nb_variables=len(variables))
 
 
 def taux_ajuste(x, y, dec):

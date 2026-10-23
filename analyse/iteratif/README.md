@@ -20,7 +20,7 @@ Les timelines et les stats de jeu servent **seulement à ranger les champions** 
 |---|---|---|---|
 | 1 | `bloc1_champions.py` | Range chaque champion dans un groupe. Départ : le catalogue actuel (`Catalogue.csv`, style principal). Variante : la classification mesurée sur les timelines (`../classification.py`). | mode (catalogue ou mesuré), tanks séparés ou non, poids du style secondaire, poids des 8 familles d'indicateurs, nombre d'axes, nombre de groupes, **champions déplacés d'un groupe à l'autre** (le catalogue évolue) |
 | 2 | `bloc2_compos.py` | Donne un type à chaque compo : le groupe le plus présent, pondéré par poste, s'il dépasse un seuil ; sinon « Mixte ». Calcule aussi le CC, le front et la part magique de l'équipe. | poids de chaque poste (jungle toujours au moins 0,5), seuil |
-| 3 | `bloc3_biais.py` | Apprend sur A les biais de compo **en plus de la force des champions**, et mesure sur B s'ils prédisent mieux le gagnant. | régularisation (lambda) |
+| 3 | `bloc3_biais.py` | Apprend les biais de compo **en plus de la force des champions** et mesure s'ils prédisent mieux le gagnant sur des parties que l'apprentissage n'a pas vues (5 rotations sur A + B). | régularisation (lambda) |
 | 4 | `bloc4_recuit.py` | Le recuit simulé. Écrit le palmarès des meilleurs réglages et leurs biais. | — |
 | — | `confirmer.py` | Réapprend les meilleurs réglages sur A + B et les mesure sur C. Seul juge final. | — |
 | — | `commun.py` | Lit les drafts et fait le découpage en tas. | — |
@@ -36,7 +36,7 @@ Les timelines et les stats de jeu servent **seulement à ranger les champions** 
 - groupe du jungler avec compo alliée ;
 - capacités : écart de CC, de front et de part magique, et croisements (notre CC contre leur front, etc.).
 
-**Score** : de combien les biais appris sur A améliorent la prédiction du gagnant sur B. C'est la baisse de la perte logarithmique moyenne, en millièmes.
+**Score** : de combien les biais améliorent la prédiction du gagnant sur des parties non vues. C'est la baisse de la perte logarithmique moyenne, en millièmes. Elle est mesurée en **5 rotations** sur les parties de recherche (A + B) : on apprend sur 4/5, on note sur le 1/5 restant, cinq fois. Toutes les parties servent ainsi à noter, et le score dépend beaucoup moins de la chance qu'avec un seul tas B fixe.
 - 0 = rien de plus que la force des champions.
 - Négatif = les biais appris sur A ne tiennent pas sur B (du bruit).
 - Positif = ils tiennent.
@@ -49,8 +49,7 @@ Pour donner un ordre de grandeur : un vrai biais de 55 % au lieu de 50 %, dans u
 
 | Tas | Contenu | Parties au 23/10 | Qui le lit |
 |---|---|---|---|
-| A, apprentissage | 2/3 de l'échantillon figé et de l'archive | 20 769 | le recuit, pour apprendre |
-| B, validation | 1/3 de l'échantillon figé et de l'archive | 10 378 | le recuit, pour noter chaque réglage |
+| A + B, recherche | l'échantillon figé et l'archive (A = 2/3, B = 1/3) | 31 147 | le recuit, en 5 rotations (apprendre sur 4/5, noter sur 1/5) ; les taux « sur A » et « sur B » des rapports sont donnés à part pour voir si un biais tient des deux côtés |
 | C, confirmation | parties arrivées après l'échantillon figé (`../echantillon_fige.json`) | 2 431, à compléter par les collectes suivantes (~8 000 visées) | `confirmer.py` seulement, une fois à la fin |
 
 - **Répartition A / B** : faite au hasard par une empreinte du numéro de partie. Une partie va toujours dans le même tas, et chaque tas a les mêmes proportions de Diamant, d'Émeraude, d'archive et de parties neuves.
@@ -64,11 +63,12 @@ Un algorithme qui essaie des milliers de réglages trouve toujours des « biais 
 2. **Pas de groupe par champion.**
    - Chaque groupe garde au moins 8 champions ; sinon le réglage est rejeté.
    - Au plus 12 groupes.
-   - Au plus 10 champions déplacés.
-   - Une situation n'est retenue que si elle apparaît dans au moins 50 parties de A.
-3. **Régularisation.** Les effets sont rétrécis vers 0, d'autant plus qu'ils reposent sur peu de parties. La force des champions est réglée de la même façon, par validation croisée sur le tas d'apprentissage.
-4. **Seuil de hasard.** Le même recuit tourne sur des **victoires mélangées au hasard** (workflow avec la case « hasard », ou `--melanger`). Le score qu'il atteint là, sans aucun vrai biais, est le seuil à dépasser. Ce seuil vient du fait qu'à force d'essayer des réglages, on finit par coller au bruit de B.
-5. **Confirmation sur C.**
+   - Au plus 10 champions déplacés, et seulement vers leur **groupe voisin** : le groupe mesuré le plus proche après le sien, ou le style secondaire dans le catalogue. Le catalogue reste lisible.
+   - Une situation (compo X contre Y, jungler J contre compo Y…) n'est étudiée que si elle apparaît dans **au moins 200 parties de A**.
+3. **Régularisation.** Les effets sont rétrécis vers 0 : lambda d'au moins 5, et plus fort pour les effets qui reposent sur peu de parties. La force des champions est réglée de la même façon, par validation croisée sur le tas d'apprentissage.
+4. **Score en rotation.** Chaque partie de recherche sert à noter un modèle qui ne l'a pas vue (5 rotations). Un seul tas B fixe se laisse « apprendre » par le recuit à force d'essais : constaté le 23/10, le recuit atteignait sur B le même score avec de vraies victoires qu'avec des victoires tirées au sort.
+5. **Seuil de hasard.** On refait le même recuit sur des victoires **tirées au sort selon la seule force des champions** (case « hasard » du workflow, ou `--melanger`). Là, la force des champions est vraie mais aucun biais de compo n'existe. Le score atteint malgré tout mesure combien le recuit sait « trouver » dans le bruit, à force d'essayer des réglages. Un vrai recuit doit le dépasser nettement, avec la même durée.
+6. **Confirmation sur C.**
    - Réapprentissage sur A + B, puis mesure sur C, jamais vu.
    - Chaque biais est testé dans le sens trouvé.
    - Correction pour le nombre de tests (Benjamini-Hochberg).

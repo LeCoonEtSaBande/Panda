@@ -49,7 +49,7 @@ DEPART = {
     "deplacements": {},
     "roles": {p: 1.0 for p in POSTES},
     "seuil": 0.30,
-    "lambda": 5.0,
+    "lambda": 20.0,
 }
 
 # Bornes de chaque paramètre.
@@ -61,16 +61,23 @@ BORNES = {
     "role": (0.0, 2.0),
     "role_jgl": (0.5, 2.0),   # la jungle reste toujours dans l'équation
     "seuil": (0.15, 0.60),
-    "lambda": (0.3, 100.0),
+    "lambda": (5.0, 300.0),
     "deplacements_max": 10,
 }
 # Garde-fous contre un algorithme qui « triche » en faisant un groupe par champion :
 # - chaque groupe doit garder au moins TAILLE_MIN_GROUPE champions (sinon le réglage est rejeté) ;
 # - au plus 12 groupes, au plus 10 champions déplacés ;
-# - une variable de biais n'est gardée que si sa situation apparaît dans au moins 50 parties de A ;
+# - une situation n'est étudiée que si elle apparaît dans au moins 300 parties de recherche ;
+# - un champion ne peut être déplacé que vers son groupe voisin ; régularisation d'au moins 5 ;
+# - le score est mesuré en 5 rotations sur toutes les parties de recherche (chaque partie sert à
+#   noter un modèle qui ne l'a pas vue) : bien moins de place pour la chance qu'un seul tas B ;
 # - le score est mesuré sur B, que l'apprentissage n'a pas vu, et comparé au score que le même recuit
-#   atteint sur des victoires mélangées au hasard (option --melanger) : seul l'écart compte.
+#   atteint sur des victoires tirées au sort selon la seule force des champions (option --melanger) :
+#   seul l'écart compte.
 TAILLE_MIN_GROUPE = 8
+# Une situation (compo X contre Y, jungler J contre compo Y...) n'est étudiée que si elle apparaît
+# dans au moins 300 parties de recherche (A + B).
+MIN_PARTIES_SITUATION = 300
 
 
 def borner(x, bornes):
@@ -97,9 +104,13 @@ def voisin(params, rng, champions):
         if len(p["deplacements"]) >= BORNES["deplacements_max"] and rng.random() < 0.5:
             p["deplacements"].pop(rng.choice(sorted(p["deplacements"])))
             return p, "retour d'un champion dans son groupe"
+        # Un champion ne peut aller que vers son groupe voisin (voir bloc 1) ; la cible est
+        # recalculée par le bloc 1, la valeur notée ici est seulement « déplacé ».
         champion = rng.choice(champions)
-        k = p["k"] if p["mode"] == "mesure" else (6 + int(p["separer_tanks"]))
-        p["deplacements"][champion] = rng.randrange(k)
+        if champion in p["deplacements"]:
+            p["deplacements"].pop(champion)
+            return p, f"retour de {champion}"
+        p["deplacements"][champion] = 1
         return p, f"déplacement de {champion}"
     # Changements du bloc 1 lui-même : les déplacements n'ont plus de sens, on les efface.
     p["deplacements"] = {}
@@ -136,7 +147,7 @@ def signature_bloc1(params):
 class Machine:
     """Données préparées une fois ; evaluer(params) fait tourner les blocs 1, 2 et 3."""
 
-    def __init__(self, table, mesures, apprentissage=("A",), evaluation=("B",)):
+    def __init__(self, table, mesures, apprentissage=("A",), evaluation=("B",), rotation=False):
         self.table = table
         self.mesures = mesures
         self.index = bloc2.Index(table)
@@ -144,8 +155,16 @@ class Machine:
         # Recuit : A puis B. Confirmation : A + B puis C.
         self.lignes_a = np.where(table["tas"].isin(apprentissage))[0]
         self.lignes_b = np.where(table["tas"].isin(evaluation))[0]
-        force = bloc3.Force(self.index, self.lignes_a)
-        self.dec_a, (self.dec_b,) = force.decalages(self.lignes_a, [self.lignes_b])
+        if rotation:
+            # Recuit : toutes les parties de recherche (A + B), notées en 5 rotations.
+            self.lignes = np.sort(np.concatenate([self.lignes_a, self.lignes_b]))
+            self.pli = bloc3.plis(len(self.lignes))
+            force = bloc3.Force(self.index, self.lignes)
+            self.dec, _ = force.decalages(self.lignes, [], pli=self.pli)
+        else:
+            force = bloc3.Force(self.index, self.lignes_a)
+            self.dec_a, (self.dec_b,) = force.decalages(self.lignes_a, [self.lignes_b])
+        self.rotation = rotation
         self.lambda_force = force.lam
         self.cache_bloc1 = {}
         self.champions = sorted(set(mesures["champion"]))
@@ -160,9 +179,9 @@ class Machine:
         cat = copy.copy(self.cache_bloc1[cle])
         cat.groupe = dict(cat.groupe)
         deplacements = params.get("deplacements", {})
-        for champion, cible in deplacements.items():
-            if champion in cat.groupe and 0 <= cible < cat.k:
-                cat.groupe[champion] = cible
+        for champion in deplacements:
+            if champion in cat.voisin:
+                cat.groupe[champion] = cat.voisin[champion]
         if deplacements:
             membres = {}
             for champion, g in sorted(cat.groupe.items()):
@@ -176,12 +195,17 @@ class Machine:
         if tailles.min() < TAILLE_MIN_GROUPE:
             return bloc3.Evaluation(score=-1e9, score_a=-1e9, biais=[], nb_variables=0), cat
         compos = bloc2.construire(cat, self.index, params)
-        ev = bloc3.evaluer(compos, self.index, self.lignes_a, self.lignes_b, self.dec_a, self.dec_b,
-                           params["lambda"], avec_biais=avec_biais)
+        if self.rotation:
+            ev = bloc3.evaluer_rotation(compos, self.index, self.lignes, self.pli, self.dec, params["lambda"],
+                                        min_parties=MIN_PARTIES_SITUATION, avec_biais=avec_biais,
+                                        lignes_a=self.lignes_a, lignes_b=self.lignes_b)
+        else:
+            ev = bloc3.evaluer(compos, self.index, self.lignes_a, self.lignes_b, self.dec_a, self.dec_b,
+                               params["lambda"], min_parties=MIN_PARTIES_SITUATION, avec_biais=avec_biais)
         return ev, cat
 
 
-def recuit(machine, minutes, graine=1, depart=None, journal=print, t0=0.30, t_fin=0.005):
+def recuit(machine, minutes, graine=1, depart=None, journal=print, t0=0.30, t_fin=0.005, essais_max=None):
     """Recuit simulé pendant `minutes`. Renvoie (palmarès, historique)."""
     rng = random.Random(graine)
     courant = copy.deepcopy(depart or DEPART)
@@ -191,9 +215,9 @@ def recuit(machine, minutes, graine=1, depart=None, journal=print, t0=0.30, t_fi
     debut = time.time()
     duree = 60 * minutes
     iteration, sans_progres, meilleur = 0, 0, score_courant
-    while time.time() - debut < duree:
+    while time.time() - debut < duree and (essais_max is None or iteration < essais_max):
         iteration += 1
-        avance = (time.time() - debut) / duree
+        avance = (time.time() - debut) / duree if essais_max is None else iteration / essais_max
         temperature = t0 * (t_fin / t0) ** avance
         candidat, changement = voisin(courant, rng, machine.champions)
         try:
@@ -235,7 +259,8 @@ def resume_reglage(params, cat):
     if params["mode"] == "mesure":
         texte.append("Poids des familles : " + ", ".join(f"{f} {v:.2f}" for f, v in params["familles"].items()))
     if params["deplacements"]:
-        texte.append("Champions déplacés : " + ", ".join(f"{c} -> {cat.noms[g]}" for c, g in sorted(params["deplacements"].items()) if g < cat.k))
+        texte.append("Champions déplacés vers leur groupe voisin : " + ", ".join(
+            f"{c} -> {cat.noms[cat.voisin[c]]}" for c in sorted(params["deplacements"]) if c in cat.voisin))
     return texte
 
 
@@ -258,7 +283,7 @@ def rapport(machine, palmares, historique, iterations, minutes, graine, dossier=
             break
     sortie = {
         "date": date, "minutes": minutes, "graine": graine, "essais": iterations, "victoires_melangees": melange,
-        "tas": {"A": int(len(machine.lignes_a)), "B": int(len(machine.lignes_b))},
+        "tas": {"A": int(len(machine.lignes_a)), "B": int(len(machine.lignes_b)), "notation": "5 rotations sur A + B"},
         "score_depart": depart_ev.score,
         "historique": historique,
         "palmares": [{
@@ -272,12 +297,12 @@ def rapport(machine, palmares, historique, iterations, minutes, graine, dossier=
         (dossier / "dernier_recuit.json").write_text(json.dumps({"fichier": chemin.name}, ensure_ascii=False) + "\n", encoding="utf-8")
     lignes = [f"# Recuit simulé du {date}", "",
               f"- {iterations} réglages essayés en {minutes} min (graine {graine}).",
-              f"- Tas : A = {len(machine.lignes_a)} parties pour apprendre, B = {len(machine.lignes_b)} pour noter. C n'a pas été lu.",
-              f"- Score = baisse de la perte logarithmique sur B, en millièmes, par rapport à la seule force des champions. "
-              f"0 = aucun biais utile.",
-              f"- Score du départ (catalogue actuel, règle actuelle) : {depart_ev.score:.3f} sur B ({depart_ev.score_a:.3f} sur A).", ""]
+              f"- Parties de recherche : A + B = {len(machine.lignes_a) + len(machine.lignes_b)}, notées en 5 rotations. C n'a pas été lu.",
+              f"- Score = baisse de la perte logarithmique sur les parties non vues, en millièmes, par rapport à la seule "
+              f"force des champions. 0 = aucun biais utile. À comparer au seuil de hasard (recuit sur victoires tirées au sort).",
+              f"- Score du départ (catalogue actuel, règle actuelle) : {depart_ev.score:.3f} (appris par cœur : {depart_ev.score_a:.3f}).", ""]
     for i, (params, ev, cat) in enumerate(retenus[:5]):
-        lignes += [f"## Réglage n° {i + 1} : score {ev.score:.3f} sur B ({ev.score_a:.3f} sur A)", ""]
+        lignes += [f"## Réglage n° {i + 1} : score {ev.score:.3f} (appris par cœur : {ev.score_a:.3f})", ""]
         lignes += [f"- {t}" for t in resume_reglage(params, cat)]
         lignes += ["", "Biais les plus forts (à confirmer sur C) :", ""]
         tenus = [b for b in ev.biais if not b["genre"].startswith("capacite") and b["taux_B"] == b["taux_B"]
@@ -289,15 +314,26 @@ def rapport(machine, palmares, historique, iterations, minutes, graine, dossier=
 
 
 def preparer(regle=None, melanger=False, graine=0):
-    """Données des tas A et B. `melanger` : les victoires sont tirées au hasard (même proportion),
-    pour mesurer jusqu'où le recuit monte sur du pur hasard (le seuil à dépasser)."""
+    """Données des tas A et B.
+
+    `melanger` : seuil de hasard. Les victoires sont remplacées par des victoires TIRÉES AU SORT
+    selon la seule force des champions (apprise sur A + B) : la force des champions reste vraie,
+    mais il n'existe plus aucun biais de compo. Le score que le recuit atteint alors est ce qu'il
+    sait « trouver » dans le bruit ; un vrai recuit doit faire nettement mieux.
+    """
     regle = regle or commun.lire_decoupage()
     table = commun.drafts(regle)
     table = table[table["tas"].isin(["A", "B"])].reset_index(drop=True)
     if melanger:
+        index = bloc2.Index(table)
+        tout = np.arange(len(table))
+        force = bloc3.Force(index, tout)
+        force.decalages(tout, [])
+        beta, c = force.apprendre(tout, force.lam)
+        proba = bloc3.sigmoide(force.matrice(tout) @ beta + c)
         rng = np.random.default_rng(graine)
-        table["bleu_gagne"] = rng.permutation(table["bleu_gagne"].to_numpy())
-    return Machine(table, bloc1.lire_mesures())
+        table["bleu_gagne"] = (rng.random(len(table)) < proba).astype(int)
+    return Machine(table, bloc1.lire_mesures(), rotation=True)
 
 
 def main():
@@ -305,8 +341,9 @@ def main():
     parser.add_argument("--minutes", type=float, default=60)
     parser.add_argument("--graine", type=int, default=1)
     parser.add_argument("--une-iteration", action="store_true")
+    parser.add_argument("--essais", type=int, help="arrêter après ce nombre de réglages (comparaisons à effort égal)")
     parser.add_argument("--sans-validation", action="store_true", help="essai local avant validation du découpage")
-    parser.add_argument("--melanger", action="store_true", help="victoires mélangées : mesure du score atteint par hasard")
+    parser.add_argument("--melanger", action="store_true", help="victoires tirées au sort selon la force des champions : seuil de hasard")
     args = parser.parse_args()
     regle = commun.lire_decoupage()
     if not args.sans_validation:
@@ -317,12 +354,12 @@ def main():
     if args.une_iteration:
         t = time.time()
         ev, cat = machine.evaluer(DEPART, avec_biais=True)
-        print(f"Itération 0 (catalogue actuel) : score {ev.score:.3f} sur B, {ev.score_a:.3f} sur A, "
+        print(f"Itération 0 (catalogue actuel) : score {ev.score:.3f} en rotation, {ev.score_a:.3f} appris par cœur, "
               f"{ev.nb_variables} variables, {time.time() - t:.2f} s.")
         for b in ev.biais[:15]:
             print(" -", bloc3.phrase(b))
         return 0
-    palmares, historique, n = recuit(machine, args.minutes, args.graine)
+    palmares, historique, n = recuit(machine, args.minutes, args.graine, essais_max=args.essais)
     chemin = rapport(machine, palmares, historique, n, args.minutes, args.graine, melange=args.melanger)
     print(f"Recuit terminé : {n} essais, résultats dans {chemin}")
     return 0

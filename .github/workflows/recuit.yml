@@ -15,7 +15,7 @@ on:
         default: "1"
         required: true
       hasard:
-        description: "Victoires mélangées au hasard (mesure le score atteint par pure chance)"
+        description: "Seuil de hasard : victoires tirées au sort selon la seule force des champions"
         type: boolean
         default: false
       branche:
@@ -60,4 +60,4 @@ jobs:
       - name: Enregistrer les résultats
         if: always()
         run: |
-          bash analyse/iteratif/enregistrer_resultats.sh "Recuit simulé, ${{ inputs.minutes }} min, graine ${{ inputs.graine }}${{ inputs.hasard && ', victoires mélangées' || '' }}"
+          bash analyse/iteratif/enregistrer_resultats.sh "Recuit simulé, ${{ inputs.minutes }} min, graine ${{ inputs.graine }}${{ inputs.hasard && ', seuil de hasard' || '' }}"
