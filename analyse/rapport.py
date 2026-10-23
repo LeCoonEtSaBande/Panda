@@ -163,7 +163,9 @@ def main():
     print(f"Rapport : {len(lignes)} parties, {len(obs)} observations, {len(scenarios)} scénarios.")
 
     # Les analyses par profil ne doivent jamais faire échouer le rapport.
-    for nom in ("profils", "compos"):
+    # controle : contrôle des données ; categories : profils mesurés des champions (échantillon figé) ;
+    # biais : hypothèses de hypotheses.json, sur l'échantillon figé puis sur les parties suivantes.
+    for nom in ("profils", "compos", "controle", "categories", "biais"):
         try:
             __import__(nom).main()
         except Exception as erreur:  # noqa: BLE001

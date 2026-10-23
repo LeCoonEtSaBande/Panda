@@ -18,6 +18,9 @@ import lecture
 
 ICI = Path(__file__).resolve().parent
 FIGE = ICI / "echantillon_fige.json"
+# Lue une seule fois, en local, au moment de figer (jamais par le rapport) : on note quelles parties de
+# l'échantillon figé sont aussi dans l'archive, pour que les tests de réplication les écartent.
+ARCHIVE = ICI.parent / "archives" / "2026-10-22_avant_details" / "parties.csv"
 
 
 def ordre_parties(donnees=lecture.DONNEES):
@@ -70,12 +73,18 @@ def figer(donnees=lecture.DONNEES, chemin=FIGE):
         raise SystemExit(f"{chemin} existe déjà : l'échantillon est figé une seule fois.")
     completes = parties_completes_ordonnees(donnees)
     toutes = ordre_parties(donnees)
+    communs = []
+    if ARCHIVE.exists():
+        anciens = set(ordre_parties(ARCHIVE.parent))
+        communs = [m for m in completes if m in anciens]
     contenu = {
         "N": len(completes),
         "dernier_match": completes[-1] if completes else "",
         "dernier_match_parties_csv": toutes[-1] if toutes else "",
         "date": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
         "regle": "Les N premières parties complètes (dans parties.csv et details_parties), dans l'ordre de parties.csv.",
+        "nb_communs_archive": len(communs),
+        "communs_archive": communs,
     }
     Path(chemin).write_text(json.dumps(contenu, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return contenu
