@@ -10,9 +10,9 @@
 Ce que le recuit règle (le sens des mots) :
 - poids des postes dans le score de style d'une compo : jungle, support, les 3 autres lanes ensemble ;
 - seuil « compo X » : score à atteindre, en équivalents champions (2 = deux champions du style) ;
-- piste scenarios : poids du style secondaire, et au plus 15 champions dont on inverse principal et
+- piste scenarios : poids du style secondaire, et au plus 5 champions dont on inverse principal et
   secondaire ;
-- piste teamfight : au plus 15 champions déplacés vers leur groupe voisin mesuré.
+- piste teamfight : au plus 5 champions déplacés vers leur groupe voisin mesuré.
 Garde-fou : un réglage qui laisse moins de scénarios étudiables (300 parties de A) qu'au départ est
 refusé, pour que le recuit ne puisse pas « gagner » en faisant disparaître les scénarios.
 Fixés : beaucoup d'engage = 3, peel = Counter-engage ou Disengage au support ou au jungler,
@@ -55,7 +55,7 @@ GROUPES = ("Engage (tanks)", "Engage (bruisers)", "Supports tanks", "Pick (assas
            "Carrys", "Disengage (enchanteurs)")
 POSTES = bloc2.POSTES                       # top, jgl, mid, adc, sup
 MIN_PARTIES = 300                           # une situation doit apparaître dans 300 parties de A
-MAX_DEPLACEMENTS = 15
+MAX_DEPLACEMENTS = 5
 BEAUCOUP_ENGAGE = 3.0
 LAMBDAS = (10.0, 30.0, 100.0, 300.0, 1000.0)
 TAILLE_PALMARES = 10

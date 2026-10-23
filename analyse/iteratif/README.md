@@ -12,7 +12,7 @@ Les timelines et les stats de jeu servent **seulement à ranger les champions** 
 >   (avec leur sens attendu), chacun aussi vu du jungler, plus une famille « exploration ».
 > - Piste `teamfight` : groupe teamfight (7 groupes) et tanky. Tout y est exploration.
 > - Boutons : poids jungle / support / autres lanes, seuil « compo X » (en équivalents champions), poids du
->   secondaire (scenarios), au plus 15 champions changés (inversion principal/secondaire, ou groupe voisin
+>   secondaire (scenarios), au plus 5 champions changés (inversion principal/secondaire, ou groupe voisin
 >   mesuré). Garde-fou : pas moins de scénarios étudiables qu'au départ.
 > - Workflow « Lancer un recuit simulé » : case « piste » ; chaque piste + hasard a sa propre file.
 >
