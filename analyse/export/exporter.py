@@ -84,6 +84,7 @@ def teamfight():
                 groupes = list(m.groups())
                 effets.append({"genre": genre, "x": groupes[0] if groupes else None, "y": groupes[1] if len(groupes) > 1 else None,
                                "nom": b["nom"], "taux": (ta * na + tb * nb) / (na + nb), "taux_A": ta, "taux_B": tb,
+                               "coefficient": b["coefficient"],
                                "parties": na + nb})
                 break
     return {"recuit": fichiers[-1].name, "roles": meilleur["parametres"]["roles"], "seuil": meilleur["parametres"]["seuil"],
