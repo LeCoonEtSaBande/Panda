@@ -18,6 +18,10 @@ Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la
 - **Selon la durée** : la chance de gagner avant 20 min, à 20-25, 25-30, 30-35 et après 35 min, due au seul tempo des deux compos, avec le conseil qui va avec (finir vite ou temporiser).
 - **Comment jouer** avec le champion recommandé (ou le sien, ou celui sur lequel on clique) : pour chaque lane, l'écart d'or attendu à 15 min et la chance d'être devant ; la chance que le gank de son jungler finisse en kill avant 15 min, et celle du jungler adverse ; le matchup Lolalytics. En jungle : lanes avec ou sans prio, meilleure lane à ganker, lane exposée, envahir à 5, 10, 15 et 20 min. En lane : sa chance d'être devant, le risque de gank adverse, l'aide de son jungler.
 
+- **Valider la compo** : quand les 10 champions sont entrés. La page passe au récapitulatif : le plan en quelques lignes (tempo, lanes devant ou derrière, où ganker et quand envahir, ou ta lane et le risque de gank, dégâts adverses, leurs ultimes qui contrôlent), une carte simplifiée de la Faille avec chaque lane, et chaque champion avec ses styles du catalogue et ses contrôles. « Nouvelle draft » repart de zéro pour la partie suivante.
+- **Un poste sans champion dans le profil** = tous les champions de ce poste sont proposés.
+- **Seulement ce qui est confirmé** sur nos parties jamais vues (tas C) : force du patch et contres (Lolalytics), or à 15 min par lane, ganks, envahir à 15 min pour les junglers Engage (tanks et bruisers), early/late, mix de dégâts. Les effets du recuit teamfight, non confirmés, ont été retirés (24/10/2026).
+
 ## D'où viennent les chiffres
 
 | Chiffre | Source |
@@ -25,8 +29,8 @@ Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la
 | Force du patch, contres, matchups de lane, poste deviné | Lolalytics, Platine et plus, tous serveurs (branche `scraping`) |
 | Or à 15 min, chance d'être devant | nos parties Émeraude-Diamant avec timeline (`analyse/contres`, `analyse/lanes/dynamique.py`) |
 | Ganks réussis | nos parties (`analyse/lanes/ganks.py`) |
-| Effets d'équipe | recuit teamfight (`analyse/iteratif/recuit_pistes.py`), effets qui tiennent sur A et sur B |
 | Dégâts par type, early / late | Lolalytics (page de chaque champion, `profils.csv`), sinon nos parties ; effets vérifiés sur nos parties (`analyse/lanes/duree_degats.py`) |
-| Envahir | `analyse/lanes/envahir.py` (5 à 20 min, à écart d'or égal) : ce que font les junglers qui gagnent, pas une cause prouvée |
+| Contrôles des sorts | Data Dragon (descriptions officielles, `sorts.py`, rafraîchi à chaque génération) |
+| Envahir | `analyse/lanes/envahir.py` (5 à 20 min, à écart d’or égal ; seules les minutes et catégories confirmées sur C sont affichées) : ce que font les junglers qui gagnent, pas une cause prouvée |
 
 `construire.py` assemble tout dans `modele.html`.

@@ -10,16 +10,16 @@
   --fond:#0f1418; --carte:#171e24; --carte2:#1d262e; --ligne:#2a3640; --texte:#e6ecef; --doux:#93a3ad;
   --nous:#3d8bd9; --nous-doux:#16293a; --eux:#d9573d; --eux-doux:#3a1d17; --bon:#4fbf7f; --mauvais:#e0685a;
   --titre:"Segoe UI Semibold","Segoe UI",system-ui,-apple-system,sans-serif; --corps:"Segoe UI",system-ui,-apple-system,sans-serif;
-  --chiffres:ui-monospace,"Cascadia Mono",Consolas,monospace; --physique:#e08a3c; --magique:#8f82f5; --brut:#b9c3c9;
+  --chiffres:ui-monospace,"Cascadia Mono",Consolas,monospace; --physique:#e08a3c; --magique:#8f82f5; --brut:#b9c3c9; --riviere:#1f3f55;
 }
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
   --fond:#eef2f4; --carte:#ffffff; --carte2:#f4f7f9; --ligne:#d3dce1; --texte:#18222a; --doux:#5a6a74;
   --nous:#1f6fbf; --nous-doux:#e3eefa; --eux:#c0452c; --eux-doux:#fae8e3; --bon:#21844b; --mauvais:#c0392b;
-  --physique:#c4661a; --magique:#5a4ccf; --brut:#8a979f; color-scheme:light}}
+  --physique:#c4661a; --magique:#5a4ccf; --brut:#8a979f; --riviere:#bcd9ea; color-scheme:light}}
 :root[data-theme="light"]{
   --fond:#eef2f4; --carte:#ffffff; --carte2:#f4f7f9; --ligne:#d3dce1; --texte:#18222a; --doux:#5a6a74;
   --nous:#1f6fbf; --nous-doux:#e3eefa; --eux:#c0452c; --eux-doux:#fae8e3; --bon:#21844b; --mauvais:#c0392b;
-  --physique:#c4661a; --magique:#5a4ccf; --brut:#8a979f; color-scheme:light}
+  --physique:#c4661a; --magique:#5a4ccf; --brut:#8a979f; --riviere:#bcd9ea; color-scheme:light}
 *{box-sizing:border-box}
 html{color-scheme:dark}
 body{margin:0;background:var(--fond);color:var(--texte);font-family:var(--corps);font-size:14px;line-height:1.45;
@@ -98,6 +98,49 @@ button{background:var(--carte2);border:1px solid var(--ligne);border-radius:6px;
 .tempo div{background:var(--carte2);border-radius:6px;padding:6px 4px;text-align:center;display:flex;flex-direction:column;gap:2px}
 .tempo .chiffre{font-size:1.05rem}
 @media (max-width:480px){.tempo{grid-template-columns:repeat(3,1fr)}}
+details.aide{font-size:.8rem;color:var(--doux)}
+details.aide summary{cursor:pointer;list-style:none;display:inline-flex;gap:6px;align-items:center}
+details.aide summary::before{content:"?";display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--ligne);font-size:.7rem}
+details.aide p{margin:6px 0 0}
+button.principal{background:var(--nous);border-color:var(--nous);color:#fff;font-family:var(--titre)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.recap{display:flex;flex-direction:column;gap:16px}
+.recap-tete{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.recap-tete h2{font-size:1.25rem}
+.cles{display:grid;grid-template-columns:110px 1fr;gap:8px 14px;margin:0}
+.cles dt{font-family:var(--titre);color:var(--doux)}
+.cles dd{margin:0}
+@media (max-width:520px){.cles{grid-template-columns:1fr;gap:2px}.cles dd{margin-bottom:8px}}
+.recap-corps{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.recap-corps{grid-template-columns:1fr}}
+.carte{position:relative;width:100%;max-width:560px;aspect-ratio:1/1;margin:0 auto}
+.carte svg{position:absolute;inset:0;width:100%;height:100%}
+.carte .sol{fill:var(--carte2)}
+.carte .riviere{stroke:var(--riviere);stroke-width:9;fill:none}
+.carte .voie{stroke:var(--ligne);stroke-width:4.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.carte .base-nous{fill:var(--nous)} .carte .base-eux{fill:var(--eux)}
+.carte .fosse{fill:var(--carte);stroke:var(--ligne);stroke-width:.6}
+.carte .etiquette{fill:var(--doux);font-size:3.2px;font-family:var(--corps)}
+.carte .gank{stroke:var(--nous);stroke-width:1.1;stroke-dasharray:2.2 1.6;fill:none;marker-end:url(#fleche)}
+.badge{position:absolute;transform:translate(-50%,-50%);width:36%;background:var(--carte);border:1px solid var(--ligne);border-left-width:4px;
+  border-radius:8px;padding:5px 7px;font-size:.74rem;line-height:1.3;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.badge.devant{border-left-color:var(--bon)} .badge.derriere{border-left-color:var(--mauvais)} .badge.egal{border-left-color:var(--doux)}
+.badge.moi{outline:2px solid var(--nous);outline-offset:1px}
+.badge .b-tete{display:flex;justify-content:space-between;gap:4px;font-family:var(--titre)}
+.badge .b-champs{color:var(--doux);overflow-wrap:anywhere}
+.badge .b-champs .n{color:var(--nous)} .badge .b-champs .e{color:var(--eux)}
+.badge .tag{display:inline-block;margin-top:2px;padding:0 5px;border-radius:999px;background:var(--fond);border:1px solid var(--ligne);font-size:.68rem}
+@media (max-width:480px){.badge{width:40%;font-size:.66rem;padding:3px 5px}}
+.champs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.champs{grid-template-columns:1fr}}
+.champs h3{margin:0 0 6px;font-family:var(--titre);font-size:.95rem}
+.champ{background:var(--carte2);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;margin-bottom:6px;border-left:3px solid var(--nous)}
+.champ.eux{border-left-color:var(--eux)}
+.champ .c-tete{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.cc{font-size:.8rem;display:flex;flex-direction:column;gap:2px}
+.touche{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:4px;background:var(--fond);border:1px solid var(--ligne);
+  font-family:var(--chiffres);font-size:.72rem;margin-right:4px}
+.puce.style{background:var(--nous-doux)}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -134,7 +177,10 @@ button{background:var(--carte2);border:1px solid var(--ligne);border-radius:6px;
           <div class="mix" id="mix-eux"></div>
         </section>
       </div>
-      <div class="boutons">
+      <div class="boutons" style="align-items:center">
+        <button type="button" id="valider" class="principal">Valider la compo</button>
+        <span class="petit" id="valider-aide"></span>
+        <span style="flex:1"></span>
         <button type="button" id="effacer">Nouvelle draft</button>
         <button type="button" id="echanger">Inverser les équipes</button>
       </div>
@@ -145,10 +191,11 @@ button{background:var(--carte2);border:1px solid var(--ligne);border-radius:6px;
           <label><input type="checkbox" id="tous"> tous les champions du poste</label>
         </div>
         <div class="reco" id="reco"></div>
-        <p class="note">Score en points de victoire, à ajouter les uns aux autres : force du patch (Lolalytics, écart à la moyenne du poste),
-          contre ton adversaire direct, et à moitié contre le reste de leur équipe (écart au taux attendu, Lolalytics, rétréci quand il y a
-          peu de parties), effets d'équipe (groupes teamfight, nos parties : score du modèle qui les apprend ensemble, détail = taux mesuré).
-          Adversaire direct inconnu : moyenne sur ses champions probables. Ordres de grandeur, pas des certitudes.</p>
+        <details class="aide"><summary>Comment lire ce score</summary>
+          <p>Points de victoire estimés, qui s'additionnent : force du champion au patch, contre ton adversaire direct, et à moitié contre
+          le reste de leur équipe (Lolalytics, Platine et plus), plus la pénalité d'une équipe presque toute physique ou toute magique.
+          Adversaire direct inconnu : moyenne sur ses champions probables. Tout ce qui est affiché a été confirmé sur nos parties jamais
+          vues (tas C). Ordres de grandeur, pas des certitudes.</p></details>
       </section>
 
       <section class="panneau">
@@ -156,19 +203,39 @@ button{background:var(--carte2);border:1px solid var(--ligne);border-radius:6px;
         <div id="tempo" style="display:flex;flex-direction:column;gap:6px"></div>
         <div class="lanes" id="lanes"></div>
         <ul class="conseils" id="conseils"></ul>
-        <p class="note">Or à 15 min : écart attendu d'après les champions de la lane (nos parties Émeraude-Diamant). Gank réussi : chance que le
-          jungler participe à au moins un kill sur cette lane avant 15 min. Envahir : présence dans la jungle adverse à 5, 10, 15 ou 20 min,
-          comparée à écart d'or égal ; c'est ce que font les junglers qui gagnent, pas une cause prouvée. Selon la durée : chance de gagner
-          due au seul tempo des deux compos (early ou late, Lolalytics), à draft égale par ailleurs, avec l'amplitude vérifiée sur nos parties.
-          Dégâts : part physique, magique et brute de chaque équipe (dégâts moyens de chaque champion à son poste) ; une équipe presque toute
-          physique ou toute magique gagne moins dans nos parties, à force de champions égale.</p>
+        <details class="aide"><summary>Comment lire ces chiffres</summary>
+          <p>Or à 15 min : écart attendu d'après les champions de la lane. Gank réussi : chance que le jungler participe à au moins un kill
+          sur cette lane avant 15 min. Selon la durée : chance de gagner due au seul tempo des deux compos (early ou late), à draft égale par
+          ailleurs. Envahir : seulement quand c'est confirmé pour ce type de jungler ; c'est ce que font les junglers qui gagnent, à écart
+          d'or égal, pas une cause prouvée. Nos parties Émeraude-Diamant ; tout est confirmé sur des parties jamais vues (tas C).</p></details>
       </section>
+    </div>
+  </div>
+
+  <div id="vue-recap" hidden>
+    <div class="recap">
+      <div class="recap-tete">
+        <h2 id="recap-titre">Ta partie</h2>
+        <div class="boutons"><button type="button" id="modifier">Modifier la draft</button>
+          <button type="button" id="nouvelle" class="principal">Nouvelle draft</button></div>
+      </div>
+      <section class="panneau"><h2>Le plan</h2><dl class="cles" id="recap-plan"></dl></section>
+      <div class="recap-corps">
+        <section class="panneau">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline">
+            <h2>Sur la carte</h2><label class="petit"><input type="checkbox" id="cote-rouge"> on est côté rouge</label>
+          </div>
+          <div class="carte" id="carte"></div>
+          <p class="note">Bordure verte : lane annoncée devant à 15 min, rouge : derrière. Pourcentage : chance d'être devant à 15 min.</p>
+        </section>
+        <section class="panneau"><h2>Les champions</h2><div class="champs" id="recap-champs"></div></section>
+      </div>
     </div>
   </div>
 
   <div id="vue-profils" hidden>
     <div style="display:flex;flex-direction:column;gap:16px">
-      <p class="note" style="font-size:.9rem">Un profil = une personne : les postes qu'elle joue et ses champions à chaque poste. La page retient
+      <p class="note" style="font-size:.9rem">Un profil = une personne : les postes qu'elle joue et ses champions à chaque poste. Un poste sans champion = tous les champions de ce poste. La page retient
         le dernier profil, le dernier poste et la dernière draft, dans ce navigateur, pour la prochaine ouverture.</p>
       <div id="profils" style="display:flex;flex-direction:column;gap:12px"></div>
       <div class="boutons"><button type="button" id="ajouter-profil">Ajouter un profil</button></div>
@@ -288,9 +355,20 @@ function tempoEquipe(eq) {
   return {s, n};
 }
 
+// --- Ce qui est confirmé sur C (le reste n'est pas affiché) -----------------------------------------
+const CONF = D.conf || {};
+function envahirConfirme(gr) {
+  const sortie = [];
+  for (const [mn, s] of Object.entries(D.invm || {})) {
+    if (!(s.confirme_C || []).includes(gr)) continue;
+    const d = s.groupes[gr]; sortie.push({minute: +mn, points: (d.A + d.B) / 2});
+  }
+  return sortie;
+}
+
 // --- Recommandations, pour n'importe quel poste -------------------------------------------------------
-function force(c, R) { const t = D.tier[R][lola(c)]; if (!t) return null; return (t[0] - D.moy[R]) * t[1] / (t[1] + 1000); }
-function contre(c, R, P, e) { const m = MU.get(`${R}|${lola(c)}|${P}|${lola(e)}`); return m ? {pts: m[0] * m[2] / (m[2] + 300), wr: m[1], n: m[2]} : null; }
+function force(c, R) { if (CONF.force === false) return null; const t = D.tier[R][lola(c)]; if (!t) return null; return (t[0] - D.moy[R]) * t[1] / (t[1] + 1000); }
+function contre(c, R, P, e) { if (P === R ? CONF.contre_direct === false : CONF.contres_autres === false) return null; const m = MU.get(`${R}|${lola(c)}|${P}|${lola(e)}`); return m ? {pts: m[0] * m[2] / (m[2] + 300), wr: m[1], n: m[2]} : null; }
 function probables(P, exclus) {
   return Object.entries(D.tier[P]).filter(([c, t]) => t[3] >= 0.8 && !exclus.has(c)).sort((a, b) => b[1][3] - a[1][3]).slice(0, 25);
 }
@@ -316,9 +394,9 @@ function evaluer(c, R, nous, eux) {
   const avecC = Object.assign({}, nous, {[R]: c});
   const effets = effetsEquipe(avecC, eux), mx = mixEffet(mixEquipe(avecC));
   const eq = 100 * (sig(effets.reduce((s, e) => s + e.logit, 0) + (mx ? mx.coef : 0)) - 0.5);
-  if (effets.length || mx) puces.push({t: `Effets d'équipe ${pts(eq)}`, v: eq});
+  if (effets.length) puces.push({t: `Effets d'équipe ${pts(eq)}`, v: eq});
   for (const e of effets) puces.push({t: `${e.sens > 0 ? "" : "(eux) "}${e.nom} : ${(100 * e.taux).toFixed(1)} %`, v: (e.sens > 0 ? e.taux : 1 - e.taux) - 0.5, detail: true});
-  if (mx) puces.push({t: `${mx.titre} ${pts(points(mx.coef))}`, v: points(mx.coef), detail: true});
+  if (mx) puces.push({t: `${mx.titre} ${pts(points(mx.coef))}`, v: points(mx.coef), detail: effets.length > 0});
   const s = DD && (DD.late[R] || {})[c];
   if (s !== undefined && s !== null && Math.abs(100 * s) >= 2) puces.push({t: `${s > 0 ? "late" : "early"} (${pts(100 * s)} pts / 10 min)`, v: 0});
   return {c, total: (f || 0) + direct + autres + eq, puces};
@@ -328,6 +406,7 @@ function evaluer(c, R, nous, eux) {
 const LANES = [["top", ["top"]], ["jgl", ["jgl"]], ["mid", ["mid"]], ["bot", ["adc", "sup"]]];
 const laneDuPoste = R => R === "adc" || R === "sup" ? "bot" : R;
 function orLane(roles, nous, eux) {
+  if (CONF.lanes === false) return null;
   let total = 0, connu = 0, s = 0;
   for (const p of roles) { const L = D.lanes[p]; if (!L) continue; s = Math.max(s, L.s);
     const a = nous[p], b = eux[p]; if (!a || !b) continue; connu++;
@@ -335,6 +414,7 @@ function orLane(roles, nous, eux) {
   return connu ? {or: total, proba: phi(total / s), partiel: connu < roles.length} : null;
 }
 function gank(jungler, lane, allies, adverses) {
+  if (CONF.ganks === false) return null;
   const G = D.ganks, g = groupe(jungler); let x = G.constante + (G.base[g + "|" + lane] || 0) + (G.jungler[jungler + "|" + lane] || 0);
   for (const p of (lane === "bot" ? ["adc", "sup"] : [lane])) {
     if (allies[p]) x += G.allie[p + "|" + allies[p]] || 0; if (adverses[p]) x += G.adverse[p + "|" + adverses[p]] || 0; }
@@ -349,7 +429,7 @@ function dessinerBarre() {
   const postes = pr.postes.length ? pr.postes : POSTES;
   document.getElementById("poste-joue").innerHTML = postes.map(p => `<option value="${p}"${p === etat.poste ? " selected" : ""}>${NOM_POSTE[p]}</option>`).join("");
   const pool = (pr.pool[etat.poste] || []);
-  document.getElementById("rappel-pool").textContent = pool.length ? `Tes champions : ${pool.join(", ")}` : "Aucun champion à ce poste : ajoute-les dans Profils, ou coche « tous les champions du poste ».";
+  document.getElementById("rappel-pool").textContent = pool.length ? `Tes champions : ${pool.join(", ")}` : "Aucun champion choisi à ce poste : tous les champions du poste sont proposés.";
 }
 function dessinerEquipes() {
   const d = devinerPostes();
@@ -396,18 +476,20 @@ function dessinerReco() {
   const R = etat.poste, nous = equipe("nous"), eux = equipe("eux"), pr = profil();
   document.getElementById("titre-reco").textContent = `Quel champion prendre en ${NOM_POSTE[R]}`;
   const pris = new Set([...Object.entries(nous).filter(([p]) => p !== R).map(([, c]) => c), ...Object.values(eux)]);
-  let cands = etat.tous ? Object.keys(D.tier[R]).filter(c => D.tier[R][c][1] >= 1500).flatMap(c => c === "Kayn" ? ["Kayn rouge", "Kayn bleu"] : [c])
+  // Aucun champion choisi à ce poste dans le profil = il les joue tous.
+  const tousLesChamps = etat.tous || !(pr.pool[R] || []).length;
+  let cands = tousLesChamps ? Object.keys(D.tier[R]).filter(c => D.tier[R][c][1] >= 1500).flatMap(c => c === "Kayn" ? ["Kayn rouge", "Kayn bleu"] : [c])
                         : (pr.pool[R] || []).slice();
   if (nous[R] && !cands.includes(nous[R])) cands.push(nous[R]);
   const res = cands.filter(c => !pris.has(c)).map(c => evaluer(c, R, nous, eux)).sort((a, b) => b.total - a.total);
   if (nous[R]) etat.choix = nous[R];
   else if (!etat.manuel || !res.find(r => r.c === etat.choix)) { etat.manuel = false; etat.choix = (res[0] && res[0].c) || ""; }
-  document.getElementById("reco").innerHTML = res.length ? res.slice(0, etat.tous ? 15 : 12).map(r => `
+  document.getElementById("reco").innerHTML = res.length ? res.slice(0, tousLesChamps ? 15 : 12).map(r => `
     <button type="button" class="cand${r.c === etat.choix ? " choisi" : ""}" data-c="${esc(r.c)}">
       <span class="nom">${esc(r.c)}${r.c === nous[R] ? " <span class='petit'>(ton pick)</span>" : ""}<br><span class="petit">${esc(groupe(r.c) || "?")}</span></span>
       <span class="score ${cls(r.total)}" title="Points de victoire estimés">≈ ${pts(r.total)}</span>
       <span class="puces">${r.puces.map(p => `<span class="puce ${cls(p.v)}${p.detail ? " detail" : ""}">${esc(p.t)}</span>`).join("")}</span>
-    </button>`).join("") : `<p class="petit">Aucun champion pour ce poste dans ce profil : ajoute-les dans l'onglet Profils, ou coche « tous les champions du poste ».</p>`;
+    </button>`).join("") : `<p class="petit">Aucun champion à proposer pour ce poste.</p>`;
   dessinerPlan(R, nous, eux);
   dessinerMix();
 }
@@ -446,15 +528,10 @@ function dessinerPlan(R, nous, eux) {
     const m = ["top", "mid", "bot"].filter(l => infos[l].pe !== null).sort((a, b) => infos[b].pe - infos[a].pe);
     if (m.length) conseils.push(`Lane la plus exposée aux ganks adverses : <b>${m[0]}</b> (${pc(infos[m[0]].pe)}).`);
     if (c) {
-      const gr = groupe(c), oui = [], non = [];
-      for (const [mn, s] of Object.entries(D.invm || {})) { const d = (s.groupes || {})[gr]; if (!d || d.envahisseurs < 100) continue;
-        if (d.A * d.B > 0 && Math.min(Math.abs(d.A), Math.abs(d.B)) >= 1) (d.A > 0 ? oui : non).push(`${mn} min (${pts((d.A + d.B) / 2)} points)`); }
-      let t = `Envahir la jungle adverse, pour un jungler ${gr}, à écart d'or égal : `;
-      if (oui.length) t += `va avec plus de victoires à <b>${oui.join(", ")}</b>`;
-      if (non.length) t += `${oui.length ? " ; " : ""}va avec moins de victoires à <b>${non.join(", ")}</b>`;
-      if (!oui.length && !non.length) t += "aucun effet net, quelle que soit la minute";
-      if (infos.jgl.o) t += `. Ton duel de jungle est annoncé ${infos.jgl.o.proba >= 0.5 ? "gagnant" : "perdant"} à ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))}`;
-      conseils.push(t + ". Ce que font les junglers qui gagnent, pas une cause prouvée.");
+      const inv = envahirConfirme(groupe(c));
+      if (inv.length) conseils.push(`Envahis la jungle adverse vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> : pour un jungler ${groupe(c)}, `
+        + `ça va avec ${inv.map(x => pts(x.points)).join(" / ")} points de victoire, à écart d'or égal.`);
+      if (infos.jgl.o) conseils.push(`Ton duel de jungle est annoncé ${infos.jgl.o.proba >= 0.5 ? "gagnant" : "perdant"} à ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} (or à 15 min).`);
     }
   } else {
     const i = infos[maLane];
@@ -474,6 +551,123 @@ function dessinerPlan(R, nous, eux) {
   document.getElementById("conseils").innerHTML = conseils.map(x => `<li>${x}</li>`).join("") || `<li class="petit">Entre des champions pour voir les lanes.</li>`;
 }
 
+// --- Récapitulatif après « Valider la compo » ------------------------------------------------------
+const FORTS = new Set(["neutralise", "projette en l'air", "étourdit", "charme", "terrifie", "provoque", "endort", "attire", "transforme"]);
+const LANE_NOM = {top: "Top", jgl: "Jungle", mid: "Mid", bot: "Bot"};
+function compoComplete() { const n = equipe("nous"), e = equipe("eux"); return POSTES.filter(p => n[p]).length + POSTES.filter(p => e[p]).length; }
+function majValider() {
+  const nb = compoComplete(), b = document.getElementById("valider");
+  b.disabled = nb < 10;
+  document.getElementById("valider-aide").textContent = nb < 10 ? `${10 - nb} champion${10 - nb > 1 ? "s" : ""} à entrer` : "";
+}
+function sortsDe(c) { return (D.cc || {})[lola(c)] || []; }
+function styles(c) {
+  const k = D.cat[c] || [], pr = k[4] || k[5] || "", se = k[4] ? k[5] : "";
+  const out = [];
+  if (pr) out.push(`<span class="puce style">${esc(pr)}</span>`);
+  if (se) out.push(`<span class="puce style">${esc(se)}</span>`);
+  if (k[0]) out.push(`<span class="puce">${esc(k[0])}</span>`);
+  if (k[1] === "HP+") out.push(`<span class="puce">très tanky</span>`); else if (k[1] === "HP") out.push(`<span class="puce">tanky</span>`);
+  if (k[2]) out.push(`<span class="puce">carry</span>`);
+  return out.join("");
+}
+function lignesCC(c, max) {
+  const s = sortsDe(c).slice(0, max);
+  if (!s.length) return `<span class="petit">Pas de gros contrôle.</span>`;
+  return s.map(([k, nom, types]) => `<span><span class="touche">${k}</span>${esc(nom)} <span class="petit">— ${types.join(", ")}</span></span>`).join("");
+}
+function dessinerRecap() {
+  const nous = equipe("nous"), eux = equipe("eux"), R = etat.poste, moi = nous[R], maLane = laneDuPoste(R), pc = x => (100 * x).toFixed(0) + " %";
+  document.getElementById("recap-titre").textContent = `${moi} en ${NOM_POSTE[R]}`;
+  document.getElementById("cote-rouge").checked = !!etat.rouge;
+  const infos = {};
+  for (const [lane, roles] of LANES) {
+    infos[lane] = {o: orLane(roles, nous, eux)};
+    if (lane !== "jgl") { infos[lane].pg = gank(nous.jgl, lane, nous, eux); infos[lane].pe = gank(eux.jgl, lane, eux, nous); }
+  }
+  const trois = ["top", "mid", "bot"];
+  const meilleurGank = trois.filter(l => infos[l].pg !== null && infos[l].pg !== undefined).sort((a, b) => infos[b].pg - infos[a].pg)[0];
+  const exposee = trois.filter(l => infos[l].pe !== null && infos[l].pe !== undefined).sort((a, b) => infos[b].pe - infos[a].pe)[0];
+
+  // Le plan : quatre ou cinq lignes au plus.
+  const plan = [];
+  const a = tempoEquipe(nous), b = tempoEquipe(eux);
+  if (DD && DD.k && a.n && b.n) {
+    const S = a.s - b.s, avant = 50 + points(DD.k * S * -1.25), apres = 50 + points(DD.k * S * 1.0), ecart = points(DD.k * S);
+    const quoi = Math.abs(ecart) < 1.5 ? "Même tempo des deux côtés : la durée ne change presque rien."
+      : (S > 0 ? "Vous êtes <b>plus late</b> : pas de combat décisif avant 25 min, farm et vision, la partie tourne pour vous après 30 min."
+               : "Vous êtes <b>plus early</b> : prenez l'avantage avant 25 min (ganks, plaques, dragons, héraut), cherchez à finir avant 30 min.");
+    plan.push(["Tempo", `${quoi} <span class="petit">Chance de gagner : ${avant.toFixed(0)} % si la partie finit avant 20 min, ${apres.toFixed(0)} % après 35 min.</span>`]);
+  }
+  const devant = trois.filter(l => infos[l].o && infos[l].o.proba >= 0.55), derriere = trois.filter(l => infos[l].o && infos[l].o.proba <= 0.45);
+  plan.push(["Lanes", (devant.length ? `Devant à 15 min : <b>${devant.map(l => `${LANE_NOM[l]} ${pc(infos[l].o.proba)}`).join(", ")}</b>. ` : "Aucune lane nettement devant. ")
+    + (derriere.length ? `Derrière : <b>${derriere.map(l => `${LANE_NOM[l]} ${pc(infos[l].o.proba)}`).join(", ")}</b>.` : "")]);
+  if (R === "jgl") {
+    let t = meilleurGank ? `Ganke en priorité <b>${LANE_NOM[meilleurGank]}</b> (${pc(infos[meilleurGank].pg)} de gank réussi).` : "";
+    if (exposee) t += ` Lane la plus exposée à leur jungler : <b>${LANE_NOM[exposee]}</b> (${pc(infos[exposee].pe)}).`;
+    const inv = envahirConfirme(groupe(moi));
+    if (inv.length) t += ` Envahis vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> (${inv.map(x => pts(x.points)).join(" / ")} points).`;
+    if (infos.jgl.o) t += ` Duel de jungle : ${infos.jgl.o.proba >= 0.5 ? "gagnant" : "perdant"} à ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))}.`;
+    plan.push(["Ta jungle", t.trim()]);
+  } else {
+    const i = infos[maLane];
+    let t = i.o ? `Devant à 15 min : <b>${pc(i.o.proba)}</b>.` : "";
+    if (i.pe !== null && i.pe !== undefined) t += ` Leur jungler (${esc(eux.jgl)}) réussit un gank sur ta lane dans ${pc(i.pe)} des cas${i.pe >= 0.7 ? " : <b>balises et prudence</b>" : ""}.`;
+    if (i.pg !== null && i.pg !== undefined) t += ` Ton jungler (${esc(nous.jgl)}) : ${pc(i.pg)}.`;
+    plan.push(["Ta lane", t.trim()]);
+  }
+  const me = mixEquipe(eux), mn = mixEquipe(nous);
+  if (me) {
+    let t = me.parts[0] >= 0.65 ? `Ils font <b>${Math.round(100 * me.parts[0])} % de dégâts physiques</b> : l'armure rapporte plus.`
+      : (me.parts[1] >= 0.6 ? `Ils font <b>${Math.round(100 * me.parts[1])} % de dégâts magiques</b> : la résistance magique rapporte plus.`
+         : `Ils sont mixtes (${Math.round(100 * me.parts[0])} % physiques, ${Math.round(100 * me.parts[1])} % magiques).`);
+    const fx = [[mixEffet(mn), "vous"], [mixEffet(me), "eux"]].filter(([x]) => x).map(([x, qui]) => `${x.titre.toLowerCase()} pour ${qui} (${pts(points(x.coef))} points)`);
+    if (fx.length) t += ` ${fx.join(" ; ")}.`;
+    plan.push(["Dégâts", t]);
+  }
+  const gros = [];
+  for (const p of POSTES) for (const [k, nom, types] of sortsDe(eux[p])) if (k === "R" && types.some(x => FORTS.has(x))) gros.push(`${esc(eux[p])} R (${types[0]})`);
+  if (gros.length) plan.push(["À surveiller", `Leurs ultimes qui contrôlent : <b>${gros.join(", ")}</b>.`]);
+  document.getElementById("recap-plan").innerHTML = plan.map(([dt, dd]) => `<dt>${dt}</dt><dd>${dd}</dd>`).join("");
+
+  // La carte : notre base en bas à gauche (en haut à droite si on est côté rouge).
+  const rouge = !!etat.rouge, pos = (x, y) => rouge ? [100 - x, 100 - y] : [x, y];
+  const centres = {top: [26, 14], mid: [50, 50], bot: [74, 86], jgl: rouge ? [72, 33] : [28, 67]};
+  const [bnx, bny] = pos(7, 93), [bex, bey] = pos(93, 7);
+  let fleche = "";
+  if (R === "jgl" && meilleurGank) { const [x1, y1] = centres.jgl, [x2, y2] = centres[meilleurGank];
+    fleche = `<path class="gank" d="M${x1} ${y1} L${x1 + (x2 - x1) * 0.62} ${y1 + (y2 - y1) * 0.62}"/>`; }
+  const svg = `<svg viewBox="0 0 100 100" aria-hidden="true">
+    <defs><marker id="fleche" viewBox="0 0 6 6" refX="3" refY="3" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--nous)"/></marker></defs>
+    <rect class="sol" x="0" y="0" width="100" height="100" rx="4"/>
+    <path class="riviere" d="M0 0 L100 100"/>
+    <path class="voie" d="M7 93 L7 7 L93 7"/><path class="voie" d="M7 93 L93 93 L93 7"/><path class="voie" d="M7 93 L93 7"/>
+    <circle class="fosse" cx="31" cy="31" r="3.4"/><text class="etiquette" x="31" y="38.5" text-anchor="middle">Nashor</text>
+    <circle class="fosse" cx="69" cy="69" r="3.4"/><text class="etiquette" x="69" y="65" text-anchor="middle">Dragon</text>
+    <circle class="base-nous" cx="${bnx}" cy="${bny}" r="5.5"/><circle class="base-eux" cx="${bex}" cy="${bey}" r="5.5"/>
+    ${fleche}</svg>`;
+  const badges = LANES.map(([lane, roles]) => {
+    const o = infos[lane].o, [x, y] = centres[lane];
+    const etatLane = !o ? "egal" : (o.proba >= 0.55 ? "devant" : (o.proba <= 0.45 ? "derriere" : "egal"));
+    const n = roles.map(p => nous[p]).filter(Boolean).join(" + "), e = roles.map(p => eux[p]).filter(Boolean).join(" + ");
+    const tags = [];
+    if (lane === maLane) tags.push("toi");
+    if (R === "jgl" && lane === meilleurGank) tags.push("à ganker");
+    if (lane === exposee && lane !== "jgl") tags.push("exposée");
+    return `<div class="badge ${etatLane}${lane === maLane ? " moi" : ""}" style="left:${x}%;top:${y}%">
+      <div class="b-tete"><span>${LANE_NOM[lane]}</span><span>${o ? pc(o.proba) : "—"}</span></div>
+      <div class="b-champs"><span class="n">${esc(n)}</span> vs <span class="e">${esc(e)}</span></div>
+      ${tags.length ? tags.map(x => `<span class="tag">${x}</span>`).join(" ") : ""}</div>`;
+  }).join("");
+  document.getElementById("carte").innerHTML = svg + badges;
+
+  // Les champions : styles du catalogue et contrôles.
+  const colonne = (cote, eq, titre, max) => `<div><h3>${titre}</h3>${POSTES.map(p => `
+    <div class="champ ${cote}"><div class="c-tete"><b>${esc(eq[p])}</b><span class="petit">${NOM_POSTE[p]}</span></div>
+      <div class="puces">${styles(eq[p])}</div><div class="cc">${lignesCC(eq[p], max)}</div></div>`).join("")}</div>`;
+  document.getElementById("recap-champs").innerHTML = colonne("eux", eux, "En face : leurs contrôles à surveiller", 3) + colonne("nous", nous, "Ton équipe : vos contrôles", 2);
+}
+
 // --- Affichage : profils ------------------------------------------------------------------------------
 function dessinerProfils() {
   document.getElementById("profils").innerHTML = etat.profils.map(p => `
@@ -488,12 +682,16 @@ function dessinerProfils() {
 }
 function montrer() {
   const o = etat.onglet === "profils" ? "profils" : "draft";
-  document.getElementById("vue-draft").hidden = o !== "draft"; document.getElementById("vue-profils").hidden = o !== "profils";
+  if (etat.valide && compoComplete() < 10) etat.valide = false;
+  const recap = o === "draft" && etat.valide;
+  document.getElementById("vue-draft").hidden = o !== "draft" || recap; document.getElementById("vue-recap").hidden = !recap;
+  document.getElementById("vue-profils").hidden = o !== "profils";
+  if (recap) { document.querySelectorAll("[data-onglet]").forEach(b => b.setAttribute("aria-selected", b.dataset.onglet === o ? "true" : "false")); dessinerRecap(); garder(); return; }
   document.querySelectorAll("[data-onglet]").forEach(b => b.setAttribute("aria-selected", b.dataset.onglet === o ? "true" : "false"));
-  if (o === "draft") { dessinerBarre(); dessinerEquipes(); dessinerReco(); } else dessinerProfils();
+  if (o === "draft") { dessinerBarre(); dessinerEquipes(); dessinerReco(); majValider(); } else dessinerProfils();
   garder();
 }
-function toutDraft() { dessinerBarre(); dessinerEquipes(); dessinerReco(); garder(); }
+function toutDraft() { dessinerBarre(); dessinerEquipes(); dessinerReco(); majValider(); garder(); }
 
 // --- Saisie : autocomplétion ------------------------------------------------------------------------
 const INDEX = D.noms.map(n => [n, sansAccent(n)]);
@@ -552,6 +750,7 @@ document.addEventListener("change", e => {
     if (cote === "nous") { const autre = etat.nous.findIndex((l, k) => k !== i && l.poste === p); if (autre >= 0) etat.nous[autre].poste = etat.nous[i].poste; }
     else if (p) etat.eux.forEach((l, k) => { if (k !== i && l.poste === p) l.poste = ""; });
     etat[cote][i].poste = p; toutDraft();
+  } else if (s.id === "cote-rouge") { etat.rouge = s.checked; dessinerRecap(); garder();
   } else if (s.id === "tous") { etat.tous = s.checked; dessinerReco(); garder(); }
   else if (s.id === "profil-actif") { etat.actif = s.value; etat.manuel = false; toutDraft(); }
   else if (s.id === "poste-joue") { etat.poste = s.value; etat.manuel = false; toutDraft(); }
@@ -570,6 +769,10 @@ document.addEventListener("click", e => {
   else if (b.classList.contains("suppr-profil")) { etat.profils = etat.profils.filter(p => p.id !== b.dataset.id); if (etat.actif === b.dataset.id) etat.actif = etat.profils[0].id; dessinerProfils(); garder(); }
   else if (b.id === "ajouter-profil") { const p = nouveauProfil("Nouveau profil", ["mid"], {}); etat.profils.push(p); dessinerProfils(); garder();
     const champ = document.querySelector(`.nom-profil[data-id="${p.id}"]`); if (champ) { champ.focus(); champ.select(); } }
+  else if (b.id === "valider") { if (compoComplete() === 10) { etat.valide = true; montrer(); window.scrollTo(0, 0); } }
+  else if (b.id === "modifier") { etat.valide = false; montrer(); }
+  else if (b.id === "nouvelle") { etat.valide = false; etat.nous = etat.nous.map(l => ({poste: l.poste, champ: ""})); etat.eux = etat.eux.map(() => ({poste: "", champ: ""}));
+    etat.choix = ""; etat.manuel = false; montrer(); window.scrollTo(0, 0); }
   else if (b.id === "effacer") { etat.nous = etat.nous.map(l => ({poste: l.poste, champ: ""})); etat.eux = etat.eux.map(() => ({poste: "", champ: ""})); etat.choix = ""; etat.manuel = false; toutDraft(); }
   else if (b.id === "echanger") { const n = equipe("nous"), x = equipe("eux");
     etat.nous = POSTES.map(p => ({poste: p, champ: x[p] || ""})); etat.eux = POSTES.map(p => ({poste: "", champ: n[p] || ""})); etat.choix = ""; etat.manuel = false; toutDraft(); }

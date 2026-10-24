@@ -33,6 +33,12 @@ def nombre(x):
         return None
 
 
+def lire_sorts():
+    """Contrôles de chaque champion (assistant_panda/sorts.json, écrit par sorts.py) ; vide s'il manque."""
+    chemin = ICI / "sorts.json"
+    return json.loads(chemin.read_text(encoding="utf-8"))["champions"] if chemin.exists() else {}
+
+
 def duree_degats(dd):
     """Mix de dégâts et early / late (analyse/lanes/duree_degats.py), en version compacte ; None si absent.
 
@@ -83,10 +89,15 @@ def construire(dossier_lola, export, sortie):
         "meta": {"patch": patch, "export": ex["date"], "parties_lanes": ex["lanes"]["parties"],
                  "parties_ganks": ex["ganks"]["parties"]},
         "noms": noms,
-        "cat": {c: [v["groupe"], v["tanky"], v["carry"], v["degats"]] for c, v in ex["catalogue"].items()},
+        # Catalogue unifié : [groupe teamfight, tanky, carry, dégâts, style principal, style secondaire].
+        "cat": {c: [v["groupe"], v["tanky"], v["carry"], v["degats"], v.get("principal", ""), v.get("secondaire", "")]
+                for c, v in ex["catalogue"].items()},
         "tier": tier, "moy": moyenne, "lola": lola_noms, "mu": mu, "lanes": lanes,
         "ganks": ex["ganks"], "tf": ex["teamfight"], "inv": ex["envahir"], "invm": ex.get("envahir_minutes", {}),
         "dd": duree_degats(ex.get("duree_degats")),
+        # Ce qui est confirmé sur C (l'export a déjà retiré le reste) et contrôles des sorts (Data Dragon).
+        "conf": ex.get("confirmation_C") or {},
+        "cc": lire_sorts(),
     }
     modele = (ICI / "modele.html").read_text(encoding="utf-8")
     page = modele.replace("__DONNEES__", json.dumps(donnees, ensure_ascii=False, separators=(",", ":")))
