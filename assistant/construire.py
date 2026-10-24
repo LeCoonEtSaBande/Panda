@@ -98,6 +98,8 @@ def construire(dossier_lola, export, sortie):
         # Ce qui est confirmé sur C (l'export a déjà retiré le reste) et contrôles des sorts (Data Dragon).
         "conf": ex.get("confirmation_C") or {},
         "cc": lire_sorts(),
+        # Duels de junglers à or égal (seulement les forces confirmées sur C ; None si non confirmé).
+        "duel": ex.get("duels"),
     }
     modele = (ICI / "modele.html").read_text(encoding="utf-8")
     page = modele.replace("__DONNEES__", json.dumps(donnees, ensure_ascii=False, separators=(",", ":")))

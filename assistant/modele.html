@@ -206,7 +206,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <details class="aide"><summary>Comment lire ces chiffres</summary>
           <p>Or à 15 min : écart attendu d'après les champions de la lane. Gank réussi : chance que le jungler participe à au moins un kill
           sur cette lane avant 15 min. Selon la durée : chance de gagner due au seul tempo des deux compos (early ou late), à draft égale par
-          ailleurs. Envahir : seulement quand c'est confirmé pour ce type de jungler ; c'est ce que font les junglers qui gagnent, à écart
+          ailleurs. Duel : si les deux junglers se croisent seuls, chance de gagner à or et niveau égaux (forces confirmées
+          seulement, les autres junglers comptent comme moyens). Envahir : seulement quand c'est confirmé pour ce type de jungler ; c'est ce que font les junglers qui gagnent, à écart
           d'or égal, pas une cause prouvée. Nos parties Émeraude-Diamant ; tout est confirmé sur des parties jamais vues (tas C).</p></details>
       </section>
     </div>
@@ -366,6 +367,22 @@ function envahirConfirme(gr) {
   return sortie;
 }
 
+// --- Duels de junglers à or et niveau égaux (confirmés sur C) -----------------------------------------
+function duel(a, b, minute) {     // chance que a gagne s'ils se croisent seuls, à or et niveau égaux
+  const M = D.duel; if (!M || !a || !b) return null;
+  const fa = M.champions[a] || [0, 0], fb = M.champions[b] || [0, 0], t = (minute - M.minute_ref) / 10;
+  return sig(fa[0] - fb[0] + (fa[1] - fb[1]) * t);
+}
+function texteDuel(a, b) {
+  const p8 = duel(a, b, 8), p15 = duel(a, b, 15), p25 = duel(a, b, 25);
+  if (p8 === null) return "";
+  const pc = x => (100 * x).toFixed(0) + " %";
+  const inconnus = [a, b].filter(x => !(D.duel.confirmes || []).includes(x));
+  return `Si vous vous croisez seuls, à or et niveau égaux, ${esc(a)} gagne le duel contre ${esc(b)} : <b>${pc(p8)}</b> à 8 min, `
+    + `<b>${pc(p15)}</b> à 15 min, <b>${pc(p25)}</b> à 25 min. 1 000 or d'avance : ${pts(points(D.duel.or_1000))} points ; un niveau : ${pts(points(D.duel.niveau))}.`
+    + (inconnus.length ? ` <span class="petit">(${inconnus.map(esc).join(" et ")} : pas assez de duels pour être confirmé, compté comme un jungler moyen.)</span>` : "");
+}
+
 // --- Recommandations, pour n'importe quel poste -------------------------------------------------------
 function force(c, R) { if (CONF.force === false) return null; const t = D.tier[R][lola(c)]; if (!t) return null; return (t[0] - D.moy[R]) * t[1] / (t[1] + 1000); }
 function contre(c, R, P, e) { if (P === R ? CONF.contre_direct === false : CONF.contres_autres === false) return null; const m = MU.get(`${R}|${lola(c)}|${P}|${lola(e)}`); return m ? {pts: m[0] * m[2] / (m[2] + 300), wr: m[1], n: m[2]} : null; }
@@ -397,6 +414,11 @@ function evaluer(c, R, nous, eux) {
   if (effets.length) puces.push({t: `Effets d'équipe ${pts(eq)}`, v: eq});
   for (const e of effets) puces.push({t: `${e.sens > 0 ? "" : "(eux) "}${e.nom} : ${(100 * e.taux).toFixed(1)} %`, v: (e.sens > 0 ? e.taux : 1 - e.taux) - 0.5, detail: true});
   if (mx) puces.push({t: `${mx.titre} ${pts(points(mx.coef))}`, v: points(mx.coef), detail: effets.length > 0});
+  if (R === "jgl" && eux.jgl && D.duel) {
+    const p8 = duel(c, eux.jgl, 8), p15 = duel(c, eux.jgl, 15);
+    const sur = [c, eux.jgl].every(x => (D.duel.confirmes || []).includes(x));
+    puces.push({t: `duel à or égal vs ${eux.jgl} : ${(100 * p8).toFixed(0)} % (8 min) / ${(100 * p15).toFixed(0)} % (15 min)${sur ? "" : " — approximatif"}`, v: sur ? p15 - 0.5 : 0});
+  }
   const s = DD && (DD.late[R] || {})[c];
   if (s !== undefined && s !== null && Math.abs(100 * s) >= 2) puces.push({t: `${s > 0 ? "late" : "early"} (${pts(100 * s)} pts / 10 min)`, v: 0});
   return {c, total: (f || 0) + direct + autres + eq, puces};
@@ -531,6 +553,7 @@ function dessinerPlan(R, nous, eux) {
       const inv = envahirConfirme(groupe(c));
       if (inv.length) conseils.push(`Envahis la jungle adverse vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> : pour un jungler ${groupe(c)}, `
         + `ça va avec ${inv.map(x => pts(x.points)).join(" / ")} points de victoire, à écart d'or égal.`);
+      if (eux.jgl && texteDuel(c, eux.jgl)) conseils.push(texteDuel(c, eux.jgl));
       if (infos.jgl.o) conseils.push(`Or à 15 min face à leur jungler : ${infos.jgl.o.proba >= 0.5 ? "devant" : "derrière"} dans ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} des cas (farm, kills et objectifs ; ce n'est pas l'issue d'un combat entre vous deux).`);
     }
   } else {
@@ -607,6 +630,8 @@ function dessinerRecap() {
     if (exposee) t += ` Lane la plus exposée à leur jungler : <b>${LANE_NOM[exposee]}</b> (${pc(infos[exposee].pe)}).`;
     const inv = envahirConfirme(groupe(moi));
     if (inv.length) t += ` Envahis vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> (${inv.map(x => pts(x.points)).join(" / ")} points).`;
+    const td = texteDuel(moi, eux.jgl);
+    if (td) t += ` ${td}`;
     if (infos.jgl.o) t += ` Or à 15 min face à leur jungler : ${infos.jgl.o.proba >= 0.5 ? "devant" : "derrière"} dans ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} des cas.`;
     plan.push(["Ta jungle", t.trim()]);
   } else {
@@ -654,6 +679,7 @@ function dessinerRecap() {
     if (lane === maLane) tags.push("toi");
     if (R === "jgl" && lane === meilleurGank) tags.push("à ganker");
     if (lane === exposee && lane !== "jgl") tags.push("exposée");
+    if (lane === "jgl" && duel(nous.jgl, eux.jgl, 15) !== null) tags.push(`duel 15 min : ${(100 * duel(nous.jgl, eux.jgl, 15)).toFixed(0)} %`);
     return `<div class="badge ${etatLane}${lane === maLane ? " moi" : ""}" style="left:${x}%;top:${y}%">
       <div class="b-tete"><span>${LANE_NOM[lane]}</span><span>${o ? pc(o.proba) : "—"}</span></div>
       <div class="b-champs"><span class="n">${esc(n)}</span> vs <span class="e">${esc(e)}</span></div>
