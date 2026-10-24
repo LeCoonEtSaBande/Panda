@@ -71,7 +71,7 @@ Le seul but de ces règles : ne pas casser ni interrompre les collectes, et ne p
 - **Collectes** : ne jamais annuler ni interrompre une collecte en cours ; ne pas en lancer sans demande ; rien ne doit dépasser 5 h 30 dans le workflow. Vérifier avec `gh run list` qu'aucune collecte ne tourne avant de toucher aux workflows.
 - **Durée du rapport** : `rapport.py` tourne dans le temps restant du job (environ 35 minutes, moins les sauvegardes). Une analyse lente doit pouvoir être sautée.
 - **Dépendances** : `collecte.py`, `enregistrer.sh` et `lecture.py` n'utilisent que la bibliothèque standard Python et bash. Ce que lance `rapport.py` peut utiliser `statsmodels`, `pandas` et `scipy` (installés par le workflow), mais doit continuer sans eux et ne jamais faire échouer le rapport.
-- **Git** : pas de `push --force` ni de réécriture d'historique sur `main` (les commits de collecte en dépendent), pas de changement de visibilité du dépôt (seul le propriétaire la change ; le dépôt est prévu pour être public).
+- **Git** : pas de `push --force` ni de réécriture d'historique sur `main` (les commits de collecte en dépendent). Seule exception, à la demande du propriétaire : le 23/10/2026, l'historique de `main` a été réécrit pour remplacer les clés Riot par `RGAPI-[retirée]` ; les identifiants de commit d'avant cette date ont changé ; pas de changement de visibilité du dépôt (seul le propriétaire la change ; le dépôt est prévu pour être public).
 - **Workflows** : vérifier que le YAML est valide avant de pousser (par exemple `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/lancer-collecte.yml'))"`).
 
 ## Format des données
@@ -134,7 +134,7 @@ for joueur in lire_details("joueurs"):   # dictionnaires, valeurs en texte
 | `/lol/match/v5/matches/{id}/timeline` | `europe` | ajouté le 22/10/2026 : `timeline_joueurs`, `evenements` |
 | Data Dragon `champion.json` (dernière version, `en_US`) | ddragon | noms des champions à partir de leur identifiant |
 
-- Un limiteur par serveur respecte l'en-tête `X-App-Rate-Limit`. 429 : attente de `Retry-After` ; 5xx ou réseau : jusqu'à 6 essais avec attente croissante ; 401/403 : clé refusée, arrêt de la collecte ; 404 : match introuvable (écarté, ou noté dans `rattrapage_echecs.csv` en rattrapage).
+- Un limiteur par serveur respecte l'en-tête `X-App-Rate-Limit`. 429 : attente de `Retry-After` ; 5xx, réseau ou réponse coupée en plein envoi (JSON tronqué) : jusqu'à 6 essais avec attente croissante, puis l'appel est sauté avec un avertissement, sans arrêter la collecte ni écarter la partie (elle pourra être reprise) ; 401/403 : clé refusée, arrêt de la collecte ; 404 : match introuvable (écarté, ou noté dans `rattrapage_echecs.csv` en rattrapage).
 - Si la timeline échoue après les essais (ou renvoie 404), la partie est gardée sans timeline, avec un avertissement dans le journal.
 
 ### Traductions et pièges
