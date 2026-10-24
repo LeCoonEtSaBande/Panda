@@ -1,6 +1,8 @@
-# Assistant Panda
+# Assistant Draft
 
-Une page HTML autonome (`Assistant_Panda.html`, à la racine de la branche `assistant`) : elle s'ouvre sans connexion, depuis le bureau.
+Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la branche `assistant`) : elle s'ouvre sans connexion, depuis le bureau.
+
+**Télécharger** : sur GitHub, branche `assistant`, cliquer sur le fichier, puis sur le bouton « Download raw file » (flèche vers le bas, en haut à droite du fichier). Le fichier fait environ 2 Mo : GitHub ne l'affiche pas, et un « Enregistrer sous » de la page GitHub donne une page vide.
 
 **Régénérer** : workflow « Générer l'assistant Panda ». À lancer après un passage Lolalytics (nouveau patch) ou quand des collectes ont ajouté des parties.
 
@@ -9,8 +11,10 @@ Une page HTML autonome (`Assistant_Panda.html`, à la racine de la branche `assi
 - **Mon équipe à gauche**, dans l'ordre de la draft : un poste (un seul de chaque) et un champion par ligne.
 - **L'équipe adverse à droite** : le champion seulement ; le poste est deviné (part de ses parties à chaque poste, Lolalytics) et se change à la main.
 - Saisie : quelques lettres suffisent, la liste propose les champions correspondants (sans accent ni majuscule). Entrée ou Tab valide.
-- **Quel jungler prendre** (ton pool, ou tous les junglers) : force du patch, contre le jungler adverse, contre leurs laners (à moitié), effets d'équipe (groupes teamfight). Jungler adverse inconnu : moyenne sur ses junglers probables, « sûr en blind » ou non, et les junglers à éviter s'ils peuvent encore être pris.
-- **Comment jouer** avec le jungler recommandé (ou le tien, ou celui sur lequel tu cliques) : pour chaque lane, l'écart d'or attendu à 15 min et la chance d'être devant ; la chance que ton gank finisse en kill avant 15 min, et celle du jungler adverse ; le matchup Lolalytics ; l'envahissement à 5 min.
+- **Profils** (onglet Profils) : une personne par profil, avec les postes qu'elle joue et ses champions à chaque poste. En haut de la draft : le profil et le poste joué (« Je joue »).
+- **Mémoire** : la page retient, dans le navigateur, les profils, le dernier profil, le dernier poste, la draft en cours et la case « tous les champions ». À la réouverture, tout est comme à la dernière utilisation (même navigateur ; avec Chrome ou Edge, une nouvelle version téléchargée retrouve aussi les profils ; avec Firefox, l'ouvrir depuis le même dossier que l'ancienne).
+- **Quel champion prendre** à son poste (son pool, ou tous les champions du poste) : force du patch, contre son adversaire direct, contre le reste de leur équipe (à moitié), effets d'équipe (groupes teamfight). Adversaire direct inconnu : moyenne sur ses champions probables, « sûr en blind » ou non, et les champions à éviter s'ils peuvent encore être pris.
+- **Comment jouer** avec le champion recommandé (ou le sien, ou celui sur lequel on clique) : pour chaque lane, l'écart d'or attendu à 15 min et la chance d'être devant ; la chance que le gank de son jungler finisse en kill avant 15 min, et celle du jungler adverse ; le matchup Lolalytics. En jungle : lanes avec ou sans prio, meilleure lane à ganker, lane exposée, envahir à 5, 10, 15 et 20 min. En lane : sa chance d'être devant, le risque de gank adverse, l'aide de son jungler.
 
 ## D'où viennent les chiffres
 
@@ -20,6 +24,6 @@ Une page HTML autonome (`Assistant_Panda.html`, à la racine de la branche `assi
 | Or à 15 min, chance d'être devant | nos parties Émeraude-Diamant avec timeline (`analyse/contres`, `analyse/lanes/dynamique.py`) |
 | Ganks réussis | nos parties (`analyse/lanes/ganks.py`) |
 | Effets d'équipe | recuit teamfight (`analyse/iteratif/recuit_pistes.py`), effets qui tiennent sur A et sur B |
-| Envahir | `analyse/lanes/comportement.py` : ce que font les junglers qui gagnent, pas une cause prouvée |
+| Envahir | `analyse/lanes/envahir.py` (5 à 20 min, à écart d'or égal) : ce que font les junglers qui gagnent, pas une cause prouvée |
 
 `construire.py` assemble tout dans `modele.html`.

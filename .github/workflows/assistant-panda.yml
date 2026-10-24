@@ -2,8 +2,9 @@ name: Générer l'assistant Panda
 
 # Bouton « Run workflow ». Recalcule nos modèles (code de la branche « analyse », données à jour de
 # « main »), prend les dernières stats Lolalytics (branche « scraping »), puis génère
-# Assistant_Panda.html, une page autonome à ouvrir hors connexion. Le fichier est committé sur la
-# branche « assistant » : le télécharger depuis cette branche et le poser sur le bureau.
+# « Assistant Draft - DL - <date>.html », une page autonome à ouvrir hors connexion. Le fichier est
+# committé à la racine de la branche « assistant » (l'ancienne version est retirée) : l'ouvrir sur GitHub
+# et cliquer sur « Download raw file », puis le poser sur le bureau.
 on:
   workflow_dispatch:
 
@@ -55,9 +56,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Assistant_Panda.html
+          nouveau="$(ls -t "Assistant Draft - DL - "*.html | head -1)"
+          for ancien in Assistant_Panda.html "Assistant Draft - DL - "*.html; do
+            if [ -e "$ancien" ] && [ "$ancien" != "$nouveau" ]; then git rm -q --ignore-unmatch "$ancien"; rm -f "$ancien"; fi
+          done
+          git add "$nouveau"
           if git diff --cached --quiet; then echo "Page inchangée."; exit 0; fi
-          git commit -q -m "Assistant Panda régénéré"
+          git commit -q -m "Assistant Draft régénéré : $nouveau"
           for essai in 1 2 3; do
             if git pull -q --rebase origin assistant && git push -q origin HEAD:assistant; then exit 0; fi
             git rebase --abort 2>/dev/null; sleep 10

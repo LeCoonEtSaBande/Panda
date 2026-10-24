@@ -1,4 +1,4 @@
-"""Génère l'assistant de draft autonome (Assistant_Panda.html), une seule page sans connexion.
+"""Génère l'assistant de draft autonome (« Assistant Draft - DL - <date>.html »), une seule page sans connexion.
 
 Sources :
 - Lolalytics (branche scraping, analyse/lolalytics/<patch>/) : force des champions du patch à chaque poste,
@@ -49,14 +49,18 @@ def construire(dossier_lola, export, sortie):
         n = sum(v[1] for v in t.values())
         moyenne[p] = round(sum(v[0] * v[1] for v in t.values()) / n, 2) if n else 50.0
 
-    mu_j, mu_l = {}, {}
+    # Matchups de tous les postes, vus au moins 30 fois, en tableau compact :
+    # mu[poste][indice du champion] = [poste adverse, indice de l'adversaire, delta_2 × 10, victoires × 10, parties, ...]
+    lola_noms = sorted({m["champion"] for m in matchups} | {m["adversaire"] for m in matchups})
+    indice = {n: i for i, n in enumerate(lola_noms)}
+    code = {p: i for i, p in enumerate(POSTES)}
+    mu = {p: {} for p in POSTES}
     for m in matchups:
         n = int(m["parties"])
-        d2, wr = float(m["delta_2"]), float(m["victoires"])
-        if m["poste"] == "jgl" and n >= 30:
-            mu_j.setdefault(m["champion"], {})[f"{m['poste_adversaire']}|{m['adversaire']}"] = [round(d2, 2), round(wr, 1), n]
-        elif m["poste"] == m["poste_adversaire"] and n >= 100:
-            mu_l[f"{m['poste']}|{m['champion']}|{m['adversaire']}"] = [round(d2, 2), round(wr, 1), n]
+        if n < 30 or m["poste"] not in code or m["poste_adversaire"] not in code:
+            continue
+        mu[m["poste"]].setdefault(indice[m["champion"]], []).extend(
+            [code[m["poste_adversaire"]], indice[m["adversaire"]], round(float(m["delta_2"]) * 10), round(float(m["victoires"]) * 10), n])
 
     noms = sorted(set(ex["catalogue"]) | {c["champion"] for c in champions if c["champion"] != "Kayn"}, key=str.lower)
     lanes = {p: {"f": v["forces"], "p": v["paires"], "s": round(v["ecart_type"]), "k": round(v["pente_victoire"], 4)}
@@ -66,22 +70,27 @@ def construire(dossier_lola, export, sortie):
                  "parties_ganks": ex["ganks"]["parties"]},
         "noms": noms,
         "cat": {c: [v["groupe"], v["tanky"], v["carry"], v["degats"]] for c, v in ex["catalogue"].items()},
-        "tier": tier, "moy": moyenne, "mj": mu_j, "ml": mu_l, "lanes": lanes,
+        "tier": tier, "moy": moyenne, "lola": lola_noms, "mu": mu, "lanes": lanes,
         "ganks": ex["ganks"], "tf": ex["teamfight"], "inv": ex["envahir"], "invm": ex.get("envahir_minutes", {}),
     }
     modele = (ICI / "modele.html").read_text(encoding="utf-8")
     page = modele.replace("__DONNEES__", json.dumps(donnees, ensure_ascii=False, separators=(",", ":")))
     Path(sortie).write_text(page, encoding="utf-8")
     print(f"Assistant : {sortie} ({Path(sortie).stat().st_size // 1024} Ko), patch {patch}, "
-          f"{len(mu_j)} junglers avec matchups, {len(mu_l)} matchups de lane.")
+          f"{sum(len(v) for v in mu.values())} champions-postes avec matchups.")
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--lolalytics", required=True)
     parser.add_argument("--export", required=True)
-    parser.add_argument("--sortie", default=str(ICI.parent / "Assistant_Panda.html"))
+    parser.add_argument("--sortie", help="par défaut : « Assistant Draft - DL - <date>.html » à la racine")
     args = parser.parse_args()
+    if not args.sortie:
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        date = datetime.now(ZoneInfo("Europe/Paris")).strftime("%Y-%m-%d")
+        args.sortie = str(ICI.parent / f"Assistant Draft - DL - {date}.html")
     construire(args.lolalytics, args.export, args.sortie)
     return 0
 
