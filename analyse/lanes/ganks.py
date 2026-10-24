@@ -27,7 +27,7 @@ import numpy as np
 ICI = Path(__file__).resolve().parent
 sys.path.insert(0, str(ICI.parent))
 sys.path.insert(0, str(ICI.parent / "contres"))
-sys.path.insert(0, str(ICI.parent / "iteratif"))
+sys.path.insert(0, str(ICI.parent / "base"))
 
 import lecture  # noqa: E402
 import contres  # noqa: E402

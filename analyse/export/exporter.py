@@ -8,10 +8,9 @@
 - ganks : le modèle des ganks réussis avant 15 min (ganks.py) ;
 - teamfight : le réglage du recuit teamfight (poids des postes, seuil) et les effets qui tiennent sur A
   et sur B (même sens, au moins 1,5 point sur B, 300 parties sur B) ;
-- envahir : les taux de victoire des junglers qui envahissent à 5 min (comportement.py), avec la mise en garde ;
 - envahir_minutes : l'effet d'envahir à 5, 10, 15 et 20 min à écart d'or égal, par catégorie, sur A et sur B (envahir.py).
 
-    python3 analyse/export/exporter.py      (après analyse/lanes/ganks.py, comportement.py et envahir.py)
+    python3 analyse/export/exporter.py      (après lanes/dynamique.py, envahir.py, ganks.py et duree_degats.py)
 """
 
 import csv
@@ -32,7 +31,8 @@ import contres  # noqa: E402
 
 CATALOGUE = ANALYSE / "catalogues" / "catalogue_unifie.csv"
 LANES_RES = ANALYSE / "lanes" / "resultats"
-ITERATIF_RES = ANALYSE / "iteratif" / "resultats"
+RECUIT_RES = ANALYSE / "recuit" / "resultats"
+CONFIRMATION_RES = ANALYSE / "confirmation" / "resultats"
 SORTIE = ICI / "assistant_donnees.json"
 
 
@@ -71,7 +71,7 @@ MOTIFS = [
 
 
 def teamfight():
-    fichiers = sorted(ITERATIF_RES.glob("recuit2_teamfight_*.json"))
+    fichiers = sorted(RECUIT_RES.glob("recuit2_teamfight_*.json"))
     fichiers = [f for f in fichiers if "hasard" not in f.name and "test" not in f.name]
     d = json.loads(fichiers[-1].read_text(encoding="utf-8"))
     meilleur = d["palmares"][0]
@@ -98,9 +98,9 @@ def confirmation_c():
     un bloc est considéré comme non confirmé."""
     lire = lambda chemin: json.loads(chemin.read_text(encoding="utf-8")) if chemin.exists() else None
     ok = lambda d: bool(d) and d.get("verdict") == "confirmé"
-    gen = lire(ANALYSE / "resultats_C" / "confirmation_C.json") or {}
-    dd = lire(LANES_RES / "confirmation_C_duree_degats.json") or {}
-    recuits = sorted(ITERATIF_RES.glob("confirmation_C_recuit2_teamfight_*.json"))
+    gen = lire(CONFIRMATION_RES / "confirmation_C.json") or {}
+    dd = lire(CONFIRMATION_RES / "confirmation_C_duree_degats.json") or {}
+    recuits = sorted(CONFIRMATION_RES.glob("confirmation_C_recuit2_teamfight_*.json"))
     rec = lire(recuits[-1]) if recuits else None
     lola = {t["nom"]: ok(t) for t in gen.get("lolalytics", {}).get("tests", [])}
     return {
@@ -139,7 +139,6 @@ def main():
         "lanes": lanes(),
         "ganks": json.loads((LANES_RES / "ganks_modele.json").read_text(encoding="utf-8")),
         "teamfight": tf,
-        "envahir": json.loads((LANES_RES / "comportement.json").read_text(encoding="utf-8"))["envahir"],
         "envahir_minutes": envm,
         # Mix de dégâts et early / late (lanes/duree_degats.py), filtrés par la confirmation sur C.
         "duree_degats": dd,

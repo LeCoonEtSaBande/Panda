@@ -1,58 +1,58 @@
 {
  "etape1": {
   "top": {
-   "correlation": 0.26951356263789567,
-   "ecart_annonce_500": 748.9464575446187,
-   "justes_500": 0.6792861005949161,
-   "part_500": 0.30832082708020675
+   "correlation": 0.270263422262438,
+   "ecart_annonce_500": 765.9749727965179,
+   "justes_500": 0.6838955386289445,
+   "part_500": 0.30260125123477116
   },
   "jgl": {
-   "correlation": 0.27330288199584524,
-   "ecart_annonce_500": 640.4241281809614,
-   "justes_500": 0.7115928369462771,
-   "part_500": 0.17692179423044857
+   "correlation": 0.2731575030823941,
+   "ecart_annonce_500": 646.0668724279835,
+   "justes_500": 0.7098765432098766,
+   "part_500": 0.1600263417846559
   },
   "mid": {
-   "correlation": 0.24765614328929725,
-   "ecart_annonce_500": 744.7323135755258,
-   "justes_500": 0.6806883365200764,
-   "part_500": 0.1744205436051359
+   "correlation": 0.24813519032439382,
+   "ecart_annonce_500": 749.8091603053435,
+   "justes_500": 0.6812977099236641,
+   "part_500": 0.17253868949621337
   },
   "bot": {
-   "correlation": 0.2567891839057835,
-   "ecart_annonce_500": 934.6120218579235,
-   "justes_500": 0.6527952921395545,
-   "part_500": 0.3966983491745873
+   "correlation": 0.2553801859464115,
+   "ecart_annonce_500": 936.6197241955704,
+   "justes_500": 0.6514834935227748,
+   "part_500": 0.3939743167599605
   }
  },
  "lambda": 300.0,
- "gain_lanes_B": -0.07551645040626553,
- "gain_complet_B": -0.15653982330854355,
+ "gain_lanes_B": -0.07674596198581352,
+ "gain_complet_B": -0.17065738528487806,
  "effets": {
-  "toutes|top": 0.010677875914134579,
-  "toutes|mid": 0.015891884284992077,
-  "toutes|bot": -0.01585556272068406,
-  "toutes|jgl": -0.028642068252345384,
-  "Engage (tanks)|top": 0.017497819790028655,
-  "Engage (tanks)|mid": 0.030967972538456477,
-  "Engage (tanks)|bot": -0.025458673738093414,
-  "Engage (bruisers)|top": -0.035551123044928044,
-  "Engage (bruisers)|mid": -0.006084551780486503,
-  "Engage (bruisers)|bot": -0.008919032876326323,
-  "Supports tanks|top": 0.023655913433512536,
-  "Supports tanks|mid": 0.027858792316709773,
-  "Supports tanks|bot": -0.00039517056296740693,
-  "Pick (assassins)|top": 0.009128677549319977,
-  "Pick (assassins)|mid": -0.03288768547082143,
-  "Pick (assassins)|bot": 0.017931393724564246,
-  "Poke (artilleurs)|top": -0.02575141365494885,
-  "Poke (artilleurs)|mid": 0.033345620938276276,
-  "Poke (artilleurs)|bot": 0.004347608391218104,
-  "Carrys|top": -0.007018367371646215,
-  "Carrys|mid": -0.021394701287466657,
-  "Carrys|bot": -0.01761676320942496,
-  "Disengage (enchanteurs)|top": 0.03939424512693109,
-  "Disengage (enchanteurs)|mid": -2.167868468366306e-05,
-  "Disengage (enchanteurs)|bot": -0.0016004871703370405
+  "toutes|top": 0.010070915786601669,
+  "toutes|mid": 0.012617075223621146,
+  "toutes|bot": -0.016262700109993252,
+  "toutes|jgl": -0.026814752172452303,
+  "Engage (tanks)|top": 0.018773412441311907,
+  "Engage (tanks)|mid": 0.026812217385263345,
+  "Engage (tanks)|bot": -0.027137229949127817,
+  "Engage (bruisers)|top": -0.03798390988716444,
+  "Engage (bruisers)|mid": -0.0020570761779694505,
+  "Engage (bruisers)|bot": -0.008607557408692703,
+  "Supports tanks|top": 0.024453284545818965,
+  "Supports tanks|mid": 0.027841146813444854,
+  "Supports tanks|bot": -0.0018446924737261815,
+  "Pick (assassins)|top": 0.009545001486752516,
+  "Pick (assassins)|mid": -0.03159387377753162,
+  "Pick (assassins)|bot": 0.017915886113557798,
+  "Poke (artilleurs)|top": -0.026846193391467325,
+  "Poke (artilleurs)|mid": 0.028999428107851832,
+  "Poke (artilleurs)|bot": 0.005704078796010963,
+  "Carrys|top": -0.0068626781408138125,
+  "Carrys|mid": -0.023933734029613643,
+  "Carrys|bot": -0.016799227722437002,
+  "Disengage (enchanteurs)|top": 0.039062914518765667,
+  "Disengage (enchanteurs)|mid": -0.0008339578742028878,
+  "Disengage (enchanteurs)|bot": -0.0017566575755718938
  }
 }

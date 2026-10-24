@@ -30,7 +30,7 @@ import numpy as np
 ICI = Path(__file__).resolve().parent
 sys.path.insert(0, str(ICI.parent))
 sys.path.insert(0, str(ICI.parent / "contres"))
-sys.path.insert(0, str(ICI.parent / "iteratif"))
+sys.path.insert(0, str(ICI.parent / "base"))
 
 import lecture  # noqa: E402
 import contres  # noqa: E402
@@ -38,9 +38,20 @@ import commun  # noqa: E402
 import bloc2_compos as bloc2  # noqa: E402
 import bloc3_biais as bloc3  # noqa: E402
 from dynamique import GROUPES, RESULTATS, lire_catalogue  # noqa: E402
-from comportement import zone  # noqa: E402
 
 MINUTES = (5, 10, 15, 20)
+RIVIERE = 14800          # la rivière suit la diagonale x + y ≈ 14 800 (base bleue en bas à gauche)
+MARGE = 1200
+
+
+def zone(x, y, equipe):
+    """« adverse » si le joueur est dans la jungle adverse, « allie » dans la sienne, « lane » sur une lane."""
+    if x < 2500 or y > 12500 or y < 2500 or x > 12500 or abs(x - y) < 1500:
+        return "lane"
+    s = x + y
+    if equipe == "b":
+        return "adverse" if s > RIVIERE + MARGE else ("allie" if s < RIVIERE - MARGE else "riviere")
+    return "adverse" if s < RIVIERE - MARGE else ("allie" if s > RIVIERE + MARGE else "riviere")
 
 
 def points(b):

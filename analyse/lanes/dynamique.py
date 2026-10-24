@@ -28,7 +28,7 @@ import numpy as np
 ICI = Path(__file__).resolve().parent
 sys.path.insert(0, str(ICI.parent))
 sys.path.insert(0, str(ICI.parent / "contres"))
-sys.path.insert(0, str(ICI.parent / "iteratif"))
+sys.path.insert(0, str(ICI.parent / "base"))
 
 import contres  # noqa: E402
 import commun  # noqa: E402
@@ -103,7 +103,7 @@ def main():
         print(f"Rotation {f + 1}/6 faite.", flush=True)
 
     RESULTATS.mkdir(parents=True, exist_ok=True)
-    # Prédictions gardées pour l'étape 3 (comportement.py) : une ligne par partie de A et B.
+    # Prédictions gardées pour envahir.py : une ligne par partie de A et B.
     import gzip
     with gzip.open(RESULTATS / "predictions.csv.gz", "wt", encoding="utf-8", newline="") as f:
         w = csv.writer(f, delimiter=";", lineterminator="\n")
