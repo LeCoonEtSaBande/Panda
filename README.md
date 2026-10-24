@@ -7,24 +7,26 @@ Tout se fait en français : code, commentaires, messages de commit, réponses.
 
 ## Branches
 
-- `main` reçoit les collectes : les commits de données et le rapport de fin de collecte y arrivent automatiquement.
-- Le travail d'analyse peut se faire sur d'autres branches (par exemple `analyse-iterative`). Une branche de travail ne touche jamais aux fichiers de données ; elle est fusionnée dans `main` quand le propriétaire le décide.
+Quatre branches, une par rôle. Les boutons des workflows sont tous sur `main` (GitHub l'exige), mais chacun travaille sur sa branche.
 
-| Dossier ou fichier | Rôle |
+| Branche | Rôle | Workflow (onglet Actions) |
+|---|---|---|
+| `main` | **Collecte** : les parties de l'API Riot (`analyse/donnees/`), le code de collecte, le rapport de fin de collecte. | **Lancer une collecte** |
+| `scraping` | **Lolalytics** : tier list et contres du patch, une fois par patch (`analyse/lolalytics/<patch>/`). | **Récupérer les stats Lolalytics du patch** |
+| `analyse` | **Analyses** : recuits, contres par lane, dynamique des lanes, ganks, export pour l'assistant (`analyse/iteratif`, `analyse/contres`, `analyse/lanes`, `analyse/export`). Ne touche jamais aux données. | **Lancer un recuit simulé**, **Confirmer les résultats du recuit**, **Enrichir les contres** |
+| `assistant` | **Assistant de draft** : `Assistant_Panda.html`, une page autonome à poser sur le bureau (`assistant_panda/`). | **Générer l'assistant Panda** |
+
+Les anciennes branches `analyse-iterative` et `champions-patch` sont remplacées par `analyse` et `scraping` (même contenu) ; elles peuvent être supprimées.
+
+| Dossier ou fichier (sur `main`) | Rôle |
 |---|---|
-| `Catalogue.csv`, `Catalogue_champions_LoL.xlsx` | Le catalogue des champions. |
-| `analyse/` | Collecte des parties (`collecte.py`, `collecte.ini`, `enregistrer.sh`), analyses (`rapport.py`, `profils.py`, `compos.py`, `regle.py`), lecture des données (`lecture.py`), tests. |
-| `analyse/iteratif/` | **Le cœur de l'analyse** : la boucle en 4 blocs (catalogue → compos → biais → recuit simulé) qui cherche des biais de draft. Voir `analyse/iteratif/README.md`. |
+| `Catalogue.csv`, `Catalogue_champions_LoL.xlsx` | Le catalogue des champions d'origine. Le catalogue unifié (relu le 24/10/2026) est sur `analyse` : `analyse/catalogues/catalogue_unifie.csv`. |
+| `analyse/` | Collecte des parties (`collecte.py`, `collecte.ini`, `enregistrer.sh`), premières analyses (`rapport.py`, `profils.py`, `compos.py`, `regle.py`), lecture des données (`lecture.py`), tests. |
 | `analyse/donnees/` | Les données collectées (voir plus bas). |
-| `analyse/resultats/` | Les résultats, régénérés à la fin de chaque collecte. |
+| `analyse/resultats/` | Les résultats du rapport, régénérés à la fin de chaque collecte. |
 | `archives/` | Copies figées d'anciennes données. |
-| `assistant/`, `Assistant_draft.html` | La page d'assistant de draft, générée par `assistant/construire.py`. |
-| `.github/workflows/lancer-collecte.yml` | **Lancer une collecte** : bouton « Run workflow », ou modification de `analyse/collecte.ini`. |
-| `.github/workflows/assistant.yml` | **Page d'assistant** : régénère `Assistant_draft.html` quand `Catalogue.csv` ou `assistant/` change. |
-| `.github/workflows/recuit.yml` | **Lancer un recuit simulé** : bouton « Run workflow » (code de la branche `analyse-iterative`, données de `main`). |
-| `.github/workflows/confirmer.yml` | **Confirmer les résultats du recuit** : mesure les meilleurs réglages sur les parties jamais vues. |
-| `.github/workflows/champions-patch.yml` | **Identifier les champions forts du patch** : collecte légère (sans timeline) du patch en cours en Platine-Diamant, puis classement des champions forts et faibles. Code et données sur la branche `champions-patch` (voir `analyse/patch/README.md` sur cette branche). Même file que les collectes. |
-| `.github/workflows/contres.yml` | **Enrichir les contres** : contres par lane à 15 minutes (or, XP, kills, plaques, tour), recalculés sur toutes les parties avec timeline ; signale les nouveautés. Code et résultats sur `analyse-iterative` (`analyse/contres/`). |
+| `assistant/`, `Assistant_draft.html` | L'ancienne page d'assistant (règle du catalogue), remplacée par l'Assistant Panda de la branche `assistant`. |
+| `.github/workflows/` | `lancer-collecte.yml`, `lolalytics.yml`, `recuit.yml`, `confirmer.yml`, `contres.yml`, `assistant-panda.yml`, et `assistant.yml` (ancienne page). |
 
 ### Les analyses, dans l'ordre où elles ont été faites
 

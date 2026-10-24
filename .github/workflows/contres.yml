@@ -3,14 +3,14 @@ name: Enrichir les contres
 # Bouton « Run workflow ». Relit toutes les parties avec timeline (données à jour de main, non
 # committées), compte celles qu'il ne connaissait pas encore, recalcule les contres par lane à 15 minutes
 # et signale les contres apparus ou disparus depuis le passage précédent.
-# Le code vient de la branche choisie (analyse-iterative par défaut) ; seuls analyse/contres/resultats/
+# Le code vient de la branche choisie (analyse par défaut) ; seuls analyse/contres/resultats/
 # sont committés, sur cette branche. Ne lit ni n'écrit jamais dans analyse/donnees sur la branche.
 on:
   workflow_dispatch:
     inputs:
       branche:
         description: "Branche du code"
-        default: "analyse-iterative"
+        default: "analyse"
         required: true
 
 permissions:

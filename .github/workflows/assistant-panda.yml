@@ -1,0 +1,64 @@
+name: Générer l'assistant Panda
+
+# Bouton « Run workflow ». Recalcule nos modèles (code de la branche « analyse », données à jour de
+# « main »), prend les dernières stats Lolalytics (branche « scraping »), puis génère
+# Assistant_Panda.html, une page autonome à ouvrir hors connexion. Le fichier est committé sur la
+# branche « assistant » : le télécharger depuis cette branche et le poser sur le bureau.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: assistant-panda
+  cancel-in-progress: false
+
+jobs:
+  assistant:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: assistant
+          fetch-depth: 0
+
+      - name: Installer numpy, pandas, scipy, scikit-learn
+        run: python3 -m pip install -q --break-system-packages numpy pandas scipy scikit-learn
+
+      - name: Récupérer les données, les analyses et Lolalytics
+        run: |
+          git fetch -q origin main analyse scraping
+          mkdir -p "$RUNNER_TEMP/main" "$RUNNER_TEMP/analyse" "$RUNNER_TEMP/scraping"
+          git archive origin/main analyse/donnees | tar -x -C "$RUNNER_TEMP/main"
+          git archive origin/analyse analyse | tar -x -C "$RUNNER_TEMP/analyse"
+          git archive origin/scraping analyse/lolalytics | tar -x -C "$RUNNER_TEMP/scraping"
+          echo "PANDA_DONNEES=$RUNNER_TEMP/main/analyse/donnees" >> "$GITHUB_ENV"
+
+      - name: Recalculer nos modèles (lanes, ganks, envahir, export)
+        timeout-minutes: 40
+        run: |
+          cd "$RUNNER_TEMP/analyse/analyse"
+          python3 lanes/dynamique.py > /dev/null
+          python3 lanes/comportement.py > /dev/null
+          python3 lanes/ganks.py > /dev/null
+          python3 export/exporter.py
+
+      - name: Générer la page
+        run: |
+          patch="$(ls -d "$RUNNER_TEMP"/scraping/analyse/lolalytics/*/ | sort -V | tail -1)"
+          python3 assistant_panda/construire.py --lolalytics "$patch" --export "$RUNNER_TEMP/analyse/analyse/export/assistant_donnees.json"
+
+      - name: Enregistrer
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Assistant_Panda.html
+          if git diff --cached --quiet; then echo "Page inchangée."; exit 0; fi
+          git commit -q -m "Assistant Panda régénéré"
+          for essai in 1 2 3; do
+            if git pull -q --rebase origin assistant && git push -q origin HEAD:assistant; then exit 0; fi
+            git rebase --abort 2>/dev/null; sleep 10
+          done
+          exit 1

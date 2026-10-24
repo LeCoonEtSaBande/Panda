@@ -28,7 +28,7 @@ on:
         default: false
       branche:
         description: "Branche du code"
-        default: "analyse-iterative"
+        default: "analyse"
         required: true
 
 permissions:
