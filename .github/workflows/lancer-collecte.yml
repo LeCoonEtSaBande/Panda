@@ -18,7 +18,7 @@ concurrency:
 jobs:
   collecte:
     runs-on: ubuntu-latest
-    timeout-minutes: 330
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,7 +29,7 @@ jobs:
           python3 -m pip install -q --break-system-packages statsmodels pandas || python3 -m pip install -q statsmodels pandas || echo "statsmodels indisponible : régression sautée."
 
       - name: Collecter
-        timeout-minutes: 295
+        timeout-minutes: 325
         env:
           RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
           COMMANDE_SAUVEGARDE: bash analyse/enregistrer.sh
