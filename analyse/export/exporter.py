@@ -8,9 +8,10 @@
 - ganks : le modèle des ganks réussis avant 15 min (ganks.py) ;
 - teamfight : le réglage du recuit teamfight (poids des postes, seuil) et les effets qui tiennent sur A
   et sur B (même sens, au moins 1,5 point sur B, 300 parties sur B) ;
-- envahir : les taux de victoire des junglers qui envahissent à 5 min (comportement.py), avec la mise en garde.
+- envahir : les taux de victoire des junglers qui envahissent à 5 min (comportement.py), avec la mise en garde ;
+- envahir_minutes : l'effet d'envahir à 5, 10, 15 et 20 min à écart d'or égal, par catégorie, sur A et sur B (envahir.py).
 
-    python3 analyse/export/exporter.py      (après analyse/lanes/ganks.py et comportement.py)
+    python3 analyse/export/exporter.py      (après analyse/lanes/ganks.py, comportement.py et envahir.py)
 """
 
 import csv
@@ -100,6 +101,7 @@ def main():
         "ganks": json.loads((LANES_RES / "ganks_modele.json").read_text(encoding="utf-8")),
         "teamfight": teamfight(),
         "envahir": json.loads((LANES_RES / "comportement.json").read_text(encoding="utf-8"))["envahir"],
+        "envahir_minutes": json.loads((LANES_RES / "envahir.json").read_text(encoding="utf-8")),
     }
     SORTIE.write_text(json.dumps(donnees, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"Export : {SORTIE} ({SORTIE.stat().st_size // 1024} Ko) ; {donnees['lanes']['parties']} parties pour les lanes, "
