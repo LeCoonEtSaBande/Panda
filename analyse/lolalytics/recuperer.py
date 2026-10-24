@@ -226,8 +226,6 @@ def ecrire_resume(dossier, patch, champions, matchups, pages, echecs):
         # Seuls les contres nets : au moins 2 points, et à plus de deux marges d'erreur (environ 100 × √(0,25 / n)).
         duels = [m for m in matchups if m["champion"] == nom and m["poste"] == "jgl" and m["poste_adversaire"] == "jgl"
                  and m["parties"] >= 100 and abs(m["delta_2"]) >= max(2.0, 200 * (0.25 / m["parties"]) ** 0.5)]
-        if not duels:
-            continue
         duels.sort(key=lambda m: -m["delta_2"])
         bons = [m for m in duels if m["delta_2"] > 0][:6]
         mauvais = [m for m in duels if m["delta_2"] < 0][::-1][:6]

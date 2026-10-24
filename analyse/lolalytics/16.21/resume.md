@@ -86,10 +86,20 @@
 | Nasus | 46.40 % | 2252 | 0.21 % | 13.12 % |
 | Twitch | 43.40 % | 2007 | 0.19 % | 8.24 % |
 
+## Fiddlesticks en jungle contre le jungler adverse (contres nets)
+
+- Gagne plus que prévu contre : aucun contre net
+- Perd plus que prévu contre : aucun contre net
+
 ## Ivern en jungle contre le jungler adverse (contres nets)
 
 - Gagne plus que prévu contre : Kha'Zix 59.5 % (+6.6, 326 parties)
 - Perd plus que prévu contre : Elise 42.4 % (-8.7, 177 parties)
+
+## Dr. Mundo en jungle contre le jungler adverse (contres nets)
+
+- Gagne plus que prévu contre : aucun contre net
+- Perd plus que prévu contre : aucun contre net
 
 ## Kayn en jungle contre le jungler adverse (contres nets)
 
