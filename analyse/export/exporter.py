@@ -102,6 +102,9 @@ def main():
         "teamfight": teamfight(),
         "envahir": json.loads((LANES_RES / "comportement.json").read_text(encoding="utf-8"))["envahir"],
         "envahir_minutes": json.loads((LANES_RES / "envahir.json").read_text(encoding="utf-8")),
+        # Mix de dégâts et early / late (lanes/duree_degats.py) ; absent si le script n'a pas tourné.
+        "duree_degats": (json.loads((LANES_RES / "duree_degats.json").read_text(encoding="utf-8"))
+                         if (LANES_RES / "duree_degats.json").exists() else None),
     }
     SORTIE.write_text(json.dumps(donnees, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"Export : {SORTIE} ({SORTIE.stat().st_size // 1024} Ko) ; {donnees['lanes']['parties']} parties pour les lanes, "
