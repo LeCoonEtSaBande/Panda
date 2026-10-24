@@ -98,6 +98,29 @@ def lire_build(html):
     raise ValueError("matchups introuvables dans la page")
 
 
+def lire_profil(html):
+    """Dégâts moyens du champion (physiques, magiques, bruts) et parties / victoires par tranche de durée.
+
+    Tranches de durée de Lolalytics (graphique « Win Rate vs Game Length »), calées sur nos parties :
+    1 = moins de 15 min, 2 = 15-20, 3 = 20-25, 4 = 25-30, 5 = 30-35, 6 = 35-40, 7 = plus de 40 min.
+    Renvoie {"physiques", "magiques", "bruts", "t1".."t7", "v1".."v7"}, avec None pour ce qui manque.
+    """
+    e = Etat(html)
+    profil = {k: None for k in ("physiques", "magiques", "bruts")}
+    profil.update({f"{l}{i}": None for l in "tv" for i in range(1, 8)})
+    for o in e.dicts():
+        if "damage" in o and "n" in o and profil["physiques"] is None:
+            d = e.plein(o["damage"], 2)
+            if isinstance(d, dict):
+                profil.update(physiques=nombre(d.get("physical")), magiques=nombre(d.get("magic")), bruts=nombre(d.get("true")))
+        if "time" in o and "timeWin" in o and profil["t1"] is None:
+            t, v = e.plein(o["time"], 2), e.plein(o["timeWin"], 2)
+            if isinstance(t, dict) and isinstance(v, dict):
+                for i in range(1, 8):
+                    profil[f"t{i}"], profil[f"v{i}"] = nombre(t.get(str(i))), nombre(v.get(str(i)))
+    return profil
+
+
 # --- Téléchargement ------------------------------------------------------------------------------
 
 class Client:
@@ -171,7 +194,7 @@ def main():
     dossier = ICI / (patch or "patch_inconnu")
     dossier.mkdir(parents=True, exist_ok=True)
     a_lire = sorted([c for c in champions if c["parties"] >= MIN_PARTIES_PAGE], key=lambda c: -c["parties"])[: args.max_pages]
-    matchups, echecs = [], 0
+    matchups, profils, echecs = [], [], 0
     for i, c in enumerate(a_lire, 1):
         poste_l = next(k for k, v in POSTES.items() if v == c["poste"])
         html = client.get(f"{BASE}/{slugs.get(c['id'], c['champion'].lower())}/build/?lane={poste_l}&tier={TIER}")
@@ -183,6 +206,7 @@ def main():
             echecs += 1
             print(f"::warning::{c['champion']} {c['poste']} : {err}")
             continue
+        profils.append({"champion": c["champion"], "poste": c["poste"], **lire_profil(html)})
         for poste_adverse, liste in ennemis.items():
             if poste_adverse not in POSTES or not isinstance(liste, list):
                 continue
@@ -204,6 +228,12 @@ def main():
             w = csv.DictWriter(f, fieldnames=list(matchups[0]), delimiter=";", lineterminator="\n")
             w.writeheader()
             w.writerows(matchups)
+    if profils:
+        # Dégâts moyens par partie et parties / victoires par tranche de durée (voir lire_profil).
+        with open(dossier / "profils.csv", "w", encoding="utf-8", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=list(profils[0]), delimiter=";", lineterminator="\n")
+            w.writeheader()
+            w.writerows(profils)
     ecrire_resume(dossier, patch, champions, matchups, client.pages, echecs)
     print(f"Patch {patch} : {len(champions)} lignes de tier list, {len(matchups)} matchups, {client.pages} pages, {echecs} échecs.")
     return 0

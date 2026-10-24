@@ -33,6 +33,17 @@ class LolalyticsTest(unittest.TestCase):
         self.assertEqual((n, moyenne), (5668, 51.0))
         self.assertEqual(ennemis["jungle"][0], [234, 48.8, -0.3, -3.5, 4.5, 254])
 
+    def test_profil(self):
+        # Dégâts du champion et parties / victoires par tranche de durée.
+        objs = [221.99, 20943.86, 1539.12, {"physical": "0", "magic": "1", "true": "2"}, 5668, 51.0,
+                {"damage": "3", "n": "4", "wr": "5"}, 49, 28, {"1": "7", "2": "7"}, {"1": "8", "2": "8"},
+                {"time": "9", "timeWin": "a"}]
+        p = r.lire_profil(page(objs))
+        self.assertEqual((p["physiques"], p["magiques"], p["bruts"]), (221.99, 20943.86, 1539.12))
+        self.assertEqual((p["t1"], p["v1"], p["t2"]), (49, 28, 49))
+        self.assertIsNone(p["t7"])
+        self.assertIsNone(r.lire_profil(page([1, 2]))["magiques"])
+
     def test_page_changee(self):
         with self.assertRaises(ValueError):
             r.lire_build("<html>rien</html>")
