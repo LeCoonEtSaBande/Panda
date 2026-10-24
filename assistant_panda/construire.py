@@ -67,7 +67,7 @@ def construire(dossier_lola, export, sortie):
         "noms": noms,
         "cat": {c: [v["groupe"], v["tanky"], v["carry"], v["degats"]] for c, v in ex["catalogue"].items()},
         "tier": tier, "moy": moyenne, "mj": mu_j, "ml": mu_l, "lanes": lanes,
-        "ganks": ex["ganks"], "tf": ex["teamfight"], "inv": ex["envahir"],
+        "ganks": ex["ganks"], "tf": ex["teamfight"], "inv": ex["envahir"], "invm": ex.get("envahir_minutes", {}),
     }
     modele = (ICI / "modele.html").read_text(encoding="utf-8")
     page = modele.replace("__DONNEES__", json.dumps(donnees, ensure_ascii=False, separators=(",", ":")))

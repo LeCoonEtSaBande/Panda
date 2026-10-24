@@ -117,8 +117,8 @@ details summary{cursor:pointer}
     <div class="lanes" id="lanes"></div>
     <ul class="conseils" id="conseils"></ul>
     <p class="note">Or à 15 min : écart attendu d'après les champions de la lane (nos parties Émeraude-Diamant). Gank réussi : chance
-      que ton jungler participe à au moins un kill sur cette lane avant 15 min. Envahir : ce que font les junglers qui gagnent,
-      pas une cause prouvée.</p>
+      que ton jungler participe à au moins un kill sur cette lane avant 15 min. Envahir : présence dans la jungle adverse à 5, 10,
+      15 ou 20 min, comparée à écart d'or égal ; c'est ce que font les junglers qui gagnent, pas une cause prouvée.</p>
   </section>
 
   <details class="panneau">
@@ -340,12 +340,19 @@ function dessinerPlan(nous, eux) {
   const menaces = ["top", "mid", "bot"].filter(l => infos[l] && infos[l].pe !== null && infos[l].pe !== undefined).sort((a, b) => infos[b].pe - infos[a].pe);
   if (menaces.length) conseils.push(`Lane la plus exposée aux ganks adverses : <b>${nomL(menaces[0])}</b> (${(100 * infos[menaces[0]].pe).toFixed(0)} %).`);
   if (j) {
-    const g = groupe(j), inv = D.inv["envahit, jungler " + g], tous = D.inv["tous les junglers qui envahissent"];
+    // Envahir : effet à écart d'or égal, pour la catégorie du jungler, aux minutes où il tient sur A et sur B.
+    const g = groupe(j), oui = [], non = [];
+    for (const [m, s] of Object.entries(D.invm || {})) {
+      const d = (s.groupes || {})[g]; if (!d || d.envahisseurs < 100) continue;
+      if (d.A * d.B > 0 && Math.min(Math.abs(d.A), Math.abs(d.B)) >= 1) (d.A > 0 ? oui : non).push(`${m} min (${pts((d.A + d.B) / 2)} points)`);
+    }
+    let t = `Envahir la jungle adverse, pour un jungler ${g}, à écart d'or égal : `;
+    if (oui.length) t += `va avec plus de victoires à <b>${oui.join(", ")}</b>`;
+    if (non.length) t += `${oui.length ? " ; " : ""}va avec moins de victoires à <b>${non.join(", ")}</b>`;
+    if (!oui.length && !non.length) t += "aucun effet net, quelle que soit la minute";
     const duel = infos.jgl && infos.jgl.o;
-    let t = `Envahir à 5 min : les junglers qui le font gagnent ${(100 * tous.taux_B).toFixed(0)} % de leurs parties à force de champions égale`;
-    if (inv && inv.parties_A >= 100) t += ` ; pour la catégorie ${g} : ${(100 * inv.taux_A).toFixed(0)} % et ${(100 * inv.taux_B).toFixed(0)} % (deux moitiés des parties)`;
     if (duel) t += `. Ton duel de jungle est annoncé ${duel.proba >= 0.5 ? "gagnant" : "perdant"} à ${(100 * Math.max(duel.proba, 1 - duel.proba)).toFixed(0)} %`;
-    conseils.push(t + ". C'est ce que font les junglers qui gagnent, pas une cause prouvée.");
+    conseils.push(t + ". Ce que font les junglers qui gagnent, pas une cause prouvée.");
   }
   document.getElementById("conseils").innerHTML = conseils.map(c => `<li>${c}</li>`).join("") || `<li class="petit">Entre des champions pour voir les lanes.</li>`;
   garder();
