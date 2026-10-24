@@ -1,18 +1,17 @@
-"""Duels de junglers : quand les deux junglers se croisent et que l'un tue l'autre seul, qui gagne, à or égal ?
+"""Duels : quand deux champions se croisent seuls et que l'un tue l'autre, qui gagne, à or et niveau égaux ?
 
-Un duel = un kill de champion où le tueur et la victime sont les deux junglers, sans assistance, et où seul le
-tueur a infligé des dégâts de champion à la victime (nb_sources = 1). On ne voit que les duels qui finissent en
-kill : un duel où les deux repartent vivants n'est pas compté.
+Un duel = un kill de champion sans assistance, où seul le tueur a infligé des dégâts de champion à la victime
+(nb_sources = 1), à n'importe quel poste (top contre top, mid contre joueur…). On ne voit que les duels qui
+finissent en kill : un duel où les deux repartent vivants n'est pas compté. Une tour peut avoir aidé (plongée).
 
 Pour chaque duel : l'écart d'or (or total gagné, interpolé entre les relevés de la timeline à 5, 10, 15, 20, 25 et
 30 min) et l'écart de niveau au moment du kill. Modèle (régression logistique régularisée, une ligne par duel,
-du point de vue du jungler bleu) :
+du point de vue du champion bleu) :
     victoire du bleu ~ force en duel du champion bleu − celle du rouge
-                       + évolution de cette force avec la minute (certains junglers sont forts tôt, d'autres tard)
+                       + évolution de cette force avec la minute (certains champions sont forts tôt, d'autres tard)
                        + écart d'or + écart de niveau
-La force en duel « à or et niveau égaux » est donc ce que le champion gagne en plus ou en moins, toutes choses
-égales. Appris sur A, vérifié sur B (gain de prédiction par rapport à l'or et au niveau seuls, et accord des forces
-apprises séparément sur A et sur B). C (après le gel) n'est pas lu : la confirmation viendra après la prochaine collecte.
+La force en duel « à or et niveau égaux » est ce que le champion gagne en plus ou en moins, toutes choses égales.
+Appris sur A, vérifié sur B ; confirmé à part (confirmation/confirmer_duels.py).
 Écrit resultats/duels.json et resultats/duels.md.
 
     python3 analyse/lanes/duels.py
@@ -55,14 +54,13 @@ def interpoler(releves, t):
 
 def lire_duels(donnees, tas):
     matchs = {m for m, t in tas.items() if t in ("A", "B")} & lecture.matchs_presents("timeline_joueurs", donnees)
-    jungler = {}                                   # (match, participant) -> (equipe, champion)
+    joueur = {}                                   # (match, participant) -> (equipe, champion, poste)
     for j in lecture.lire_details("joueurs", donnees, matchs=matchs):
-        if j["poste"] == "jgl":
-            jungler[(j["match"], j["participant"])] = (j["equipe"], j["champion"])
+        joueur[(j["match"], j["participant"])] = (j["equipe"], j["champion"], j["poste"])
     releves = {}
     for t in lecture.lire_details("timeline_joueurs", donnees, matchs=matchs):
         cle = (t["match"], t["participant"])
-        if cle not in jungler:
+        if cle not in joueur:
             continue
         val = lambda col: float(t[col]) if t[col] else None
         releves[cle] = ({0: 500.0, **{m: val(f"or_{m}") for m in MINUTES[1:]}},
@@ -72,40 +70,43 @@ def lire_duels(donnees, tas):
         if e["type"] != "CHAMPION_KILL" or e["assistants"] or e["nb_sources"] != "1":
             continue
         k, v = (e["match"], e["participant"]), (e["match"], e["victime"])
-        if k not in jungler or v not in jungler or k not in releves or v not in releves:
+        if k not in joueur or v not in joueur or k not in releves or v not in releves:
             continue
         minute = float(e["t_ms"]) / 60000
         ok, ov = interpoler(releves[k][0], minute), interpoler(releves[v][0], minute)
         nk, nv = interpoler(releves[k][1], minute), interpoler(releves[v][1], minute)
         if None in (ok, ov, nk, nv):
             continue
-        (ek, ck), (_, cv) = jungler[k], jungler[v]
-        # Point de vue du jungler bleu.
+        (ek, ck, pk), (_, cv, pv) = joueur[k], joueur[v]
+        # Point de vue du champion bleu.
         if ek == "b":
             duels.append({"match": e["match"], "tas": tas[e["match"]], "bleu": ck, "rouge": cv, "bleu_gagne": 1,
-                          "or": ok - ov, "niveau": nk - nv, "minute": minute})
+                          "postes": (pk, pv), "or": ok - ov, "niveau": nk - nv, "minute": minute})
         else:
             duels.append({"match": e["match"], "tas": tas[e["match"]], "bleu": cv, "rouge": ck, "bleu_gagne": 0,
-                          "or": ov - ok, "niveau": nv - nk, "minute": minute})
+                          "postes": (pv, pk), "or": ov - ok, "niveau": nv - nk, "minute": minute})
     return duels
 
 
 def matrice(duels, champions):
+    """Matrice creuse : force (±1), force × minute, écart d'or (milliers), écart de niveau."""
+    from scipy import sparse
     idx = {c: i for i, c in enumerate(champions)}
     n = len(champions)
-    X = np.zeros((len(duels), 2 * n + 2))
+    rangs, cols, vals = [], [], []
     for r, d in enumerate(duels):
         temps = (d["minute"] - MINUTE_REF) / 10
-        X[r, idx[d["bleu"]]] += 1; X[r, idx[d["rouge"]]] -= 1
-        X[r, n + idx[d["bleu"]]] += temps; X[r, n + idx[d["rouge"]]] -= temps
-        X[r, 2 * n] = d["or"] / 1000
-        X[r, 2 * n + 1] = d["niveau"]
-    return X
+        for col, val in ((idx[d["bleu"]], 1.0), (idx[d["rouge"]], -1.0), (n + idx[d["bleu"]], temps), (n + idx[d["rouge"]], -temps),
+                         (2 * n, d["or"] / 1000), (2 * n + 1, d["niveau"])):
+            rangs.append(r); cols.append(col); vals.append(val)
+    return sparse.csr_matrix((vals, (rangs, cols)), shape=(len(duels), 2 * n + 2))
 
 
 def apprendre(X, y, lam):
-    beta, c = bloc3.logistique(X, y, lam=lam, constante=True)
-    return beta, c
+    """Régression logistique avec pénalité ridge lam (C = 1 / lam) ; renvoie (coefficients, constante)."""
+    from sklearn.linear_model import LogisticRegression
+    m = LogisticRegression(C=1.0 / lam, max_iter=2000).fit(X, y)
+    return m.coef_[0], float(m.intercept_[0])
 
 
 def points(b):
@@ -157,11 +158,15 @@ def main():
     force = {ch: float(beta[i]) for i, ch in enumerate(champions)}
     pente = {ch: float(beta[n + i]) for i, ch in enumerate(champions)}
     coef_or, coef_niveau = float(beta[2 * n]), float(beta[2 * n + 1])
+    poste = defaultdict(lambda: defaultdict(int))
+    for d in duels:
+        poste[d["bleu"]][d["postes"][0]] += 1; poste[d["rouge"]][d["postes"][1]] += 1
     sortie = {"duels": len(duels), "duels_A": int(a.sum()), "duels_B": int(b.sum()), "lambda": lam,
               "verification_B": {"perte_or_niveau": perte_or, "perte_complet": perte_complet, "gain_millièmes": 1000 * (perte_or - perte_complet),
                                  "accord_forces_A_B": accord, "champions_compares": len(assez)},
               "coef_or_1000": coef_or, "coef_niveau": coef_niveau, "minute_reference": MINUTE_REF,
-              "champions": {ch: {"force": force[ch], "pente_10min": pente[ch], "duels": compte[ch]} for ch in champions}}
+              "champions": {ch: {"force": force[ch], "pente_10min": pente[ch], "duels": compte[ch],
+                                 "poste": max(poste[ch], key=poste[ch].get)} for ch in champions}}
     RESULTATS.mkdir(parents=True, exist_ok=True)
     (RESULTATS / "duels.json").write_text(json.dumps(sortie, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
@@ -169,27 +174,19 @@ def main():
         t = (minute - MINUTE_REF) / 10
         return 1 / (1 + math.exp(-(force[c1] - force[c2] + (pente[c1] - pente[c2]) * t)))
 
-    frequents = sorted((ch for ch in champions if compte[ch] >= 400), key=lambda ch: -compte[ch])
-    texte = ["# Duels de junglers à or égal", "",
-             f"- {len(duels)} duels (kill d'un jungler par l'autre, seul, sans aide) dans A + B ; A {int(a.sum())}, B {int(b.sum())}.",
+    poste_principal = {ch: sortie["champions"][ch]["poste"] for ch in champions}
+    texte = ["# Duels à or et niveau égaux", "",
+             f"- {len(duels)} duels (un champion tué par un autre, seul, sans aide) dans A + B ; A {int(a.sum())}, B {int(b.sum())}.",
              f"- Repères : 1 000 or d'avance = {points(coef_or):+.1f} points de chance de gagner le duel ; 1 niveau d'avance = {points(coef_niveau):+.1f} points.",
              f"- Vérification sur B : le modèle (champions + or + niveau) prédit mieux que l'or et le niveau seuls : "
              f"gain {1000 * (perte_or - perte_complet):.1f} millièmes. Accord des forces apprises séparément sur A et sur B : {accord:.2f} "
-             f"({len(assez)} junglers). À confirmer sur C après la prochaine collecte.", "",
-             "## Force en duel à or et niveau égaux (à 13 min), contre un jungler moyen", "",
-             "| Jungler | Gagne à or égal | Évolution par 10 min | Duels |", "|---|---|---|---|"]
-    for ch in sorted(frequents, key=lambda ch: -force[ch]):
-        nom = f"**{ch}**" if ch in POOL else ch
-        texte.append(f"| {nom} | {50 + points(force[ch]):.0f} % | {points(pente[ch]):+.1f} | {compte[ch]} |")
-    texte += ["", "## Ton pool contre les junglers les plus joués (à or et niveau égaux, à 8 et à 15 min)", ""]
-    adverses = frequents[:12]
-    texte += ["| Ton jungler | " + " | ".join(adverses) + " |", "|---" * (len(adverses) + 1) + "|"]
-    for ch in POOL:
-        if compte.get(ch, 0) < 150:
-            continue
-        cases = [f"{100 * proba(ch, e, 8):.0f} / {100 * proba(ch, e, 15):.0f}" if e != ch else "—" for e in adverses]
-        texte.append(f"| {ch} | " + " | ".join(cases) + " |")
-    texte.append("")
+             f"({len(assez)} champions).", ""]
+    for p_, titre in (("top", "Top"), ("jgl", "Jungle"), ("mid", "Mid"), ("adc", "ADC"), ("sup", "Support")):
+        liste = sorted((ch for ch in champions if poste_principal[ch] == p_ and compte[ch] >= 400), key=lambda ch: -force[ch])
+        texte += [f"## {titre} : force en duel à or et niveau égaux (à 13 min), contre un champion moyen", "",
+                  "| Champion | Gagne à or égal | Évolution par 10 min | Duels |", "|---|---|---|---|"]
+        texte += [f"| {'**' + ch + '**' if ch in POOL else ch} | {50 + points(force[ch]):.0f} % | {points(pente[ch]):+.1f} | {compte[ch]} |" for ch in liste]
+        texte.append("")
     (RESULTATS / "duels.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
     print("\n".join(texte))
     return 0

@@ -1,4 +1,4 @@
-"""Confirmation des duels de junglers (lanes/duels.py) sur un tas C propre aux duels.
+"""Confirmation des duels (lanes/duels.py, tous les champions) sur un tas C propre aux duels.
 
 Pas de nouvelle collecte prévue : on découpe les parties existantes dans le temps, règles fixées AVANT de lancer :
 - apprentissage (A) = les deux premiers tiers de donnees/parties.csv (ordre de collecte) ;
@@ -10,7 +10,7 @@ Tests fixés à l'avance (seuil 5 %, correction de Benjamini-Hochberg dans chaqu
 1. Ensemble : sur C, le modèle complet (champions + évolution avec la minute + or + niveau) prédit-il mieux que
    l'or et le niveau seuls ? (différence de perte log, duel par duel, test unilatéral)
 2. Évolution avec la minute : le modèle complet prédit-il mieux sur C que le même modèle sans l'évolution ?
-3. Chaque jungler vu au moins 150 fois dans A et 100 fois dans C : sa force à or égal (signe appris sur A) se
+3. Chaque champion vu au moins 150 fois dans A et 100 fois dans C : sa force à or égal (signe appris sur A) se
    retrouve-t-elle sur C ? (taux de victoire de ses duels sur C, avec la prédiction or + niveau + adversaire comme
    point de départ, test unilatéral dans le sens appris)
 Écrit confirmation/decoupage_duels.json (la règle, avant tout calcul) et confirmation/resultats/confirmation_duels.json et .md.
@@ -78,7 +78,7 @@ def main():
     regle = {"regle": "A = les deux premiers tiers de parties.csv (ordre de collecte), C = le dernier tiers ; archive sans duels.",
              "parties": len(ordre), "coupure_position": coupure, "premier_match_C": ordre[coupure],
              "date": datetime.now(ZoneInfo("Europe/Paris")).isoformat(timespec="seconds"),
-             "tests": ["ensemble : complet mieux que or + niveau", "évolution avec la minute", "force de chaque jungler (≥ 150 duels A, ≥ 100 C)"]}
+             "tests": ["ensemble : complet mieux que or + niveau", "évolution avec la minute", "force de chaque champion (≥ 150 duels A, ≥ 100 C)"]}
     REGLE.write_text(json.dumps(regle, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     position = {m: i for i, m in enumerate(ordre)}
     tas = {m: ("C" if i >= coupure else "A") for m, i in position.items()}
@@ -116,7 +116,7 @@ def main():
         if compte_a[ch] < 150 or compte_c[ch] < 100:
             continue
         i = idx[ch]
-        x = Xc[:, i]                          # +1 s'il est bleu, −1 s'il est rouge, 0 sinon
+        x = np.asarray(Xc[:, i].todense()).ravel()   # +1 s'il est bleu, −1 s'il est rouge, 0 sinon
         sel = x != 0
         b_sans = beta.copy(); b_sans[i] = 0.0; b_sans[n + i] = 0.0
         depart = Xc[sel] @ b_sans + k
@@ -137,14 +137,14 @@ def main():
     SORTIE.mkdir(exist_ok=True)
     (SORTIE / "confirmation_duels.json").write_text(json.dumps(sortie, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     pts = lambda b: 100 * (1 / (1 + math.exp(-b)) - 0.5)
-    texte = ["# Confirmation des duels de junglers", "",
+    texte = ["# Confirmation des duels (tous les champions)", "",
              f"- Découpage propre aux duels, fixé avant calcul : A = les {coupure} premières parties de parties.csv, "
              f"C = les {len(ordre) - coupure} dernières (à partir de {ordre[coupure]}). Duels : A {int(a.sum())}, C {int(c.sum())}.",
              "- Le modèle de lanes/duels.py est rejoué tel quel, appris sur A, mesuré sur C.", "",
              "## Ensemble", ""]
     texte += [f"- {t['nom']} : gain {t['gain_millièmes']:.1f} millièmes sur C, **{t['verdict']}**." for t in ensemble]
-    texte += ["", f"## Chaque jungler (accord des forces A / C : {accord:.2f})", "",
-              "| Jungler | À or égal sur A | Sur C | Duels A | Duels C | Verdict |", "|---|---|---|---|---|---|"]
+    texte += ["", f"## Chaque champion (accord des forces A / C : {accord:.2f})", "",
+              "| Champion | À or égal sur A | Sur C | Duels A | Duels C | Verdict |", "|---|---|---|---|---|---|"]
     texte += [f"| {t['jungler']} | {50 + pts(t['force_A']):.0f} % | {50 + pts(t['force_C']):.0f} % | {t['duels_A']} | {t['duels_C']} | {t['verdict']} |"
               for t in sorted(tests, key=lambda t: -t["force_A"])]
     texte.append("")

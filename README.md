@@ -47,8 +47,8 @@ Le bouton « Générer l'assistant Draft » (sur `main`) fait tout cela lui-mêm
 | Envahir à 5, 10 et 20 min, autres catégories de jungler | non confirmé | non |
 | Early/late : la compo la plus late gagne 39 % avant 20 min et 60 % entre 35 et 40 min | confirmé | oui |
 | Mix de dégâts : moins de 20 % ou plus de 70 % de dégâts magiques, −4 points | confirmé | oui |
-| Duels de junglers à or et niveau égaux (`lanes/duels.py`) : modèle d'ensemble et évolution avec la minute | confirmé (C propre aux duels : dernier tiers des parties, `confirmation/decoupage_duels.json` ; accord des forces A/C 0,92) | oui |
-| Force en duel de chaque jungler | confirmée pour 26 junglers (dont Kayn rouge et Kayn bleu) ; les autres comptent comme moyens | oui |
+| Duels (1 contre 1) de tous les champions à or et niveau égaux (`lanes/duels.py`, 515 000 duels) : modèle d'ensemble et évolution avec la minute | confirmé (C propre aux duels : dernier tiers des parties, `confirmation/decoupage_duels.json` ; accord des forces A/C 0,94) | oui |
+| Force en duel de chaque champion | confirmée pour 117 champions ; les autres comptent comme moyens | oui |
 | Recuit teamfight (13 effets de compo) | non confirmé (28 tirages au hasard sur 40 font aussi bien) | non |
 
 Détails : `analyse/confirmation/resultats/`.
