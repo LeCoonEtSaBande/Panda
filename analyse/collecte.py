@@ -7,6 +7,7 @@ cherche pas de nouvelles parties : on complète les détails des parties déjà 
 
 import configparser
 import csv
+import http.client
 import json
 import os
 import random
@@ -184,9 +185,25 @@ class Riot:
                     time.sleep(2**essai)
                     continue
                 raise
-            except (urllib.error.URLError, TimeoutError):
+            except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException, json.JSONDecodeError):
+                # Réseau coupé, y compris en pleine réponse (JSON tronqué, IncompleteRead) : on réessaie.
                 time.sleep(2**essai)
         raise RuntimeError(f"Riot ne répond plus sur {chemin}")
+
+
+RATE = object()
+
+
+def essayer(riot, base, chemin, params=None):
+    """Comme riot.get, mais un échec après tous les essais renvoie RATE au lieu d'arrêter la collecte.
+
+    Une clé refusée (CleRefusee) arrête toujours la collecte.
+    """
+    try:
+        return riot.get(base, chemin, params)
+    except (RuntimeError, urllib.error.HTTPError) as erreur:
+        print(f"::warning::Appel sauté : {chemin} ({erreur}).", flush=True)
+        return RATE
 
 
 def noms_des_champions():
@@ -600,7 +617,9 @@ def collecter(riot, reglages, noms, parties, ecartees, vus, fin, sauvegarder=Non
             if not temps_restant():
                 break
             page = random.randint(1, pages_max[(palier, division)])
-            entrees = riot.get(PLATEFORME, f"/lol/league/v4/entries/RANKED_SOLO_5x5/{palier}/{division}", {"page": page})
+            entrees = essayer(riot, PLATEFORME, f"/lol/league/v4/entries/RANKED_SOLO_5x5/{palier}/{division}", {"page": page})
+            if entrees is RATE:
+                continue
             if not entrees:
                 pages_max[(palier, division)] = max(1, page // 2)
                 continue
@@ -611,18 +630,23 @@ def collecter(riot, reglages, noms, parties, ecartees, vus, fin, sauvegarder=Non
                 puuid = entree.get("puuid")
                 if not puuid:
                     continue
-                identifiants = riot.get(
+                identifiants = essayer(
+                    riot,
                     REGION,
                     f"/lol/match/v5/matches/by-puuid/{puuid}/ids",
                     {"queue": FILE_SOLO, "start": 0, "count": reglages["parties_par_joueur"], "startTime": debut},
-                ) or []
-                for identifiant in identifiants:
+                )
+                if identifiants is RATE:
+                    continue
+                for identifiant in identifiants or []:
                     court = identifiant.removeprefix(PREFIXE)
                     if court in vus:
                         continue
                     if not temps_restant():
                         break
-                    match = riot.get(REGION, f"/lol/match/v5/matches/{identifiant}")
+                    match = essayer(riot, REGION, f"/lol/match/v5/matches/{identifiant}")
+                    if match is RATE:
+                        continue
                     vus.add(court)
                     if match is None:
                         ecartees.ecrire([court, "introuvable"])
@@ -660,8 +684,10 @@ def rattraper(riot, reglages, noms, details, echecs, fin, sauvegarder=None, part
     for identifiant in a_faire:
         if not temps_restant():
             break
-        match = riot.get(REGION, f"/lol/match/v5/matches/{PREFIXE}{identifiant}")
+        match = essayer(riot, REGION, f"/lol/match/v5/matches/{PREFIXE}{identifiant}")
         compte["restantes"] -= 1
+        if match is RATE:
+            continue
         if match is None:
             echecs.ecrire([identifiant, "introuvable"])
             compte["echecs"] += 1

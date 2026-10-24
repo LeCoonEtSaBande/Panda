@@ -1,12 +1,15 @@
 import copy
+import io
 import re
 import sys
 import time
 import unittest
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import collecte  # noqa: E402
 from collecte import COLONNES, Limiteur, collecter, convertir  # noqa: E402
 
 NOMS = {1: "Annie", 2: "Olaf", 3: "Galio", 22: "Ashe", 12: "Alistar", 266: "Aatrox", 64: "Lee Sin", 103: "Ahri", 51: "Caitlyn", 412: "Thresh"}
@@ -124,6 +127,49 @@ class PassageDePalierTest(unittest.TestCase):
         riot, parties = self.lancer(tour_min=0)
         self.assertEqual(set(riot.ligues), {"DIAMOND"})
         self.assertEqual(parties.lignes, [])
+
+
+class FausseReponse(io.BytesIO):
+    headers = {}
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *erreur):
+        return False
+
+
+class ReponseCoupeeTest(unittest.TestCase):
+    """Collecte du 23/10/2026 arrêtée par un JSON tronqué : il faut réessayer, pas planter."""
+
+    def lancer(self, corps):
+        reponses = iter(corps)
+        with mock.patch("collecte.urllib.request.urlopen", lambda *a, **k: FausseReponse(next(reponses))), \
+                mock.patch("collecte.time.sleep"):
+            return collecte.Riot("cle").get(collecte.REGION, "/lol/match/v5/matches/EUW1_1")
+
+    def test_json_tronque_puis_valide(self):
+        self.assertEqual(self.lancer([b'{"info": {"gameDura', b'{"ok": 1}']), {"ok": 1})
+
+    def test_toujours_tronque_appel_saute(self):
+        with mock.patch("collecte.urllib.request.urlopen", lambda *a, **k: FausseReponse(b'{"a')), \
+                mock.patch("collecte.time.sleep"):
+            self.assertIs(collecte.essayer(collecte.Riot("cle"), collecte.REGION, "/x"), collecte.RATE)
+
+    def test_match_en_echec_ne_stoppe_pas_la_collecte(self):
+        class RiotCapricieux(FauxRiot):
+            def get(self, base, chemin, params=None):
+                if chemin.endswith("EUW1_9000001"):
+                    raise RuntimeError("Riot ne répond plus")
+                return super().get(base, chemin, params)
+
+        riot, parties, ecartees = RiotCapricieux(), Journal(), Journal()
+        reglages = PassageDePalierTest().reglages(tour_min=3)
+        collecter(riot, reglages, NOMS, parties, ecartees, {"1", "2"}, time.monotonic() + 0.4)
+        identifiants = [ligne[0] for ligne in parties.lignes]
+        self.assertNotIn("9000001", identifiants)
+        self.assertIn("9000002", identifiants)
+        self.assertEqual(ecartees.lignes, [])
 
 
 class AucuneCleDansLeDepotTest(unittest.TestCase):
