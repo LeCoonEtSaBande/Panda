@@ -1,0 +1,378 @@
+{
+ "lolalytics": {
+  "parties": 12579,
+  "tests": [
+   {
+    "nom": "Force du patch",
+    "coefficient": 4.536927292232365,
+    "erreur": 0.40300673016870314,
+    "attendu": 4.0,
+    "p": 1.0611741325691922e-29,
+    "q": 3.1835223977075767e-29,
+    "verdict": "confirmé"
+   },
+   {
+    "nom": "Contre de l'adversaire direct",
+    "coefficient": 5.807457273431463,
+    "erreur": 0.5304675272125269,
+    "attendu": 4.0,
+    "p": 3.4037079584250395e-28,
+    "q": 5.105561937637559e-28,
+    "verdict": "confirmé"
+   },
+   {
+    "nom": "Contres des autres adversaires",
+    "coefficient": 3.1578041055673545,
+    "erreur": 0.30898198353846723,
+    "attendu": 4.0,
+    "p": 8.0648266252658765e-25,
+    "q": 8.064826625265876e-25,
+    "verdict": "confirmé"
+   }
+  ],
+  "annonce_3_points": {
+   "parties": 7410,
+   "gagne": 0.5804318488529014
+  }
+ },
+ "lanes": {
+  "top": {
+   "parties": 12425,
+   "correlation": 0.28012755755244406,
+   "calibration": [
+    {
+     "annonce": "0-35 %",
+     "parties": 1359,
+     "annonce_moyenne": 0.29226348216007836,
+     "devant_reel": 0.29065489330389993
+    },
+    {
+     "annonce": "35-45 %",
+     "parties": 3076,
+     "annonce_moyenne": 0.40489460536397154,
+     "devant_reel": 0.4057217165149545
+    },
+    {
+     "annonce": "45-55 %",
+     "parties": 4284,
+     "annonce_moyenne": 0.49948658960623027,
+     "devant_reel": 0.5063025210084033
+    },
+    {
+     "annonce": "55-65 %",
+     "parties": 2631,
+     "annonce_moyenne": 0.5915353983313826,
+     "devant_reel": 0.5826681870011402
+    },
+    {
+     "annonce": "65-100 %",
+     "parties": 1075,
+     "annonce_moyenne": 0.6981537353461633,
+     "devant_reel": 0.7125581395348837
+    }
+   ],
+   "annonce_devant_60": {
+    "parties": 2035,
+    "devant_reel": 0.6560196560196561
+   },
+   "p": 4.3621306024418156e-226,
+   "q": 1.7448522409767262e-225,
+   "verdict": "confirmé"
+  },
+  "jgl": {
+   "parties": 12425,
+   "correlation": 0.26856770197588686,
+   "calibration": [
+    {
+     "annonce": "0-35 %",
+     "parties": 1101,
+     "annonce_moyenne": 0.30292619414728983,
+     "devant_reel": 0.27883742052679383
+    },
+    {
+     "annonce": "35-45 %",
+     "parties": 3027,
+     "annonce_moyenne": 0.4054767840910847,
+     "devant_reel": 0.4007267922035018
+    },
+    {
+     "annonce": "45-55 %",
+     "parties": 4140,
+     "annonce_moyenne": 0.500933029194658,
+     "devant_reel": 0.48285024154589373
+    },
+    {
+     "annonce": "55-65 %",
+     "parties": 3080,
+     "annonce_moyenne": 0.5963589225386641,
+     "devant_reel": 0.560064935064935
+    },
+    {
+     "annonce": "65-100 %",
+     "parties": 1077,
+     "annonce_moyenne": 0.6972000978059172,
+     "devant_reel": 0.7093779015784587
+    }
+   ],
+   "annonce_devant_60": {
+    "parties": 2453,
+    "devant_reel": 0.6392172849571953
+   },
+   "p": 4.4470644579640844e-207,
+   "q": 8.894128915928169e-207,
+   "verdict": "confirmé"
+  },
+  "mid": {
+   "parties": 12425,
+   "correlation": 0.24769019927385008,
+   "calibration": [
+    {
+     "annonce": "0-35 %",
+     "parties": 939,
+     "annonce_moyenne": 0.3111892319545877,
+     "devant_reel": 0.3194888178913738
+    },
+    {
+     "annonce": "35-45 %",
+     "parties": 3236,
+     "annonce_moyenne": 0.4076741074174112,
+     "devant_reel": 0.39029666254635353
+    },
+    {
+     "annonce": "45-55 %",
+     "parties": 4638,
+     "annonce_moyenne": 0.500098741793452,
+     "devant_reel": 0.49805950840879687
+    },
+    {
+     "annonce": "55-65 %",
+     "parties": 2861,
+     "annonce_moyenne": 0.5925345807136145,
+     "devant_reel": 0.5830129325410696
+    },
+    {
+     "annonce": "65-100 %",
+     "parties": 751,
+     "annonce_moyenne": 0.6912771666156272,
+     "devant_reel": 0.677762982689747
+    }
+   ],
+   "annonce_devant_60": {
+    "parties": 1847,
+    "devant_reel": 0.6578234975636167
+   },
+   "p": 3.628019579048493e-175,
+   "q": 4.837359438731324e-175,
+   "verdict": "confirmé"
+  },
+  "bot": {
+   "parties": 12425,
+   "correlation": 0.24611603600494233,
+   "calibration": [
+    {
+     "annonce": "0-35 %",
+     "parties": 687,
+     "annonce_moyenne": 0.3065520274480722,
+     "devant_reel": 0.3260553129548763
+    },
+    {
+     "annonce": "35-45 %",
+     "parties": 2684,
+     "annonce_moyenne": 0.40862009424624796,
+     "devant_reel": 0.396795827123696
+    },
+    {
+     "annonce": "45-55 %",
+     "parties": 4565,
+     "annonce_moyenne": 0.5001790872889915,
+     "devant_reel": 0.48806133625410736
+    },
+    {
+     "annonce": "55-65 %",
+     "parties": 3352,
+     "annonce_moyenne": 0.5934705166583195,
+     "devant_reel": 0.5871121718377088
+    },
+    {
+     "annonce": "65-100 %",
+     "parties": 1137,
+     "annonce_moyenne": 0.6948556733623933,
+     "devant_reel": 0.6781002638522428
+    }
+   ],
+   "annonce_devant_60": {
+    "parties": 2483,
+    "devant_reel": 0.6528393072895691
+   },
+   "p": 6.959174811870903e-173,
+   "q": 6.959174811870903e-173,
+   "verdict": "confirmé"
+  }
+ },
+ "ganks": {
+  "lignes_C": 75396,
+  "parties_C": 12566,
+  "tests": [
+   {
+    "nom": "mieux que la moyenne",
+    "gain": 0.03211268737162874,
+    "p": 1.261636189776173e-308,
+    "q": 2.523272379552346e-308,
+    "verdict": "confirmé"
+   },
+   {
+    "nom": "mieux que la seule catégorie du jungler",
+    "gain": 0.010445257954405146,
+    "p": 4.6601634702283256e-98,
+    "q": 4.6601634702283256e-98,
+    "verdict": "confirmé"
+   }
+  ],
+  "calibration": [
+   {
+    "annonce": "0-50 %",
+    "lignes": 1236,
+    "annonce_moyenne": 0.47351822249017206,
+    "reel": 0.4506472491909385
+   },
+   {
+    "annonce": "50-60 %",
+    "lignes": 11056,
+    "annonce_moyenne": 0.5626457776855367,
+    "reel": 0.5541787264833574
+   },
+   {
+    "annonce": "60-70 %",
+    "lignes": 24198,
+    "annonce_moyenne": 0.6506991813219476,
+    "reel": 0.650095049177618
+   },
+   {
+    "annonce": "70-80 %",
+    "lignes": 17943,
+    "annonce_moyenne": 0.7467192972995373,
+    "reel": 0.7453045756005128
+   },
+   {
+    "annonce": "80-100 %",
+    "lignes": 20963,
+    "annonce_moyenne": 0.850239886421037,
+    "reel": 0.8536469016839193
+   }
+  ]
+ },
+ "envahir": {
+  "tests": [
+   {
+    "minute": 5,
+    "groupe": "Engage (tanks)",
+    "A": 2.496697862384789,
+    "B": 2.3673489823294536,
+    "C": 1.5005033602616735,
+    "parties_C": 12566,
+    "p": 0.3450623263443634,
+    "q": 0.4313279079304543,
+    "verdict": "rien"
+   },
+   {
+    "minute": 5,
+    "groupe": "Pick (assassins)",
+    "A": 2.982390654342837,
+    "B": 2.8394305897455285,
+    "C": 1.8552835228198616,
+    "parties_C": 12566,
+    "p": 0.23820310660348676,
+    "q": 0.3402901522906954,
+    "verdict": "rien"
+   },
+   {
+    "minute": 5,
+    "groupe": "Poke (artilleurs)",
+    "A": -3.676719541388346,
+    "B": -7.1390489842708185,
+    "C": -9.145220001965782,
+    "parties_C": 12566,
+    "p": 0.08623524734552537,
+    "q": 0.17247049469105075,
+    "verdict": "rien"
+   },
+   {
+    "minute": 10,
+    "groupe": "Carrys",
+    "A": 3.9787643216841473,
+    "B": 1.9133797653599793,
+    "C": 4.314087214229723,
+    "parties_C": 12499,
+    "p": 0.15835014377703238,
+    "q": 0.263916906295054,
+    "verdict": "rien"
+   },
+   {
+    "minute": 15,
+    "groupe": "Engage (tanks)",
+    "A": 6.547352610730261,
+    "B": 5.536860878839834,
+    "C": 7.252177397791481,
+    "parties_C": 12425,
+    "p": 0.005424349668563922,
+    "q": 0.044122099789003735,
+    "verdict": "confirmé"
+   },
+   {
+    "minute": 15,
+    "groupe": "Engage (bruisers)",
+    "A": 5.833675003435356,
+    "B": 3.3659805348358773,
+    "C": 6.30000884080647,
+    "parties_C": 12425,
+    "p": 0.008824419957800747,
+    "q": 0.044122099789003735,
+    "verdict": "confirmé"
+   },
+   {
+    "minute": 15,
+    "groupe": "Poke (artilleurs)",
+    "A": 8.990304515795,
+    "B": 4.4210940905390235,
+    "C": 11.4652828254873,
+    "parties_C": 12425,
+    "p": 0.024909961358975857,
+    "q": 0.0665871268920955,
+    "verdict": "à surveiller"
+   },
+   {
+    "minute": 20,
+    "groupe": "Engage (tanks)",
+    "A": 3.049828428168766,
+    "B": 10.52963675161348,
+    "C": 5.585548637299842,
+    "parties_C": 11674,
+    "p": 0.0266348507568382,
+    "q": 0.0665871268920955,
+    "verdict": "à surveiller"
+   },
+   {
+    "minute": 20,
+    "groupe": "Poke (artilleurs)",
+    "A": 2.6478538948618957,
+    "B": 10.312384853869162,
+    "C": -4.540727196802585,
+    "parties_C": 11674,
+    "p": 0.7828599467386659,
+    "q": 0.7828599467386659,
+    "verdict": "rien"
+   },
+   {
+    "minute": 20,
+    "groupe": "Carrys",
+    "A": 6.028386411338538,
+    "B": 8.929222266195136,
+    "C": -2.718557840251151,
+    "parties_C": 11674,
+    "p": 0.7446867042867348,
+    "q": 0.7828599467386659,
+    "verdict": "rien"
+   }
+  ]
+ }
+}

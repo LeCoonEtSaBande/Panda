@@ -93,22 +93,61 @@ def teamfight():
             "effets": sorted(effets, key=lambda e: -abs(e["taux"] - 0.5))}
 
 
+def confirmation_c():
+    """Ce qui a été confirmé sur C (parties jamais vues). L'assistant n'affiche que ça : sans fichier de confirmation,
+    un bloc est considéré comme non confirmé."""
+    lire = lambda chemin: json.loads(chemin.read_text(encoding="utf-8")) if chemin.exists() else None
+    ok = lambda d: bool(d) and d.get("verdict") == "confirmé"
+    gen = lire(ANALYSE / "resultats_C" / "confirmation_C.json") or {}
+    dd = lire(LANES_RES / "confirmation_C_duree_degats.json") or {}
+    recuits = sorted(ITERATIF_RES.glob("confirmation_C_recuit2_teamfight_*.json"))
+    rec = lire(recuits[-1]) if recuits else None
+    lola = {t["nom"]: ok(t) for t in gen.get("lolalytics", {}).get("tests", [])}
+    return {
+        "parties_C": gen.get("lolalytics", {}).get("parties"),
+        "force": lola.get("Force du patch", False),
+        "contre_direct": lola.get("Contre de l'adversaire direct", False),
+        "contres_autres": lola.get("Contres des autres adversaires", False),
+        "lanes": bool(gen.get("lanes")) and all(ok(d) for d in gen["lanes"].values()),
+        "ganks": bool(gen.get("ganks")) and all(ok(t) for t in gen["ganks"]["tests"]),
+        "envahir": [[t["minute"], t["groupe"]] for t in gen.get("envahir", {}).get("tests", []) if ok(t)],
+        "tempo": ok(dd.get("late")),
+        "mix": [titre for titre, m in dd.get("mix", {}).items() if ok(m)],
+        "teamfight": {"recuit": rec["recuit"] if rec else None,
+                      "effets": [e["nom"] for e in (rec or {}).get("effets", []) if ok(e)]},
+    }
+
+
 def main():
+    conf = confirmation_c()
+    tf = teamfight()
+    # Effets du recuit : seulement ceux confirmés sur C, et seulement si la confirmation porte sur ce recuit.
+    garder = set(conf["teamfight"]["effets"]) if conf["teamfight"]["recuit"] == tf["recuit"] else set()
+    tf["effets"] = [e for e in tf["effets"] if e["nom"] in garder]
+    dd = (json.loads((LANES_RES / "duree_degats.json").read_text(encoding="utf-8"))
+          if (LANES_RES / "duree_degats.json").exists() else None)
+    if dd:
+        dd["mix"] = {k: dict(m, tient=m["tient"] and k in conf["mix"]) for k, m in dd["mix"].items()}
+        if not conf["tempo"]:
+            dd["coef_late"]["retenu"] = 0.0
+    envm = json.loads((LANES_RES / "envahir.json").read_text(encoding="utf-8"))
+    for m, s in envm.items():
+        s["confirme_C"] = [g for mm, g in conf["envahir"] if str(mm) == str(m)]
     donnees = {
         "date": datetime.now(ZoneInfo("Europe/Paris")).strftime("%d/%m/%Y %H:%M"),
         "catalogue": catalogue(),
         "lanes": lanes(),
         "ganks": json.loads((LANES_RES / "ganks_modele.json").read_text(encoding="utf-8")),
-        "teamfight": teamfight(),
+        "teamfight": tf,
         "envahir": json.loads((LANES_RES / "comportement.json").read_text(encoding="utf-8"))["envahir"],
-        "envahir_minutes": json.loads((LANES_RES / "envahir.json").read_text(encoding="utf-8")),
-        # Mix de dégâts et early / late (lanes/duree_degats.py) ; absent si le script n'a pas tourné.
-        "duree_degats": (json.loads((LANES_RES / "duree_degats.json").read_text(encoding="utf-8"))
-                         if (LANES_RES / "duree_degats.json").exists() else None),
+        "envahir_minutes": envm,
+        # Mix de dégâts et early / late (lanes/duree_degats.py), filtrés par la confirmation sur C.
+        "duree_degats": dd,
+        "confirmation_C": conf,
     }
     SORTIE.write_text(json.dumps(donnees, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"Export : {SORTIE} ({SORTIE.stat().st_size // 1024} Ko) ; {donnees['lanes']['parties']} parties pour les lanes, "
-          f"{len(donnees['teamfight']['effets'])} effets teamfight.")
+          f"{len(donnees['teamfight']['effets'])} effets teamfight confirmés sur C ; confirmation : {conf}.")
     return 0
 
 
