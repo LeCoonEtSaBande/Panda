@@ -1,9 +1,9 @@
 type;cas;parties;valeur;ic_95;p
-tableau;jungle AD, <= 1 coequipier AP;3080;46.7;;
-tableau;jungle AD, > 1 coequipier AP;32648;50.0;;
-tableau;jungle AP, <= 1 coequipier AP;3748;50.6;;
-tableau;jungle AP, > 1 coequipier AP;14717;50.7;;
-tableau;jungle Hybride, <= 1 coequipier AP;373;44.8;;
-tableau;jungle Hybride, > 1 coequipier AP;2716;49.9;;
-regression;peu d'AP, jungler non AD;57282;-0.6;-2.3 / +1.2;0.5211
-regression;surcoût si le jungler est AD;57282;-2.8;-5.3 / -0.3;0.0289
+tableau;jungle AD, <= 1 coequipier AP;3862;47.5;;
+tableau;jungle AD, > 1 coequipier AP;39799;50.1;;
+tableau;jungle AP, <= 1 coequipier AP;4581;50.2;;
+tableau;jungle AP, > 1 coequipier AP;17954;50.4;;
+tableau;jungle Hybride, <= 1 coequipier AP;462;45.0;;
+tableau;jungle Hybride, > 1 coequipier AP;3384;50.1;;
+regression;peu d'AP, jungler non AD;70042;-0.7;-2.3 / +0.9;0.3755
+regression;surcoût si le jungler est AD;70042;-1.9;-4.2 / +0.3;0.0926
