@@ -14,7 +14,7 @@ Quatre branches, une par rôle. Les boutons des workflows sont tous sur `main` (
 | `main` | **Collecte** : les parties de l'API Riot (`analyse/donnees/`), le code de collecte, le rapport de fin de collecte. | **Lancer une collecte** |
 | `scraping` | **Lolalytics** : tier list et contres du patch, une fois par patch (`analyse/lolalytics/<patch>/`). | **Récupérer les stats Lolalytics du patch** |
 | `analyse` | **Analyses** : recuits, contres par lane, dynamique des lanes, ganks, export pour l'assistant (`analyse/iteratif`, `analyse/contres`, `analyse/lanes`, `analyse/export`). Ne touche jamais aux données. | **Lancer un recuit simulé**, **Confirmer les résultats du recuit**, **Enrichir les contres** |
-| `assistant` | **Assistant de draft** : `Assistant_Panda.html`, une page autonome à poser sur le bureau (`assistant_panda/`). | **Générer l'assistant Panda** |
+| `assistant` | **Assistant de draft** : `Assistant Draft - DL - <date>.html`, une page autonome à poser sur le bureau (bouton « Download raw file ») (`assistant_panda/`). | **Générer l'assistant Panda** |
 
 Les anciennes branches `analyse-iterative` et `champions-patch` sont remplacées par `analyse` et `scraping` (même contenu) ; elles peuvent être supprimées.
 
