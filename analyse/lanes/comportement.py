@@ -156,10 +156,14 @@ def main():
     }
     for gg in GROUPES:
         situations[f"envahit, jungler {gg}"] = (lambda g_: lambda m, e, i: inv(m, e, i) and groupe.get(table[f"{e}_jgl"][i], "") == g_)(gg)
+    resume = {}
     for nom, cond in situations.items():
         ta, na = taux(la, dec_a, cond); tb, nb = taux(lb, dec_b, cond)
+        resume[nom] = {"taux_A": ta, "parties_A": na, "taux_B": tb, "parties_B": nb}
         texte.append(f"| {nom} | {100 * ta:.1f} % ({na}) | {100 * tb:.1f} % ({nb}) |")
     texte.append("")
+    import json
+    (RESULTATS / "comportement.json").write_text(json.dumps({"envahir": resume}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     (RESULTATS / "comportement.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
     print("\n".join(texte))
     return 0
