@@ -1,6 +1,8 @@
 # Lolalytics, patch 16.21 (Platine et plus, tous serveurs)
 
 - 403 pages lues, 2 échecs. 262321 matchups.
+- Attention : la moyenne de Lolalytics en Platine et plus est d'environ 51 % (pas 50 %) : un jungler à 52 % est à peine au-dessus de la moyenne.
+- Contre net : au moins 2 points d'écart, et à plus de deux marges d'erreur (un matchup vu 150 fois a une marge d'environ ±8 points).
 - Contre (delta 2) : de combien le champion gagne ce matchup plus que prévu d'après les taux moyens des deux champions, en points.
 
 ## Junglers (1 000 parties ou plus), du plus fort au plus faible
@@ -84,38 +86,28 @@
 | Nasus | 46.40 % | 2252 | 0.21 % | 13.12 % |
 | Twitch | 43.40 % | 2007 | 0.19 % | 8.24 % |
 
-## Fiddlesticks en jungle contre le jungler adverse (100 parties ou plus)
+## Ivern en jungle contre le jungler adverse (contres nets)
 
-- Meilleurs : Pantheon 62.4 % (+7.6), Volibear 57.9 % (+6.6), Evelynn 56.0 % (+4.3), Jax 55.5 % (+3.9), Rammus 53.3 % (+3.7)
-- Pires : Karthus 48.5 % (-4.5), Xin Zhao 47.0 % (-4.4), Jarvan IV 48.8 % (-3.6), Ekko 48.4 % (-3.4), Jayce 51.8 % (-3.0)
+- Gagne plus que prévu contre : Kha'Zix 59.5 % (+6.6, 326 parties)
+- Perd plus que prévu contre : Elise 42.4 % (-8.7, 177 parties)
 
-## Ivern en jungle contre le jungler adverse (100 parties ou plus)
+## Kayn en jungle contre le jungler adverse (contres nets)
 
-- Meilleurs : Nidalee 60.3 % (+7.3), Kha'Zix 59.5 % (+6.6), Wukong 55.0 % (+4.6), Warwick 54.8 % (+4.6), Diana 56.5 % (+4.5)
-- Pires : Elise 42.4 % (-8.7), Zed 48.8 % (-6.7), Ekko 48.1 % (-3.9), Amumu 46.5 % (-3.6), Talon 49.2 % (-3.5)
+- Gagne plus que prévu contre : Malphite 57.1 % (+4.9, 492 parties), Naafiri 55.9 % (+4.1, 1296 parties), Zac 53.4 % (+2.8, 1294 parties), Lillia 52.0 % (+2.6, 2362 parties)
+- Perd plus que prévu contre : Poppy 44.3 % (-7.4, 192 parties), Elise 47.0 % (-3.3, 1244 parties), Rengar 50.7 % (-3.2, 1711 parties)
 
-## Dr. Mundo en jungle contre le jungler adverse (100 parties ou plus)
+## Viego en jungle contre le jungler adverse (contres nets)
 
-- Meilleurs : Wukong 56.6 % (+5.5), Kha'Zix 57.4 % (+3.8), Cho'Gath 53.2 % (+2.7), Rengar 57.8 % (+2.4), Graves 55.7 % (+2.0)
-- Pires : Hecarim 46.0 % (-8.4), Lillia 43.9 % (-6.8), Sylas 48.8 % (-4.9), Shaco 47.3 % (-4.7), Jarvan IV 48.9 % (-4.3)
+- Gagne plus que prévu contre : Brand 63.0 % (+10.0, 100 parties), Nocturne 53.9 % (+2.6, 1971 parties), Master Yi 52.0 % (+2.4, 3552 parties)
+- Perd plus que prévu contre : Rammus 43.7 % (-4.3, 1169 parties), Elise 45.7 % (-3.6, 1465 parties), Evelynn 46.9 % (-3.3, 1366 parties), Nidalee 48.1 % (-3.2, 1041 parties), Kha'Zix 48.1 % (-3.1, 3474 parties), Qiyana 52.8 % (-2.4, 2732 parties)
 
-## Kayn en jungle contre le jungler adverse (100 parties ou plus)
+## Maokai en jungle contre le jungler adverse (contres nets)
 
-- Meilleurs : Shen 59.0 % (+7.5), Sion 54.4 % (+6.3), Morgana 56.6 % (+5.9), Malphite 57.1 % (+4.9), Dr. Mundo 54.1 % (+4.3)
-- Pires : Poppy 44.3 % (-7.4), Gragas 46.1 % (-4.7), Elise 47.0 % (-3.3), Rengar 50.7 % (-3.2), Zaahen 46.0 % (-2.7)
+- Gagne plus que prévu contre : Graves 61.4 % (+8.5, 153 parties)
+- Perd plus que prévu contre : aucun contre net
 
-## Viego en jungle contre le jungler adverse (100 parties ou plus)
+## Skarner en jungle contre le jungler adverse (contres nets)
 
-- Meilleurs : Brand 63.0 % (+10.0), Zaahen 54.5 % (+6.7), Nasus 61.3 % (+6.0), Sion 52.8 % (+5.7), Shen 55.6 % (+5.0)
-- Pires : Rammus 43.7 % (-4.3), Elise 45.7 % (-3.6), Morgana 46.1 % (-3.5), Poppy 47.4 % (-3.3), Evelynn 46.9 % (-3.3)
-
-## Maokai en jungle contre le jungler adverse (100 parties ou plus)
-
-- Meilleurs : Graves 61.4 % (+8.5), Shaco 59.6 % (+8.4), Talon 58.4 % (+5.8), Cho'Gath 53.3 % (+3.6), Vi 56.9 % (+3.3)
-- Pires : Ekko 46.0 % (-5.8), Master Yi 45.3 % (-5.8), Sylas 48.3 % (-4.5), Lee Sin 51.3 % (-3.2), Viego 50.2 % (-2.4)
-
-## Skarner en jungle contre le jungler adverse (100 parties ou plus)
-
-- Meilleurs : Sejuani 58.0 % (+7.6), Master Yi 57.6 % (+6.9), Talon 57.1 % (+4.8), Kha'Zix 56.3 % (+3.9), Sylas 56.4 % (+3.9)
-- Pires : Nidalee 41.9 % (-10.6), Elise 44.4 % (-6.1), Lillia 44.3 % (-5.3), Jarvan IV 46.9 % (-5.2), Viego 47.2 % (-5.1)
+- Gagne plus que prévu contre : Master Yi 57.6 % (+6.9, 295 parties)
+- Perd plus que prévu contre : Nidalee 41.9 % (-10.6, 124 parties), Lillia 44.3 % (-5.3, 361 parties)
 

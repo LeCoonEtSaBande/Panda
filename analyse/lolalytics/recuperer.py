@@ -213,6 +213,9 @@ def ecrire_resume(dossier, patch, champions, matchups, pages, echecs):
     jungle = sorted([c for c in champions if c["poste"] == "jgl" and c["parties"] >= 1000], key=lambda c: -(c["victoires"] or 0))
     lignes = [f"# Lolalytics, patch {patch} (Platine et plus, tous serveurs)", "",
               f"- {pages} pages lues, {echecs} échecs. {len(matchups)} matchups.",
+              "- Attention : la moyenne de Lolalytics en Platine et plus est d'environ 51 % (pas 50 %) : un jungler à 52 % "
+              "est à peine au-dessus de la moyenne.",
+              "- Contre net : au moins 2 points d'écart, et à plus de deux marges d'erreur (un matchup vu 150 fois a une marge d'environ ±8 points).",
               "- Contre (delta 2) : de combien le champion gagne ce matchup plus que prévu d'après les taux moyens des deux champions, en points.", "",
               "## Junglers (1 000 parties ou plus), du plus fort au plus faible", "",
               "| Champion | Victoires | Parties | Pick | Ban |", "|---|---|---|---|---|"]
@@ -220,13 +223,18 @@ def ecrire_resume(dossier, patch, champions, matchups, pages, echecs):
                f"{c['pick']:.2f} % | {c['ban'] or 0:.2f} % |" for c in jungle]
     lignes += [""]
     for nom in POOL:
-        duels = [m for m in matchups if m["champion"] == nom and m["poste"] == "jgl" and m["poste_adversaire"] == "jgl" and m["parties"] >= 100]
+        # Seuls les contres nets : au moins 2 points, et à plus de deux marges d'erreur (environ 100 × √(0,25 / n)).
+        duels = [m for m in matchups if m["champion"] == nom and m["poste"] == "jgl" and m["poste_adversaire"] == "jgl"
+                 and m["parties"] >= 100 and abs(m["delta_2"]) >= max(2.0, 200 * (0.25 / m["parties"]) ** 0.5)]
         if not duels:
             continue
         duels.sort(key=lambda m: -m["delta_2"])
-        lignes += [f"## {nom} en jungle contre le jungler adverse (100 parties ou plus)", "",
-                   "- Meilleurs : " + ", ".join(f"{m['adversaire']} {m['victoires']:.1f} % ({m['delta_2']:+.1f})" for m in duels[:5]),
-                   "- Pires : " + ", ".join(f"{m['adversaire']} {m['victoires']:.1f} % ({m['delta_2']:+.1f})" for m in duels[::-1][:5]), ""]
+        bons = [m for m in duels if m["delta_2"] > 0][:6]
+        mauvais = [m for m in duels if m["delta_2"] < 0][::-1][:6]
+        fmt = lambda m: f"{m['adversaire']} {m['victoires']:.1f} % ({m['delta_2']:+.1f}, {m['parties']} parties)"
+        lignes += [f"## {nom} en jungle contre le jungler adverse (contres nets)", "",
+                   "- Gagne plus que prévu contre : " + (", ".join(fmt(m) for m in bons) or "aucun contre net"),
+                   "- Perd plus que prévu contre : " + (", ".join(fmt(m) for m in mauvais) or "aucun contre net"), ""]
     (dossier / "resume.md").write_text("\n".join(lignes) + "\n", encoding="utf-8")
 
 
