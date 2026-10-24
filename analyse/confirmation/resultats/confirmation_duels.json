@@ -1,0 +1,454 @@
+{
+ "regle": {
+  "regle": "A = les deux premiers tiers de parties.csv (ordre de collecte), C = le dernier tiers ; archive sans duels.",
+  "parties": 42101,
+  "coupure_position": 28067,
+  "premier_match_C": "8022301461",
+  "date": "2026-10-24T20:18:17+02:00",
+  "tests": [
+   "ensemble : complet mieux que or + niveau",
+   "évolution avec la minute",
+   "force de chaque jungler (≥ 150 duels A, ≥ 100 C)"
+  ]
+ },
+ "duels_A": 15657,
+ "duels_C": 7823,
+ "lambda": 3.0,
+ "ensemble": [
+  {
+   "nom": "Champions + minute + or + niveau, mieux que or + niveau seuls",
+   "gain_millièmes": 33.01871612964907,
+   "p": 2.8065677793650853e-31,
+   "verdict": "confirmé"
+  },
+  {
+   "nom": "Évolution avec la minute, mieux que sans",
+   "gain_millièmes": 11.032276026689104,
+   "p": 2.9397241955353056e-11,
+   "verdict": "confirmé"
+  }
+ ],
+ "accord_forces_A_C": 0.9215214272102107,
+ "junglers": [
+  {
+   "jungler": "Amumu",
+   "force_A": 0.12743150192347075,
+   "force_C": 0.4030680145489549,
+   "duels_A": 260,
+   "duels_C": 135,
+   "p": 0.026602541397995644,
+   "q": 0.04469226954863268,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Bel'Veth",
+   "force_A": 0.13855338421201055,
+   "force_C": -0.13007462019039845,
+   "duels_A": 479,
+   "duels_C": 285,
+   "p": 0.7957016873060654,
+   "q": 0.8569095094065319,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Briar",
+   "force_A": 0.4409475094963852,
+   "force_C": 0.5024534802713411,
+   "duels_A": 806,
+   "duels_C": 429,
+   "p": 3.051869246812328e-05,
+   "q": 0.000142420564851242,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Cho'Gath",
+   "force_A": 0.584995223456373,
+   "force_C": 0.4662842708395331,
+   "duels_A": 626,
+   "duels_C": 289,
+   "p": 0.000555975799291847,
+   "q": 0.002122816688205234,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Diana",
+   "force_A": 0.06103152566810565,
+   "force_C": 0.13543791280867087,
+   "duels_A": 628,
+   "duels_C": 323,
+   "p": 0.16476411679576097,
+   "q": 0.24714617519364146,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Ekko",
+   "force_A": -0.4750508913967149,
+   "force_C": -0.3835097099732467,
+   "duels_A": 666,
+   "duels_C": 351,
+   "p": 0.002754705100005771,
+   "q": 0.007231100887515149,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Elise",
+   "force_A": 0.04022052877097073,
+   "force_C": 0.28052373231691896,
+   "duels_A": 718,
+   "duels_C": 378,
+   "p": 0.014918030154201279,
+   "q": 0.029836060308402558,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Evelynn",
+   "force_A": 0.002625205111937307,
+   "force_C": 0.031783024668448505,
+   "duels_A": 580,
+   "duels_C": 227,
+   "p": 0.42681189199310643,
+   "q": 0.5272382195208962,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Fiddlesticks",
+   "force_A": -0.06233293320986265,
+   "force_C": -0.08218771423121833,
+   "duels_A": 264,
+   "duels_C": 155,
+   "p": 0.349029024254617,
+   "q": 0.4581005943341848,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Graves",
+   "force_A": -0.429345896505761,
+   "force_C": -0.3348950935384616,
+   "duels_A": 926,
+   "duels_C": 519,
+   "p": 0.002380424119878343,
+   "q": 0.007092251397515444,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Hecarim",
+   "force_A": 0.2028110406917453,
+   "force_C": 0.09194875035415953,
+   "duels_A": 875,
+   "duels_C": 453,
+   "p": 0.22937695110903888,
+   "q": 0.32689168702288496,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Jarvan IV",
+   "force_A": -0.1854809692289143,
+   "force_C": -0.08510396112540414,
+   "duels_A": 966,
+   "duels_C": 491,
+   "p": 0.23349406215920354,
+   "q": 0.32689168702288496,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Karthus",
+   "force_A": -1.1320841723706352,
+   "force_C": -1.3644368283366721,
+   "duels_A": 364,
+   "duels_C": 180,
+   "p": 1.0781924501466014e-10,
+   "q": 2.264204145307863e-09,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Kayn bleu",
+   "force_A": -0.2282325380439706,
+   "force_C": -0.401543392245893,
+   "duels_A": 567,
+   "duels_C": 304,
+   "p": 0.0045387642210373775,
+   "q": 0.010033057751766834,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Kayn rouge",
+   "force_A": 0.3789520432021555,
+   "force_C": 0.3055186122644345,
+   "duels_A": 516,
+   "duels_C": 255,
+   "p": 0.024872592128598877,
+   "q": 0.04384975188675277,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Kha'Zix",
+   "force_A": -0.11907478082312169,
+   "force_C": 0.19417526287213419,
+   "duels_A": 1749,
+   "duels_C": 925,
+   "p": 0.9870830728852135,
+   "q": 0.9870830728852136,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Kindred",
+   "force_A": -0.23801895966073078,
+   "force_C": -0.09744896525280256,
+   "duels_A": 485,
+   "duels_C": 228,
+   "p": 0.28567513520821325,
+   "q": 0.38704373157241795,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Lee Sin",
+   "force_A": 0.4027155335415014,
+   "force_C": 0.32577762931972565,
+   "duels_A": 1106,
+   "duels_C": 542,
+   "p": 0.0012829062825594716,
+   "q": 0.004144774143653677,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Lillia",
+   "force_A": -0.2146945292344387,
+   "force_C": -0.2823378081345848,
+   "duels_A": 805,
+   "duels_C": 379,
+   "p": 0.016069569585164332,
+   "q": 0.030678269208041,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Locke",
+   "force_A": -0.4571489028511462,
+   "force_C": 0.018695124903583295,
+   "duels_A": 182,
+   "duels_C": 108,
+   "p": 0.529387217353332,
+   "q": 0.6009260305091877,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Master Yi",
+   "force_A": 0.09953769620894663,
+   "force_C": -0.11396141632106203,
+   "duels_A": 983,
+   "duels_C": 504,
+   "p": 0.8470325632119022,
+   "q": 0.8676918940219486,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Naafiri",
+   "force_A": -0.050639590135534485,
+   "force_C": -0.057689219563885355,
+   "duels_A": 295,
+   "duels_C": 137,
+   "p": 0.3960574419683103,
+   "q": 0.5040731079596676,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Nidalee",
+   "force_A": -0.2687346453472669,
+   "force_C": -0.2910213659248291,
+   "duels_A": 412,
+   "duels_C": 201,
+   "p": 0.058667552522388686,
+   "q": 0.09477066176693556,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Nocturne",
+   "force_A": 0.09638187344393509,
+   "force_C": -0.1481128163203906,
+   "duels_A": 430,
+   "duels_C": 241,
+   "p": 0.8169838936904751,
+   "q": 0.8578330883749988,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Nunu & Willump",
+   "force_A": -0.5064281346791347,
+   "force_C": -0.6282687519244098,
+   "duels_A": 259,
+   "duels_C": 140,
+   "p": 0.0044179745204302,
+   "q": 0.010033057751766834,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Qiyana",
+   "force_A": -0.4405504611587325,
+   "force_C": -0.45602407714338306,
+   "duels_A": 1657,
+   "duels_C": 794,
+   "p": 5.670460167645194e-07,
+   "q": 4.763186540821964e-06,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Quinn",
+   "force_A": -0.932544789610854,
+   "force_C": -0.7785805152177402,
+   "duels_A": 264,
+   "duels_C": 148,
+   "p": 0.0002825233816499996,
+   "q": 0.0011865982029299984,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Rengar",
+   "force_A": 0.17588277627718404,
+   "force_C": 0.2998573175690774,
+   "duels_A": 1070,
+   "duels_C": 611,
+   "p": 0.0038437688005090774,
+   "q": 0.009496369977728309,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Shaco",
+   "force_A": -0.13686885507350566,
+   "force_C": -0.2405454362374797,
+   "duels_A": 1052,
+   "duels_C": 435,
+   "p": 0.025057001078144438,
+   "q": 0.04384975188675277,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Shyvana",
+   "force_A": 0.37034399878208013,
+   "force_C": -0.002562087379561728,
+   "duels_A": 651,
+   "duels_C": 368,
+   "p": 0.5076678410604804,
+   "q": 0.6009260305091877,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Sylas",
+   "force_A": 0.3861160616427389,
+   "force_C": 0.18090977773999498,
+   "duels_A": 794,
+   "duels_C": 415,
+   "p": 0.06940149711981532,
+   "q": 0.1079578844086016,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Taliyah",
+   "force_A": -1.433831925381813,
+   "force_C": -1.4811041905968154,
+   "duels_A": 218,
+   "duels_C": 125,
+   "p": 3.5885894918919575e-08,
+   "q": 5.02402528864874e-07,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Talon",
+   "force_A": -0.17865882618170362,
+   "force_C": -0.2829370854801982,
+   "duels_A": 1541,
+   "duels_C": 715,
+   "p": 0.002532946927684087,
+   "q": 0.007092251397515444,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Udyr",
+   "force_A": 0.36887853472038523,
+   "force_C": 0.8702684300137666,
+   "duels_A": 273,
+   "duels_C": 166,
+   "p": 2.586624525980931e-05,
+   "q": 0.00013579778761399887,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Vi",
+   "force_A": 0.2131821989385422,
+   "force_C": -0.009304011984551436,
+   "duels_A": 505,
+   "duels_C": 227,
+   "p": 0.5219397154454943,
+   "q": 0.6009260305091877,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Viego",
+   "force_A": -0.2263418764455011,
+   "force_C": 0.06333241429481708,
+   "duels_A": 1476,
+   "duels_C": 769,
+   "p": 0.7467072975354287,
+   "q": 0.8253080656970528,
+   "verdict": "rien"
+  },
+  {
+   "jungler": "Volibear",
+   "force_A": 0.5418388924375043,
+   "force_C": 1.0982083833462712,
+   "duels_A": 170,
+   "duels_C": 115,
+   "p": 4.0097930737648994e-06,
+   "q": 2.8068551516354294e-05,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Warwick",
+   "force_A": 0.9832468152225703,
+   "force_C": 0.7338677752693016,
+   "duels_A": 372,
+   "duels_C": 203,
+   "p": 1.0141485471187852e-05,
+   "q": 6.084891282712711e-05,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Wukong",
+   "force_A": 0.6419188186159722,
+   "force_C": 0.7570932829373042,
+   "duels_A": 1093,
+   "duels_C": 468,
+   "p": 2.4099200884709912e-11,
+   "q": 1.0121664371578164e-09,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Xin Zhao",
+   "force_A": 0.28519374181604396,
+   "force_C": 0.46370112362459026,
+   "duels_A": 323,
+   "duels_C": 177,
+   "p": 0.007167818437464222,
+   "q": 0.015052418718674868,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Zed",
+   "force_A": -0.6224800008892928,
+   "force_C": -0.6471181507782073,
+   "duels_A": 474,
+   "duels_C": 175,
+   "p": 0.0009787181512672,
+   "q": 0.0034255135294352004,
+   "verdict": "confirmé"
+  },
+  {
+   "jungler": "Zyra",
+   "force_A": -1.2338013486251334,
+   "force_C": -1.3051420471362016,
+   "duels_A": 187,
+   "duels_C": 129,
+   "p": 9.245122223237217e-08,
+   "q": 9.707378334399078e-07,
+   "verdict": "confirmé"
+  }
+ ]
+}
