@@ -37,7 +37,7 @@ jobs:
           git archive origin/analyse analyse | tar -x -C "$projet"
           git archive origin/scraping lolalytics | tar -x -C "$projet"
           echo "PROJET=$projet" >> "$GITHUB_ENV"
-          echo "PATCH=$(ls -d "$projet"/lolalytics/*/ | sort -V | tail -1)" >> "$GITHUB_ENV"
+          echo "PATCH=$(ls -d "$projet"/lolalytics/[0-9]*/ | sort -V | tail -1)" >> "$GITHUB_ENV"
 
       - name: Recalculer nos modèles (lanes, ganks, envahir, dégâts et durée, export)
         timeout-minutes: 40
