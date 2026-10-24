@@ -498,7 +498,7 @@ function dessinerPlan(R, nous, eux) {
   document.getElementById("titre-plan").textContent = c ? `Comment jouer ${c} en ${NOM_POSTE[R]}` : "Comment jouer";
   const infos = {}, cartes = [];
   for (const [lane, roles] of LANES) {
-    const o = orLane(roles, avec, eux), nom = {top: "Top", jgl: "Duel de jungle", mid: "Mid", bot: "Bot"}[lane];
+    const o = orLane(roles, avec, eux), nom = {top: "Top", jgl: "Jungle (or)", mid: "Mid", bot: "Bot"}[lane];
     let html = `<div class="lane${lane === maLane ? " moi" : ""}"><h3><span>${nom}${lane === maLane ? " (toi)" : ""}</span><span class="chiffre ${o ? cls(o.or / 1000) : "nul"}">${o ? (o.or >= 0 ? "+" : "−") + Math.abs(Math.round(o.or / 10) * 10) + " or" : "—"}</span></h3>`;
     html += o ? `<div class="jauge" title="Chance d'être devant à 15 min"><span style="width:${(100 * o.proba).toFixed(0)}%"></span></div>
       <span class="petit">Devant à 15 min : <b class="chiffre">${(100 * o.proba).toFixed(0)} %</b>${o.partiel ? " (lane incomplète)" : ""}</span>` : `<span class="petit">Il manque un des deux champions.</span>`;
@@ -531,7 +531,7 @@ function dessinerPlan(R, nous, eux) {
       const inv = envahirConfirme(groupe(c));
       if (inv.length) conseils.push(`Envahis la jungle adverse vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> : pour un jungler ${groupe(c)}, `
         + `ça va avec ${inv.map(x => pts(x.points)).join(" / ")} points de victoire, à écart d'or égal.`);
-      if (infos.jgl.o) conseils.push(`Ton duel de jungle est annoncé ${infos.jgl.o.proba >= 0.5 ? "gagnant" : "perdant"} à ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} (or à 15 min).`);
+      if (infos.jgl.o) conseils.push(`Or à 15 min face à leur jungler : ${infos.jgl.o.proba >= 0.5 ? "devant" : "derrière"} dans ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} des cas (farm, kills et objectifs ; ce n'est pas l'issue d'un combat entre vous deux).`);
     }
   } else {
     const i = infos[maLane];
@@ -607,7 +607,7 @@ function dessinerRecap() {
     if (exposee) t += ` Lane la plus exposée à leur jungler : <b>${LANE_NOM[exposee]}</b> (${pc(infos[exposee].pe)}).`;
     const inv = envahirConfirme(groupe(moi));
     if (inv.length) t += ` Envahis vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> (${inv.map(x => pts(x.points)).join(" / ")} points).`;
-    if (infos.jgl.o) t += ` Duel de jungle : ${infos.jgl.o.proba >= 0.5 ? "gagnant" : "perdant"} à ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))}.`;
+    if (infos.jgl.o) t += ` Or à 15 min face à leur jungler : ${infos.jgl.o.proba >= 0.5 ? "devant" : "derrière"} dans ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} des cas.`;
     plan.push(["Ta jungle", t.trim()]);
   } else {
     const i = infos[maLane];
