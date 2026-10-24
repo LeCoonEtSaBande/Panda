@@ -52,6 +52,7 @@ jobs:
       - name: Générer la page
         run: |
           patch="$(ls -d "$RUNNER_TEMP"/scraping/analyse/lolalytics/*/ | sort -V | tail -1)"
+          python3 assistant_panda/sorts.py || echo "::warning::Data Dragon injoignable : contrôles du dernier passage gardés."
           python3 assistant_panda/construire.py --lolalytics "$patch" --export "$RUNNER_TEMP/analyse/analyse/export/assistant_donnees.json"
 
       - name: Enregistrer
@@ -62,7 +63,7 @@ jobs:
           for ancien in Assistant_Panda.html "Assistant Draft - DL - "*.html; do
             if [ -e "$ancien" ] && [ "$ancien" != "$nouveau" ]; then git rm -q --ignore-unmatch "$ancien"; rm -f "$ancien"; fi
           done
-          git add "$nouveau"
+          git add "$nouveau" assistant_panda/sorts.json
           if git diff --cached --quiet; then echo "Page inchangée."; exit 0; fi
           git commit -q -m "Assistant Draft régénéré : $nouveau"
           for essai in 1 2 3; do
