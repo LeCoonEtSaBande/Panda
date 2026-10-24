@@ -33,6 +33,20 @@ def nombre(x):
         return None
 
 
+def duree_degats(dd):
+    """Mix de dégâts et early / late (analyse/lanes/duree_degats.py), en version compacte ; None si absent.
+
+    deg[poste][champion] = [part physique, part magique, part brute, dégâts moyens par partie] ;
+    late[poste][champion] = points de victoire (en fraction) par 10 min de partie en plus ;
+    k = coefficient vérifié sur nos parties ; mix = [[de, à, coefficient]] pour les tranches de part magique qui tiennent.
+    """
+    if not dd:
+        return None
+    return {"deg": dd["degats"], "late": dd["late"], "k": round(dd["coef_late"]["retenu"], 3),
+            "mix": [[m["de"], m["a"], round(m["AB"], 4), t] for t, m in dd["mix"].items() if m["tient"]],
+            "tr": dd["tranches_B"], "parties": dd["parties"], "patch": dd.get("patch_lolalytics")}
+
+
 def construire(dossier_lola, export, sortie):
     patch = Path(dossier_lola).name
     champions = lire_csv(Path(dossier_lola) / "champions.csv")
@@ -72,6 +86,7 @@ def construire(dossier_lola, export, sortie):
         "cat": {c: [v["groupe"], v["tanky"], v["carry"], v["degats"]] for c, v in ex["catalogue"].items()},
         "tier": tier, "moy": moyenne, "lola": lola_noms, "mu": mu, "lanes": lanes,
         "ganks": ex["ganks"], "tf": ex["teamfight"], "inv": ex["envahir"], "invm": ex.get("envahir_minutes", {}),
+        "dd": duree_degats(ex.get("duree_degats")),
     }
     modele = (ICI / "modele.html").read_text(encoding="utf-8")
     page = modele.replace("__DONNEES__", json.dumps(donnees, ensure_ascii=False, separators=(",", ":")))

@@ -37,7 +37,7 @@ jobs:
           git archive origin/scraping analyse/lolalytics | tar -x -C "$RUNNER_TEMP/scraping"
           echo "PANDA_DONNEES=$RUNNER_TEMP/main/analyse/donnees" >> "$GITHUB_ENV"
 
-      - name: Recalculer nos modèles (lanes, ganks, envahir de 5 à 20 min, export)
+      - name: Recalculer nos modèles (lanes, ganks, envahir de 5 à 20 min, dégâts et durée, export)
         timeout-minutes: 40
         run: |
           cd "$RUNNER_TEMP/analyse/analyse"
@@ -45,6 +45,8 @@ jobs:
           python3 lanes/comportement.py > /dev/null
           python3 lanes/envahir.py > /dev/null
           python3 lanes/ganks.py > /dev/null
+          patch="$(ls -d "$RUNNER_TEMP"/scraping/analyse/lolalytics/*/ | sort -V | tail -1)"
+          python3 lanes/duree_degats.py --lolalytics "$patch" > /dev/null || echo "::warning::Mix de dégâts et early/late en échec : page générée sans."
           python3 export/exporter.py
 
       - name: Générer la page

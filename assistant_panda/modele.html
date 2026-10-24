@@ -10,14 +10,16 @@
   --fond:#0f1418; --carte:#171e24; --carte2:#1d262e; --ligne:#2a3640; --texte:#e6ecef; --doux:#93a3ad;
   --nous:#3d8bd9; --nous-doux:#16293a; --eux:#d9573d; --eux-doux:#3a1d17; --bon:#4fbf7f; --mauvais:#e0685a;
   --titre:"Segoe UI Semibold","Segoe UI",system-ui,-apple-system,sans-serif; --corps:"Segoe UI",system-ui,-apple-system,sans-serif;
-  --chiffres:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --chiffres:ui-monospace,"Cascadia Mono",Consolas,monospace; --physique:#e08a3c; --magique:#8f82f5; --brut:#b9c3c9;
 }
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
   --fond:#eef2f4; --carte:#ffffff; --carte2:#f4f7f9; --ligne:#d3dce1; --texte:#18222a; --doux:#5a6a74;
-  --nous:#1f6fbf; --nous-doux:#e3eefa; --eux:#c0452c; --eux-doux:#fae8e3; --bon:#21844b; --mauvais:#c0392b; color-scheme:light}}
+  --nous:#1f6fbf; --nous-doux:#e3eefa; --eux:#c0452c; --eux-doux:#fae8e3; --bon:#21844b; --mauvais:#c0392b;
+  --physique:#c4661a; --magique:#5a4ccf; --brut:#8a979f; color-scheme:light}}
 :root[data-theme="light"]{
   --fond:#eef2f4; --carte:#ffffff; --carte2:#f4f7f9; --ligne:#d3dce1; --texte:#18222a; --doux:#5a6a74;
-  --nous:#1f6fbf; --nous-doux:#e3eefa; --eux:#c0452c; --eux-doux:#fae8e3; --bon:#21844b; --mauvais:#c0392b; color-scheme:light}
+  --nous:#1f6fbf; --nous-doux:#e3eefa; --eux:#c0452c; --eux-doux:#fae8e3; --bon:#21844b; --mauvais:#c0392b;
+  --physique:#c4661a; --magique:#5a4ccf; --brut:#8a979f; color-scheme:light}
 *{box-sizing:border-box}
 html{color-scheme:dark}
 body{margin:0;background:var(--fond);color:var(--texte);font-family:var(--corps);font-size:14px;line-height:1.45;
@@ -86,6 +88,16 @@ button{background:var(--carte2);border:1px solid var(--ligne);border-radius:6px;
 .chip{display:inline-flex;gap:6px;align-items:center;padding:3px 4px 3px 9px;border-radius:999px;background:var(--nous-doux);border:1px solid var(--ligne)}
 .chip button{border:0;background:transparent;padding:0 5px;cursor:pointer;color:var(--doux)}
 .chips .auto{width:190px}
+.mix{display:flex;flex-direction:column;gap:5px;padding-top:6px;border-top:1px solid var(--ligne)}
+.mix:empty{display:none}
+.barre-mix{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--carte2)}
+.barre-mix span{display:block;height:100%}
+.phys{background:var(--physique)} .mag{background:var(--magique)} .vrai{background:var(--brut)}
+.tx-phys{color:var(--physique)} .tx-mag{color:var(--magique)}
+.tempo{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.tempo div{background:var(--carte2);border-radius:6px;padding:6px 4px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.tempo .chiffre{font-size:1.05rem}
+@media (max-width:480px){.tempo{grid-template-columns:repeat(3,1fr)}}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -114,10 +126,12 @@ button{background:var(--carte2);border:1px solid var(--ligne);border-radius:6px;
         <section class="equipe nous" aria-label="Mon équipe">
           <h2>Mon équipe <span class="petit">— dans l'ordre de la draft</span></h2>
           <div id="nous"></div>
+          <div class="mix" id="mix-nous"></div>
         </section>
         <section class="equipe eux" aria-label="Équipe adverse">
           <h2>Équipe adverse <span class="petit">— le poste est deviné, tu peux le changer</span></h2>
           <div id="eux"></div>
+          <div class="mix" id="mix-eux"></div>
         </section>
       </div>
       <div class="boutons">
@@ -139,11 +153,15 @@ button{background:var(--carte2);border:1px solid var(--ligne);border-radius:6px;
 
       <section class="panneau">
         <h2 id="titre-plan">Comment jouer</h2>
+        <div id="tempo" style="display:flex;flex-direction:column;gap:6px"></div>
         <div class="lanes" id="lanes"></div>
         <ul class="conseils" id="conseils"></ul>
         <p class="note">Or à 15 min : écart attendu d'après les champions de la lane (nos parties Émeraude-Diamant). Gank réussi : chance que le
           jungler participe à au moins un kill sur cette lane avant 15 min. Envahir : présence dans la jungle adverse à 5, 10, 15 ou 20 min,
-          comparée à écart d'or égal ; c'est ce que font les junglers qui gagnent, pas une cause prouvée.</p>
+          comparée à écart d'or égal ; c'est ce que font les junglers qui gagnent, pas une cause prouvée. Selon la durée : chance de gagner
+          due au seul tempo des deux compos (early ou late, Lolalytics), à draft égale par ailleurs, avec l'amplitude vérifiée sur nos parties.
+          Dégâts : part physique, magique et brute de chaque équipe (dégâts moyens de chaque champion à son poste) ; une équipe presque toute
+          physique ou toute magique gagne moins dans nos parties, à force de champions égale.</p>
       </section>
     </div>
   </div>
@@ -248,6 +266,28 @@ function effetsEquipe(nous, eux) {
   return sortie;
 }
 
+// --- Mix de dégâts et tempo (early / late) ---------------------------------------------------------------
+const DD = D.dd;
+const points = b => 100 * (sig(b) - 0.5);
+const TITRE_MIX = a => a < 0.1 ? "Presque tout physique" : (a < 0.5 ? "Peu de dégâts magiques" : "Presque tout magique");
+function mixEquipe(eq) {
+  if (!DD) return null;
+  const s = [0, 0, 0]; let connus = 0;
+  for (const p of POSTES) { const d = eq[p] && (DD.deg[p] || {})[eq[p]]; if (!d) continue; connus++; for (let k = 0; k < 3; k++) s[k] += d[k] * d[3]; }
+  const t = s[0] + s[1] + s[2];
+  return t ? {parts: s.map(x => x / t), connus} : null;
+}
+function mixEffet(m) {      // coefficient (cote) de la tranche de part magique, seulement si 4 champions ou plus sont connus
+  if (!m || m.connus < 4) return null;
+  for (const [a, z, coef] of DD.mix) if (m.parts[1] >= a && (m.parts[1] < z || z >= 1)) return {coef, titre: TITRE_MIX(a)};
+  return null;
+}
+function tempoEquipe(eq) {
+  let s = 0, n = 0;
+  if (DD) for (const p of POSTES) { const v = eq[p] && (DD.late[p] || {})[eq[p]]; if (v !== undefined && v !== "" && eq[p]) { s += v; n++; } }
+  return {s, n};
+}
+
 // --- Recommandations, pour n'importe quel poste -------------------------------------------------------
 function force(c, R) { const t = D.tier[R][lola(c)]; if (!t) return null; return (t[0] - D.moy[R]) * t[1] / (t[1] + 1000); }
 function contre(c, R, P, e) { const m = MU.get(`${R}|${lola(c)}|${P}|${lola(e)}`); return m ? {pts: m[0] * m[2] / (m[2] + 300), wr: m[1], n: m[2]} : null; }
@@ -273,10 +313,14 @@ function evaluer(c, R, nous, eux) {
   let autres = 0;
   for (const P of POSTES) { if (P === R || !eux[P]) continue; const m = contre(c, R, P, eux[P]); if (!m) continue;
     const v = 0.5 * m.pts; autres += v; if (Math.abs(v) >= 0.4) puces.push({t: `vs ${eux[P]} (${NOM_POSTE[P]}) ${pts(v)}`, v}); }
-  const effets = effetsEquipe(Object.assign({}, nous, {[R]: c}), eux);
-  const eq = 100 * (sig(effets.reduce((s, e) => s + e.logit, 0)) - 0.5);
-  if (effets.length) puces.push({t: `Effets d'équipe ${pts(eq)}`, v: eq});
+  const avecC = Object.assign({}, nous, {[R]: c});
+  const effets = effetsEquipe(avecC, eux), mx = mixEffet(mixEquipe(avecC));
+  const eq = 100 * (sig(effets.reduce((s, e) => s + e.logit, 0) + (mx ? mx.coef : 0)) - 0.5);
+  if (effets.length || mx) puces.push({t: `Effets d'équipe ${pts(eq)}`, v: eq});
   for (const e of effets) puces.push({t: `${e.sens > 0 ? "" : "(eux) "}${e.nom} : ${(100 * e.taux).toFixed(1)} %`, v: (e.sens > 0 ? e.taux : 1 - e.taux) - 0.5, detail: true});
+  if (mx) puces.push({t: `${mx.titre} ${pts(points(mx.coef))}`, v: points(mx.coef), detail: true});
+  const s = DD && (DD.late[R] || {})[c];
+  if (s !== undefined && s !== null && Math.abs(100 * s) >= 2) puces.push({t: `${s > 0 ? "late" : "early"} (${pts(100 * s)} pts / 10 min)`, v: 0});
   return {c, total: (f || 0) + direct + autres + eq, puces};
 }
 
@@ -319,6 +363,35 @@ function dessinerEquipes() {
       ${POSTES.map(p => `<option value="${p}"${l.poste === p ? " selected" : ""}>${NOM_POSTE[p]}</option>`).join("")}</select>
     <div class="auto"><input type="text" data-ac="draft" data-cote="eux" data-i="${i}" value="${esc(l.champ)}" placeholder="Champion" autocomplete="off" aria-label="Champion adverse ${i + 1}"></div></div>`).join("");
 }
+function dessinerMix() {
+  for (const cote of ["nous", "eux"]) {
+    const el = document.getElementById("mix-" + cote), eq = equipe(cote), m = mixEquipe(eq);
+    if (!m) { el.innerHTML = ""; continue; }
+    const [ph, ma, vr] = m.parts.map(x => Math.round(100 * x)), mx = mixEffet(m), tp = tempoEquipe(eq);
+    let html = `<div class="petit">Dégâts : <b class="tx-phys">${ph} % physiques</b> · <b class="tx-mag">${ma} % magiques</b> · ${vr} % bruts${m.connus < 5 ? ` <span>(${m.connus} champion${m.connus > 1 ? "s" : ""} connu${m.connus > 1 ? "s" : ""})</span>` : ""}</div>
+      <div class="barre-mix" role="img" aria-label="${ph} % physiques, ${ma} % magiques, ${vr} % bruts"><span class="phys" style="width:${ph}%"></span><span class="mag" style="width:${ma}%"></span><span class="vrai" style="width:${vr}%"></span></div>`;
+    const puces = [];
+    if (mx) puces.push(`<span class="puce ${cote === "nous" ? "neg" : "pos"}">${mx.titre} : ${pts(points(mx.coef))} points${cote === "eux" ? " pour eux" : ""}</span>`);
+    if (tp.n) { const v = 100 * tp.s; puces.push(`<span class="puce">Tempo : ${Math.abs(v) < 3 ? "équilibré" : (v > 0 ? "plutôt late" : "plutôt early")} (${pts(v)} pts / 10 min)</span>`); }
+    if (puces.length) html += `<div class="puces">${puces.join("")}</div>`;
+    el.innerHTML = html;
+  }
+}
+function dessinerTempo(nous, eux) {
+  const el = document.getElementById("tempo");
+  if (!DD || !DD.k) { el.innerHTML = ""; return; }
+  const a = tempoEquipe(nous), b = tempoEquipe(eux);
+  if (!a.n || !b.n) { el.innerHTML = `<p class="petit" style="margin:0">Selon la durée de la partie : entre au moins un champion de chaque côté.</p>`; return; }
+  const S = a.s - b.s, cases = [["moins de 20 min", -1.25], ["20-25 min", -0.75], ["25-30 min", -0.25], ["30-35 min", 0.25], ["35 min et plus", 1.0]];
+  const cellules = cases.map(([nom, t]) => { const v = 50 + points(DD.k * S * t);
+    return `<div><span class="petit">${nom}</span><b class="chiffre ${cls((v - 50) / 2)}">${v.toFixed(0)} %</b></div>`; }).join("");
+  const ecart = points(DD.k * S);
+  const verdict = Math.abs(ecart) < 1.5 ? "Les deux compos ont à peu près le même tempo : la durée ne change presque rien."
+    : (S > 0 ? `Votre compo est <b>${Math.abs(ecart) < 4 ? "un peu " : ""}plus late</b> : pas de combat décisif avant 25 min, farm et vision, la partie tourne pour vous après 30 min.`
+             : `Votre compo est <b>${Math.abs(ecart) < 4 ? "un peu " : ""}plus early</b> : prenez l'avantage avant 25 min (ganks, plaques, dragons, héraut) et cherchez à finir avant 30 min.`);
+  el.innerHTML = `<span class="petit">Chance de gagner selon la durée de la partie (seul effet du tempo des deux compos${a.n < 5 || b.n < 5 ? ", compos incomplètes" : ""})</span>
+    <div class="tempo">${cellules}</div><p class="note" style="font-size:.88rem;color:var(--texte)">${verdict}</p>`;
+}
 function dessinerReco() {
   const R = etat.poste, nous = equipe("nous"), eux = equipe("eux"), pr = profil();
   document.getElementById("titre-reco").textContent = `Quel champion prendre en ${NOM_POSTE[R]}`;
@@ -336,6 +409,7 @@ function dessinerReco() {
       <span class="puces">${r.puces.map(p => `<span class="puce ${cls(p.v)}${p.detail ? " detail" : ""}">${esc(p.t)}</span>`).join("")}</span>
     </button>`).join("") : `<p class="petit">Aucun champion pour ce poste dans ce profil : ajoute-les dans l'onglet Profils, ou coche « tous les champions du poste ».</p>`;
   dessinerPlan(R, nous, eux);
+  dessinerMix();
 }
 function dessinerPlan(R, nous, eux) {
   const c = etat.choix, avec = Object.assign({}, nous, c ? {[R]: c} : {}), maLane = laneDuPoste(R);
@@ -360,6 +434,7 @@ function dessinerPlan(R, nous, eux) {
     cartes.push(html + "</div>");
   }
   document.getElementById("lanes").innerHTML = cartes.join("");
+  dessinerTempo(avec, eux);
   const conseils = [], pc = x => (100 * x).toFixed(0) + " %";
   const lanes3 = ["top", "mid", "bot"].filter(l => infos[l].o);
   const devant = lanes3.filter(l => infos[l].o.proba >= 0.6), derriere = lanes3.filter(l => infos[l].o.proba <= 0.4);
@@ -390,6 +465,11 @@ function dessinerPlan(R, nous, eux) {
     if (i.pg !== null) conseils.push(`Chance que ton jungler (${avec.jgl}) réussisse un gank sur ta lane : <b>${pc(i.pg)}</b>.`);
     const autresDevant = devant.filter(l => l !== maLane);
     if (autresDevant.length) conseils.push(`Autres lanes annoncées devant : ${autresDevant.join(", ")}.`);
+  }
+  const me = mixEquipe(eux);
+  if (me && me.connus >= 3) {
+    if (me.parts[0] >= 0.65) conseils.push(`Leur équipe fait <b>${Math.round(100 * me.parts[0])} % de dégâts physiques</b> : l'armure rapporte plus que la résistance magique.`);
+    else if (me.parts[1] >= 0.6) conseils.push(`Leur équipe fait <b>${Math.round(100 * me.parts[1])} % de dégâts magiques</b> : la résistance magique rapporte plus que l'armure.`);
   }
   document.getElementById("conseils").innerHTML = conseils.map(x => `<li>${x}</li>`).join("") || `<li class="petit">Entre des champions pour voir les lanes.</li>`;
 }
