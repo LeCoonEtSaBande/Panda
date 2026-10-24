@@ -24,6 +24,7 @@ Tout se fait en français : code, commentaires, messages de commit, réponses.
 | `.github/workflows/recuit.yml` | **Lancer un recuit simulé** : bouton « Run workflow » (code de la branche `analyse-iterative`, données de `main`). |
 | `.github/workflows/confirmer.yml` | **Confirmer les résultats du recuit** : mesure les meilleurs réglages sur les parties jamais vues. |
 | `.github/workflows/champions-patch.yml` | **Identifier les champions forts du patch** : collecte légère (sans timeline) du patch en cours en Platine-Diamant, puis classement des champions forts et faibles. Code et données sur la branche `champions-patch` (voir `analyse/patch/README.md` sur cette branche). Même file que les collectes. |
+| `.github/workflows/contres.yml` | **Enrichir les contres** : contres par lane à 15 minutes (or, XP, kills, plaques, tour), recalculés sur toutes les parties avec timeline ; signale les nouveautés. Code et résultats sur `analyse-iterative` (`analyse/contres/`). |
 
 ### Les analyses, dans l'ordre où elles ont été faites
 

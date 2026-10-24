@@ -1,0 +1,49 @@
+name: Enrichir les contres
+
+# Bouton « Run workflow ». Relit toutes les parties avec timeline (données à jour de main, non
+# committées), compte celles qu'il ne connaissait pas encore, recalcule les contres par lane à 15 minutes
+# et signale les contres apparus ou disparus depuis le passage précédent.
+# Le code vient de la branche choisie (analyse-iterative par défaut) ; seuls analyse/contres/resultats/
+# sont committés, sur cette branche. Ne lit ni n'écrit jamais dans analyse/donnees sur la branche.
+on:
+  workflow_dispatch:
+    inputs:
+      branche:
+        description: "Branche du code"
+        default: "analyse-iterative"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contres
+  cancel-in-progress: false
+
+jobs:
+  contres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branche }}
+          fetch-depth: 0
+
+      - name: Installer numpy
+        run: python3 -m pip install -q --break-system-packages numpy || python3 -m pip install -q numpy
+
+      - name: Données à jour de main (non committées)
+        run: |
+          git fetch -q origin main
+          mkdir -p "$RUNNER_TEMP/main"
+          git archive origin/main analyse/donnees | tar -x -C "$RUNNER_TEMP/main"
+          echo "PANDA_DONNEES=$RUNNER_TEMP/main/analyse/donnees" >> "$GITHUB_ENV"
+
+      - name: Calculer les contres
+        timeout-minutes: 40
+        run: python3 analyse/contres/contres.py
+
+      - name: Enregistrer
+        if: always()
+        run: bash analyse/contres/enregistrer.sh "Contres par lane mis à jour"
