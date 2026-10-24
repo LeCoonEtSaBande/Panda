@@ -39,13 +39,14 @@ jobs:
           echo "PROJET=$projet" >> "$GITHUB_ENV"
           echo "PATCH=$(ls -d "$projet"/lolalytics/[0-9]*/ | sort -V | tail -1)" >> "$GITHUB_ENV"
 
-      - name: Recalculer nos modèles (lanes, ganks, envahir, dégâts et durée, export)
+      - name: Recalculer nos modèles (lanes, ganks, duels, envahir, dégâts et durée, export)
         timeout-minutes: 40
         run: |
           cd "$PROJET/analyse"
           python3 lanes/dynamique.py > /dev/null
           python3 lanes/envahir.py > /dev/null
           python3 lanes/ganks.py > /dev/null
+          python3 lanes/duels.py > /dev/null
           python3 lanes/duree_degats.py --lolalytics "$PATCH" > /dev/null || echo "::warning::Mix de dégâts et early/late en échec : page générée sans."
           python3 export/exporter.py
 
