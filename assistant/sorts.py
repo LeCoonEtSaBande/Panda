@@ -4,10 +4,10 @@ Pour chaque champion : les sorts (passif P, Q, W, E, R) qui posent un contrôle 
 projection, immobilisation, attraction, charme, peur, provocation, neutralisation, sommeil, silence,
 transformation, recul). Les ralentissements sont laissés de côté, pour ne garder que l'essentiel.
 Détection par mots-clés dans la description et l'infobulle anglaises ; nom du sort en français.
-Écrit assistant_panda/sorts.json, lu par construire.py.
+Écrit assistant/sorts.json, lu par construire.py.
 
-    python3 assistant_panda/sorts.py                 (Data Dragon officiel, dernière version)
-    python3 assistant_panda/sorts.py --dossier <d>   (fichiers championFull_en_US.json et championFull_fr_FR.json déjà là)
+    python3 assistant/sorts.py                 (Data Dragon officiel, dernière version)
+    python3 assistant/sorts.py --dossier <d>   (fichiers championFull_en_US.json et championFull_fr_FR.json déjà là)
 """
 
 import argparse

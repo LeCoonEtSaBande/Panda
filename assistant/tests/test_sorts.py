@@ -1,10 +1,10 @@
-"""Tests de la détection des contrôles dans les sorts (assistant_panda/sorts.py)."""
+"""Tests de la détection des contrôles dans les sorts (assistant/sorts.py)."""
 
 import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "assistant_panda"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import sorts  # noqa: E402
 
