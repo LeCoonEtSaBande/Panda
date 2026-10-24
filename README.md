@@ -47,6 +47,7 @@ Le bouton « Générer l'assistant Draft » (sur `main`) fait tout cela lui-mêm
 | Envahir à 5, 10 et 20 min, autres catégories de jungler | non confirmé | non |
 | Early/late : la compo la plus late gagne 39 % avant 20 min et 60 % entre 35 et 40 min | confirmé | oui |
 | Mix de dégâts : moins de 20 % ou plus de 70 % de dégâts magiques, −4 points | confirmé | oui |
+| Duels de junglers à or et niveau égaux (`lanes/duels.py`), vérifié sur B (accord A/B 0,88) | à confirmer sur C après la prochaine collecte | pas encore |
 | Recuit teamfight (13 effets de compo) | non confirmé (28 tirages au hasard sur 40 font aussi bien) | non |
 
 Détails : `analyse/confirmation/resultats/`.
