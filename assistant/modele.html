@@ -206,8 +206,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <details class="aide"><summary>Comment lire ces chiffres</summary>
           <p>Or à 15 min : écart attendu d'après les champions de la lane. Gank réussi : chance que le jungler participe à au moins un kill
           sur cette lane avant 15 min. Selon la durée : chance de gagner due au seul tempo des deux compos (early ou late), à draft égale par
-          ailleurs. Duel : si les deux junglers se croisent seuls, chance de gagner à or et niveau égaux (forces confirmées
-          seulement, les autres junglers comptent comme moyens). Envahir : seulement quand c'est confirmé pour ce type de jungler ; c'est ce que font les junglers qui gagnent, à écart
+          ailleurs. 1 contre 1 : si deux champions se croisent seuls, chance de gagner à or et niveau égaux (forces confirmées
+          seulement, les autres champions comptent comme moyens). Envahir : seulement quand c'est confirmé pour ce type de jungler ; c'est ce que font les junglers qui gagnent, à écart
           d'or égal, pas une cause prouvée. Nos parties Émeraude-Diamant ; tout est confirmé sur des parties jamais vues (tas C).</p></details>
       </section>
     </div>
@@ -367,7 +367,7 @@ function envahirConfirme(gr) {
   return sortie;
 }
 
-// --- Duels de junglers à or et niveau égaux (confirmés sur C) -----------------------------------------
+// --- Duels à or et niveau égaux, tous les champions (confirmés sur C) ---------------------------------
 function duel(a, b, minute) {     // chance que a gagne s'ils se croisent seuls, à or et niveau égaux
   const M = D.duel; if (!M || !a || !b) return null;
   const fa = M.champions[a] || [0, 0], fb = M.champions[b] || [0, 0], t = (minute - M.minute_ref) / 10;
@@ -378,9 +378,9 @@ function texteDuel(a, b) {
   if (p8 === null) return "";
   const pc = x => (100 * x).toFixed(0) + " %";
   const inconnus = [a, b].filter(x => !(D.duel.confirmes || []).includes(x));
-  return `Si vous vous croisez seuls, à or et niveau égaux, ${esc(a)} gagne le duel contre ${esc(b)} : <b>${pc(p8)}</b> à 8 min, `
+  return `En 1 contre 1, à or et niveau égaux, ${esc(a)} gagne le duel contre ${esc(b)} : <b>${pc(p8)}</b> à 8 min, `
     + `<b>${pc(p15)}</b> à 15 min, <b>${pc(p25)}</b> à 25 min. 1 000 or d'avance : ${pts(points(D.duel.or_1000))} points ; un niveau : ${pts(points(D.duel.niveau))}.`
-    + (inconnus.length ? ` <span class="petit">(${inconnus.map(esc).join(" et ")} : pas assez de duels pour être confirmé, compté comme un jungler moyen.)</span>` : "");
+    + (inconnus.length ? ` <span class="petit">(${inconnus.map(esc).join(" et ")} : force en duel non confirmée, compté comme un champion moyen.)</span>` : "");
 }
 
 // --- Recommandations, pour n'importe quel poste -------------------------------------------------------
@@ -414,10 +414,10 @@ function evaluer(c, R, nous, eux) {
   if (effets.length) puces.push({t: `Effets d'équipe ${pts(eq)}`, v: eq});
   for (const e of effets) puces.push({t: `${e.sens > 0 ? "" : "(eux) "}${e.nom} : ${(100 * e.taux).toFixed(1)} %`, v: (e.sens > 0 ? e.taux : 1 - e.taux) - 0.5, detail: true});
   if (mx) puces.push({t: `${mx.titre} ${pts(points(mx.coef))}`, v: points(mx.coef), detail: effets.length > 0});
-  if (R === "jgl" && eux.jgl && D.duel) {
-    const p8 = duel(c, eux.jgl, 8), p15 = duel(c, eux.jgl, 15);
-    const sur = [c, eux.jgl].every(x => (D.duel.confirmes || []).includes(x));
-    puces.push({t: `duel à or égal vs ${eux.jgl} : ${(100 * p8).toFixed(0)} % (8 min) / ${(100 * p15).toFixed(0)} % (15 min)${sur ? "" : " — approximatif"}`, v: sur ? p15 - 0.5 : 0});
+  if (eux[R] && D.duel) {
+    const p8 = duel(c, eux[R], 8), p15 = duel(c, eux[R], 15);
+    const sur = [c, eux[R]].every(x => (D.duel.confirmes || []).includes(x));
+    puces.push({t: `1 contre 1 à or égal vs ${eux[R]} : ${(100 * p8).toFixed(0)} % (8 min) / ${(100 * p15).toFixed(0)} % (15 min)${sur ? "" : " — approximatif"}`, v: sur ? p15 - 0.5 : 0});
   }
   const s = DD && (DD.late[R] || {})[c];
   if (s !== undefined && s !== null && Math.abs(100 * s) >= 2) puces.push({t: `${s > 0 ? "late" : "early"} (${pts(100 * s)} pts / 10 min)`, v: 0});
@@ -560,6 +560,7 @@ function dessinerPlan(R, nous, eux) {
     const i = infos[maLane];
     if (i.o) conseils.push(`Ta lane est annoncée ${i.o.or >= 0 ? "devant" : "derrière"} à 15 min : <b>${pc(i.o.proba)}</b> de chances d'être devant (${pts(i.o.or / 1000).replace(".", ",")} k or attendus).`);
     else conseils.push("Entre ton adversaire direct pour voir ta lane.");
+    if (eux[R] && texteDuel(c || nous[R], eux[R])) conseils.push(texteDuel(c || nous[R], eux[R]));
     if (i.pe !== null) conseils.push(`Risque que le jungler adverse (${eux.jgl}) réussisse un gank sur ta lane avant 15 min : <b>${pc(i.pe)}</b>${i.pe >= 0.7 ? " — joue prudemment, garde des balises." : "."}`);
     else conseils.push("Jungler adverse pas encore connu : le risque de gank s'affichera dès qu'il sera choisi.");
     if (i.pg !== null) conseils.push(`Chance que ton jungler (${avec.jgl}) réussisse un gank sur ta lane : <b>${pc(i.pg)}</b>.`);
@@ -599,6 +600,13 @@ function lignesCC(c, max) {
   if (!s.length) return `<span class="petit">Pas de gros contrôle.</span>`;
   return s.map(([k, nom, types]) => `<span><span class="touche">${k}</span>${esc(nom)} <span class="petit">— ${types.join(", ")}</span></span>`).join("");
 }
+function degatsChamp(c, p) {
+  const d = DD && ((DD.deg[p] || {})[c] || Object.values(DD.deg).map(x => x[c]).find(Boolean));
+  if (!d) return "";
+  const [ph, ma, vr] = d.slice(0, 3).map(x => Math.round(100 * x));
+  return `<div class="petit">Dégâts : <b class="tx-phys">${ph} % physiques</b> · <b class="tx-mag">${ma} % magiques</b> · ${vr} % bruts</div>
+    <div class="barre-mix" role="img" aria-label="${ph} % physiques, ${ma} % magiques, ${vr} % bruts"><span class="phys" style="width:${ph}%"></span><span class="mag" style="width:${ma}%"></span><span class="vrai" style="width:${vr}%"></span></div>`;
+}
 function dessinerRecap() {
   const nous = equipe("nous"), eux = equipe("eux"), R = etat.poste, moi = nous[R], maLane = laneDuPoste(R), pc = x => (100 * x).toFixed(0) + " %";
   document.getElementById("recap-titre").textContent = `${moi} en ${NOM_POSTE[R]}`;
@@ -630,8 +638,6 @@ function dessinerRecap() {
     if (exposee) t += ` Lane la plus exposée à leur jungler : <b>${LANE_NOM[exposee]}</b> (${pc(infos[exposee].pe)}).`;
     const inv = envahirConfirme(groupe(moi));
     if (inv.length) t += ` Envahis vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> (${inv.map(x => pts(x.points)).join(" / ")} points).`;
-    const td = texteDuel(moi, eux.jgl);
-    if (td) t += ` ${td}`;
     if (infos.jgl.o) t += ` Or à 15 min face à leur jungler : ${infos.jgl.o.proba >= 0.5 ? "devant" : "derrière"} dans ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} des cas.`;
     plan.push(["Ta jungle", t.trim()]);
   } else {
@@ -641,6 +647,8 @@ function dessinerRecap() {
     if (i.pg !== null && i.pg !== undefined) t += ` Ton jungler (${esc(nous.jgl)}) : ${pc(i.pg)}.`;
     plan.push(["Ta lane", t.trim()]);
   }
+  const td = texteDuel(moi, eux[R]);
+  if (td) plan.push(["1 contre 1", td]);
   const me = mixEquipe(eux), mn = mixEquipe(nous);
   if (me) {
     let t = me.parts[0] >= 0.65 ? `Ils font <b>${Math.round(100 * me.parts[0])} % de dégâts physiques</b> : l'armure rapporte plus.`
@@ -679,7 +687,8 @@ function dessinerRecap() {
     if (lane === maLane) tags.push("toi");
     if (R === "jgl" && lane === meilleurGank) tags.push("à ganker");
     if (lane === exposee && lane !== "jgl") tags.push("exposée");
-    if (lane === "jgl" && duel(nous.jgl, eux.jgl, 15) !== null) tags.push(`duel 15 min : ${(100 * duel(nous.jgl, eux.jgl, 15)).toFixed(0)} %`);
+    const pd = lane === "bot" ? "adc" : lane, d15 = duel(nous[pd], eux[pd], 15);
+    if (d15 !== null) tags.push(`1v1 15 min${lane === "bot" ? " (ADC)" : ""} : ${(100 * d15).toFixed(0)} %`);
     return `<div class="badge ${etatLane}${lane === maLane ? " moi" : ""}" style="left:${x}%;top:${y}%">
       <div class="b-tete"><span>${LANE_NOM[lane]}</span><span>${o ? pc(o.proba) : "—"}</span></div>
       <div class="b-champs"><span class="n">${esc(n)}</span> vs <span class="e">${esc(e)}</span></div>
@@ -690,7 +699,7 @@ function dessinerRecap() {
   // Les champions : styles du catalogue et contrôles.
   const colonne = (cote, eq, titre, max) => `<div><h3>${titre}</h3>${POSTES.map(p => `
     <div class="champ ${cote}"><div class="c-tete"><b>${esc(eq[p])}</b><span class="petit">${NOM_POSTE[p]}</span></div>
-      <div class="puces">${styles(eq[p])}</div><div class="cc">${lignesCC(eq[p], max)}</div></div>`).join("")}</div>`;
+      <div class="puces">${styles(eq[p])}</div>${degatsChamp(eq[p], p)}<div class="cc">${lignesCC(eq[p], max)}</div></div>`).join("")}</div>`;
   document.getElementById("recap-champs").innerHTML = colonne("eux", eux, "En face : leurs contrôles à surveiller", 3) + colonne("nous", nous, "Ton équipe : vos contrôles", 2);
 }
 
