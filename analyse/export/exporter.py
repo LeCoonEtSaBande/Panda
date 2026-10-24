@@ -18,7 +18,8 @@ import json
 import math
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ICI = Path(__file__).resolve().parent
@@ -93,7 +94,7 @@ def teamfight():
 
 def main():
     donnees = {
-        "date": datetime.now(timezone.utc).astimezone().strftime("%d/%m/%Y %H:%M"),
+        "date": datetime.now(ZoneInfo("Europe/Paris")).strftime("%d/%m/%Y %H:%M"),
         "catalogue": catalogue(),
         "lanes": lanes(),
         "ganks": json.loads((LANES_RES / "ganks_modele.json").read_text(encoding="utf-8")),
