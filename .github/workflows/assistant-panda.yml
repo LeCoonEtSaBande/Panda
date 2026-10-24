@@ -36,12 +36,13 @@ jobs:
           git archive origin/scraping analyse/lolalytics | tar -x -C "$RUNNER_TEMP/scraping"
           echo "PANDA_DONNEES=$RUNNER_TEMP/main/analyse/donnees" >> "$GITHUB_ENV"
 
-      - name: Recalculer nos modèles (lanes, ganks, envahir, export)
+      - name: Recalculer nos modèles (lanes, ganks, envahir de 5 à 20 min, export)
         timeout-minutes: 40
         run: |
           cd "$RUNNER_TEMP/analyse/analyse"
           python3 lanes/dynamique.py > /dev/null
           python3 lanes/comportement.py > /dev/null
+          python3 lanes/envahir.py > /dev/null
           python3 lanes/ganks.py > /dev/null
           python3 export/exporter.py
 
