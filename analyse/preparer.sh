@@ -8,4 +8,4 @@ git fetch -q origin main scraping
 rm -rf collecte donnees archives lolalytics
 git archive origin/main collecte donnees archives | tar -x
 git archive origin/scraping lolalytics | tar -x
-echo "Prêt : $(($(wc -l < donnees/parties.csv) - 1)) parties ; Lolalytics : $(ls lolalytics | grep -v '\.' | tr '\n' ' ')"
+echo "Prêt : $(($(wc -l < donnees/parties.csv) - 1)) parties ; Lolalytics : $(ls -d lolalytics/[0-9]*/ | sort -V | tail -1)"
