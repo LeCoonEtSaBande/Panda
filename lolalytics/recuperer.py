@@ -10,10 +10,11 @@ Pages lues (une toutes les 3 secondes, environ 250 par patch) :
     matchup, le « contre » (positif = le champion gagne ce matchup plus que prévu).
 Les données sont lues dans l'état sérialisé de la page (bloc « qwik/json »), pas dans le texte affiché.
 
-Écrit dans analyse/lolalytics/<patch>/ : champions.csv, matchups.csv et resume.md. Ne garde pas les pages.
+Écrit dans lolalytics/<patch>/ : champions.csv, matchups.csv, profils.csv (dégâts par type, victoires selon la
+durée) et resume.md. Ne garde pas les pages.
 Kayn : Lolalytics ne sépare pas ses deux formes (une seule ligne « Kayn »).
 
-    python3 analyse/lolalytics/recuperer.py [--max-pages 400] [--pause 3]
+    python3 lolalytics/recuperer.py [--max-pages 400] [--pause 3]
 """
 
 import argparse

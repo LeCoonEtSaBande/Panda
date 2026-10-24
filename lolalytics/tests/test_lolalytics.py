@@ -1,4 +1,4 @@
-"""Tests du lecteur Lolalytics (analyse/lolalytics/recuperer.py), sur une page miniature au même format."""
+"""Tests du lecteur Lolalytics (lolalytics/recuperer.py), sur une page miniature au même format."""
 
 import json
 import sys
@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 ICI = Path(__file__).resolve().parent
-sys.path.insert(0, str(ICI.parent / "lolalytics"))
+sys.path.insert(0, str(ICI.parent))
 
 import recuperer as r  # noqa: E402
 
