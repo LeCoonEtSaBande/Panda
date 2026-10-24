@@ -12,7 +12,7 @@ sys.path.insert(0, str(ICI.parent))
 
 import collecte  # noqa: E402
 import lecture  # noqa: E402
-import rapport  # noqa: E402
+import bilan  # noqa: E402
 from collecte import (  # noqa: E402
     COLONNES_DETAILS, COLONNES_EVENEMENTS, COLONNES_JOUEURS, COLONNES_TIMELINE, Journal, Tranches,
     collecter, convertir, details_partie, ecrire_details, evenements_partie, joueurs_partie, ouvrir_details,
@@ -251,11 +251,11 @@ class LectureTest(unittest.TestCase):
         ecrire_details(FauxRiot(), match("10"), NOMS, details)
         ecrire_details(FauxRiot(timeline=None), match("11"), NOMS, details)
         ecrire_details(FauxRiot(), match("77"), NOMS, details)
-        self.assertEqual(rapport.volume_details(self.donnees), [["avec_details", 2], ["avec_timeline", 1]])
+        self.assertEqual(bilan.volume_details(self.donnees), [["avec_details", 2], ["avec_timeline", 1]])
         self.assertEqual(len(list(lecture.lire_details("evenements", self.donnees))), 5)
 
     def test_volume_sans_details(self):
-        self.assertEqual(rapport.volume_details(self.donnees), [["avec_details", 0], ["avec_timeline", 0]])
+        self.assertEqual(bilan.volume_details(self.donnees), [["avec_details", 0], ["avec_timeline", 0]])
 
 
 class RattrapageTest(unittest.TestCase):

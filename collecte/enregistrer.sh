@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Committe et pousse les données collectées. Appelé pendant la collecte et à la fin.
-# Avec --rapport : régénère le rapport après avoir récupéré la branche, pour ne jamais
-# entrer en conflit avec des résultats poussés entre-temps.
+# Avec --rapport : régénère le bilan de collecte (collecte/bilan.md) après avoir récupéré la branche,
+# pour ne jamais entrer en conflit avec des données poussées entre-temps.
 set -u
 cd "$(git rev-parse --show-toplevel)"
 git config user.name "github-actions[bot]"
@@ -10,17 +10,17 @@ branche="${BRANCHE:-$(git rev-parse --abbrev-ref HEAD)}"
 rapport=false
 if [ "${1:-}" = "--rapport" ]; then rapport=true; fi
 
-total() { echo $(($(wc -l < analyse/donnees/parties.csv) - 1)); }
+total() { echo $(($(wc -l < donnees/parties.csv) - 1)); }
 # Lignes de details_parties (approximatif : une partie reprise après interruption compte deux fois).
 details() {
   local n=0 f
-  for f in analyse/donnees/details_parties/details_parties_*.csv; do
+  for f in donnees/details_parties/details_parties_*.csv; do
     if [ -e "$f" ]; then n=$((n + $(wc -l < "$f") - 1)); fi
   done
   echo "$n"
 }
 
-if [ -e analyse/donnees ]; then git add analyse/donnees; fi
+if [ -e donnees ]; then git add donnees; fi
 if ! git diff --cached --quiet; then
   git commit -q -m "Collecte : $(total) parties au total, $(details) avec détails."
 elif ! $rapport && [ -z "$(git log "origin/$branche..HEAD" --oneline 2>/dev/null)" ]; then
@@ -37,10 +37,10 @@ for essai in 1 2 3; do
   fi
   rapport_commite=false
   if $rapport; then
-    python3 analyse/rapport.py || echo "::warning::Rapport en échec, données enregistrées quand même."
-    if [ -e analyse/resultats ]; then git add analyse/resultats; fi
+    python3 collecte/bilan.py || echo "::warning::Bilan en échec, données enregistrées quand même."
+    if [ -e collecte/bilan.md ]; then git add collecte/bilan.md; fi
     if ! git diff --cached --quiet; then
-      git commit -q -m "Rapport : $(total) parties."
+      git commit -q -m "Bilan de collecte : $(total) parties."
       rapport_commite=true
     fi
   fi

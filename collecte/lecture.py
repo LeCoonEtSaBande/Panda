@@ -4,7 +4,7 @@
     for ligne in lire_details("joueurs"):
         ...
 
-Chaque dossier de analyse/donnees/ (details_parties, joueurs, timeline_joueurs, evenements) est lu
+Chaque dossier de donnees/ (details_parties, joueurs, timeline_joueurs, evenements) est lu
 en entier, tranche après tranche. On ne garde que les matchs présents dans parties.csv et dans
 details_parties (écrit en dernier, donc détails complets). Si un match a été écrit plusieurs fois
 (collecte interrompue puis reprise), seul son dernier bloc de lignes est gardé.
@@ -13,7 +13,7 @@ details_parties (écrit en dernier, donc détails complets). Si un match a été
 import csv
 from pathlib import Path
 
-DONNEES = Path(__file__).resolve().parent / "donnees"
+DONNEES = Path(__file__).resolve().parent.parent / "donnees"
 TYPES = ("details_parties", "joueurs", "timeline_joueurs", "evenements")
 
 

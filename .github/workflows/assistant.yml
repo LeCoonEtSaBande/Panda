@@ -1,9 +1,11 @@
-name: Page d'assistant
+name: Générer l'assistant Draft
 
+# Bouton « Run workflow ». Assemble le projet dans un dossier de travail :
+#   collecte/, donnees/, archives/ (main), analyse/ (branche analyse), lolalytics/ (branche scraping),
+# recalcule nos modèles sur toutes les données à jour, rafraîchit les contrôles des sorts (Data Dragon),
+# puis génère « Assistant Draft - DL - <date>.html », committé à la racine de la branche « assistant »
+# (l'ancienne version est retirée). Pour le télécharger : ouvrir le fichier sur GitHub, « Download raw file ».
 on:
-  push:
-    branches: [main]
-    paths: [Catalogue.csv, assistant/**]
   workflow_dispatch:
 
 permissions:
@@ -14,29 +16,57 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  page:
+  assistant:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: assistant
+          fetch-depth: 0
 
-      - name: Tester la règle
-        run: node --test assistant/tests/regle.test.js
+      - name: Installer numpy, pandas, scipy, scikit-learn
+        run: python3 -m pip install -q --break-system-packages numpy pandas scipy scikit-learn
+
+      - name: Assembler le projet (données de main, analyses, Lolalytics)
+        run: |
+          git fetch -q origin main analyse scraping
+          projet="$RUNNER_TEMP/projet"
+          mkdir -p "$projet"
+          git archive origin/main collecte donnees archives | tar -x -C "$projet"
+          git archive origin/analyse analyse | tar -x -C "$projet"
+          git archive origin/scraping lolalytics | tar -x -C "$projet"
+          echo "PROJET=$projet" >> "$GITHUB_ENV"
+          echo "PATCH=$(ls -d "$projet"/lolalytics/*/ | sort -V | tail -1)" >> "$GITHUB_ENV"
+
+      - name: Recalculer nos modèles (lanes, ganks, envahir, dégâts et durée, export)
+        timeout-minutes: 40
+        run: |
+          cd "$PROJET/analyse"
+          python3 lanes/dynamique.py > /dev/null
+          python3 lanes/envahir.py > /dev/null
+          python3 lanes/ganks.py > /dev/null
+          python3 lanes/duree_degats.py --lolalytics "$PATCH" > /dev/null || echo "::warning::Mix de dégâts et early/late en échec : page générée sans."
+          python3 export/exporter.py
 
       - name: Générer la page
-        run: python3 assistant/construire.py
+        run: |
+          python3 assistant/sorts.py || echo "::warning::Data Dragon injoignable : contrôles du dernier passage gardés."
+          python3 assistant/construire.py --lolalytics "$PATCH" --export "$PROJET/analyse/export/assistant_donnees.json"
 
       - name: Enregistrer
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Assistant_draft.html
-          if git diff --cached --quiet; then
-            echo "Page déjà à jour."
-            exit 0
-          fi
-          git commit -m "Page d'assistant régénérée."
+          nouveau="$(ls -t "Assistant Draft - DL - "*.html | head -1)"
+          for ancien in "Assistant Draft - DL - "*.html; do
+            if [ "$ancien" != "$nouveau" ]; then git rm -q --ignore-unmatch "$ancien"; rm -f "$ancien"; fi
+          done
+          git add "$nouveau" assistant/sorts.json
+          if git diff --cached --quiet; then echo "Page inchangée."; exit 0; fi
+          git commit -q -m "Assistant Draft régénéré : $nouveau"
           for essai in 1 2 3; do
-            git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
-            sleep 5
+            if git pull -q --rebase origin assistant && git push -q origin HEAD:assistant; then exit 0; fi
+            git rebase --abort 2>/dev/null; sleep 10
           done
           exit 1

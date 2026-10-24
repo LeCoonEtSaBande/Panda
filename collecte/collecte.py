@@ -22,7 +22,7 @@ from pathlib import Path
 
 ICI = Path(__file__).resolve().parent
 CONFIG = ICI / "collecte.ini"
-DONNEES = ICI / "donnees"
+DONNEES = ICI.parent / "donnees"
 PARTIES = DONNEES / "parties.csv"
 ECARTEES = DONNEES / "ecartees.csv"
 
@@ -712,7 +712,7 @@ def main():
     reglages = lire_config()
     if reglages["cle_api"]:
         print(
-            "::warning::Une clé « cle_api » est écrite dans analyse/collecte.ini : elle est ignorée et serait "
+            "::warning::Une clé « cle_api » est écrite dans collecte/collecte.ini : elle est ignorée et serait "
             "publique dans le dépôt. La retirer et la régénérer sur developer.riotgames.com.",
             flush=True,
         )
@@ -728,7 +728,7 @@ def main():
             print("::warning::Sauvegarde intermédiaire en échec, nouvel essai au prochain intervalle.", flush=True)
 
     if reglages["mode"] not in ("nouvelles", "rattrapage"):
-        print(f"::error::Mode « {reglages['mode']} » inconnu dans analyse/collecte.ini : « nouvelles » ou « rattrapage ».")
+        print(f"::error::Mode « {reglages['mode']} » inconnu dans collecte/collecte.ini : « nouvelles » ou « rattrapage ».")
         return 1
 
     noms = noms_des_champions()

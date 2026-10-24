@@ -1,11 +1,11 @@
 name: Lancer une collecte
 
-# Bouton « Run workflow », ou modification de analyse/collecte.ini sur main.
+# Bouton « Run workflow », ou modification de collecte/collecte.ini sur main.
 # La clé Riot est le secret RIOT_API_KEY du dépôt (Settings > Secrets and variables > Actions).
 on:
   push:
     branches: [main]
-    paths: [analyse/collecte.ini]
+    paths: [collecte/collecte.ini]
   workflow_dispatch:
 
 permissions:
@@ -24,17 +24,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Préparer le rapport
-        run: |
-          python3 -m pip install -q --break-system-packages statsmodels pandas || python3 -m pip install -q statsmodels pandas || echo "statsmodels indisponible : régression sautée."
-
       - name: Collecter
         timeout-minutes: 325
         env:
           RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
-          COMMANDE_SAUVEGARDE: bash analyse/enregistrer.sh
-        run: python3 analyse/collecte.py
+          COMMANDE_SAUVEGARDE: bash collecte/enregistrer.sh
+        run: python3 collecte/collecte.py
 
-      - name: Rapport et enregistrement
+      - name: Bilan et enregistrement
         if: always()
-        run: bash analyse/enregistrer.sh --rapport
+        run: bash collecte/enregistrer.sh --rapport
