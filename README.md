@@ -40,6 +40,7 @@ Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la
 | Or à 15 min, chance d'être devant | nos parties Émeraude-Diamant avec timeline (`analyse/contres`, `analyse/lanes/dynamique.py`) |
 | Ganks réussis | nos parties (`analyse/lanes/ganks.py`) |
 | Dégâts par type, early / late | Lolalytics (page de chaque champion, `profils.csv`), sinon nos parties ; effets vérifiés sur nos parties (`analyse/lanes/duree_degats.py`) |
+| 1 contre 1 à or égal | nos parties, 515 000 duels (`analyse/lanes/duels.py`), forces confirmées seulement |
 | Contrôles des sorts | Data Dragon (descriptions officielles, `sorts.py`, rafraîchi à chaque génération) |
 | Envahir | `analyse/lanes/envahir.py` (5 à 20 min, à écart d’or égal ; seules les minutes et catégories confirmées sur C sont affichées) : ce que font les junglers qui gagnent, pas une cause prouvée |
 
