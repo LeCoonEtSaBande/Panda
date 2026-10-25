@@ -6,6 +6,7 @@ Riot, on récupère les stats du patch sur Lolalytics, on cherche ce qui fait ga
 ce qui est **confirmé sur des parties jamais vues**.
 
 Tout se fait en français : code, commentaires, messages de commit, réponses.
+Résultats en pourcentages de victoire simples (« X gagne 45 % dans tel cas, contre 50 % sinon »), avec un verdict clair : confirmé, à surveiller ou rien. L'assistant n'affiche que ce qui est confirmé sur un tas C de parties jamais vues.
 
 ## Les quatre branches
 
@@ -16,15 +17,15 @@ Chaque branche ne contient que ce qui la concerne. Les boutons des workflows son
 | `main` | **Collecte** : `collecte/` (code, réglages, bilan), `donnees/` (les parties), `archives/`, les workflows. | **Lancer une collecte** |
 | `scraping` | **Lolalytics** : `lolalytics/` (le scraper et un dossier par patch). | **Récupérer les stats Lolalytics du patch** |
 | `analyse` | **Analyses** : `analyse/` (catalogue unifié, contres, lanes, confirmations sur C, export pour l'assistant). Lit les données de `main`, n'y écrit jamais. | — (lancées par la génération de l'assistant) |
-| `assistant` | **Assistant** : `assistant/` (générateur de la page) et `Assistant Draft - DL - <date>.html`. | **Générer l'assistant Draft** |
+| `assistant` | **Assistant** : `assistant/` (générateur de la page, lien client), `Assistant Draft - DL - <date>.html` et `Assistant Draft - Lien client.exe`. | **Générer l'assistant Draft** |
 
-Chaque branche a son propre README qui détaille son contenu.
+Chaque branche a son propre README qui détaille son contenu. Les anciennes branches `analyse-iterative` et `champions-patch` ne servent plus : le propriétaire les supprime depuis l'onglet « Branches » (Claude n'en a pas le droit).
 
 ## La routine
 
 1. **À chaque nouveau patch** : « Récupérer les stats Lolalytics du patch » (environ 20 minutes), puis « Générer l'assistant Draft ».
 2. **Pour avoir plus de parties** : « Lancer une collecte » (5 h 15, environ 7 000 parties), après avoir mis à jour la clé Riot. Relancer ensuite « Générer l'assistant Draft » pour que les modèles profitent des nouvelles parties.
-3. **Récupérer la page** : sur GitHub, branche `assistant`, cliquer sur `Assistant Draft - DL - <date>.html`, puis sur « Download raw file ». Un « Enregistrer sous » de la page GitHub donne une page vide (le fichier fait 2 Mo, GitHub ne l'affiche pas).
+3. **Récupérer la page** : sur GitHub, branche `assistant`, cliquer sur `Assistant Draft - DL - <date>.html`, puis sur « Download raw file ». Un « Enregistrer sous » de la page GitHub donne une page vide (le fichier fait 2 Mo, GitHub ne l'affiche pas). Même chose pour `Assistant Draft - Lien client.exe`, à mettre dans le même dossier et à lancer avant de jouer : la page voit alors la sélection des champions du client.
 
 ## Sur `main`
 
@@ -57,7 +58,8 @@ Pendant une collecte, des commits de données arrivent sur `main` toutes les 10 
 - Faire évoluer la collecte (`collecte/`) et ses tests, les analyses (branche `analyse`), le scraper (branche `scraping`) et l'assistant (branche `assistant`), chacun sur sa branche.
 - Lire toutes les données, les résultats et les archives, lancer les analyses en local, y compris des calculs longs et des bibliothèques en plus (scikit-learn…).
 - Faire évoluer le catalogue unifié (`analyse/catalogues/catalogue_unifie.csv`, branche `analyse`) quand le propriétaire valide un reclassement.
-- Committer et pousser pendant une collecte : c'est prévu, sauf ce qui déplace ou renomme `donnees/` ou les fichiers de la collecte (attendre la fin de la collecte). Les changements de `collecte.py` et `enregistrer.sh` ne serviront qu'à partir de la collecte suivante.
+- Committer et pousser pendant une collecte, y compris modifier les workflows : c'est prévu, sauf ce qui déplace ou renomme `donnees/` ou les fichiers de la collecte (attendre la fin de la collecte). Les changements de `collecte.py` et `enregistrer.sh` ne serviront qu'à partir de la collecte suivante.
+- Lancer un workflow (`gh workflow run`) quand le propriétaire le demande ; sinon, c'est lui qui les lance.
 
 ## Ce que Claude Code ne doit pas faire
 
@@ -67,16 +69,17 @@ Le seul but de ces règles : ne pas casser ni interrompre les collectes, et ne p
 - **Données sur les autres branches** : `analyse`, `scraping` et `assistant` ne contiennent jamais de copie des données ; les analyses les lisent depuis `main`.
 - **`collecte/collecte.ini`** : le pousser lance une collecte. Ne le modifier que pour lancer une collecte demandée. Pour tout autre changement de ce fichier, mettre `[skip ci]` dans le message du dernier commit poussé.
 - **Clé Riot** : ne jamais l'écrire dans un fichier du dépôt, un commit, une issue ou un journal : le dépôt est public. Elle ne vit que dans le secret `RIOT_API_KEY`. Un test (`AucuneCleDansLeDepotTest`) échoue si une clé apparaît dans le code, la configuration ou la documentation. Si une clé a été poussée par erreur, la régénérer tout de suite sur le portail Riot : l'ancienne cesse de fonctionner.
-- **Collectes** : ne jamais annuler ni interrompre une collecte en cours ; ne pas en lancer sans demande ; rien ne doit dépasser 6 h dans le workflow. Vérifier avec `gh run list --status in_progress` qu'aucune collecte ne tourne avant de toucher aux workflows ou aux dossiers de la collecte.
+- **Collectes** : ne jamais annuler ni interrompre une collecte en cours ; ne pas en lancer sans demande ; rien ne doit dépasser 6 h dans le workflow. Avant de déplacer `donnees/` ou les fichiers de `collecte/`, vérifier avec `gh run list --status in_progress` qu'aucune collecte ne tourne.
 - **Dépendances** : `collecte/` n'utilise que la bibliothèque standard Python et bash.
-- **Git** : pas de `push --force` ni de réécriture d'historique sur `main` (les commits de collecte en dépendent). Seule exception, à la demande du propriétaire : le 23/10/2026, l'historique de `main` a été réécrit pour remplacer les clés Riot par `RGAPI-[retirée]` ; les identifiants de commit d'avant cette date ont changé ; pas de changement de visibilité du dépôt (seul le propriétaire la change ; le dépôt est prévu pour être public).
+- **Git** : pas de `push --force` ni de réécriture d'historique sur `main` (les commits de collecte en dépendent), sauf demande explicite du propriétaire (fait une fois, le 23/10/2026, pour retirer des clés Riot). La visibilité du dépôt (public) ne change que par le propriétaire.
 - **Workflows** : vérifier que le YAML est valide avant de pousser (par exemple `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/lancer-collecte.yml'))"`).
 
 ## Historique en bref
 
 - Premières analyses (styles du catalogue d'origine, hypothèses, classification en 7 groupes), puis recherche itérative de biais de draft par recuit simulé : supprimées de `main` le 24/10/2026, retrouvables dans l'historique git.
 - Recuit teamfight : prometteur sur B, **non confirmé sur C** (24/10/2026) ; ses effets ne sont pas dans l'assistant.
-- Confirmés sur C et utilisés par l'assistant : force du patch et contres (Lolalytics), or à 15 min par lane, ganks, envahir à 15 min (junglers Engage), early/late, mix de dégâts. Détails sur la branche `analyse`.
+- Confirmés sur C et utilisés par l'assistant : force du patch et contres (Lolalytics), or à 15 min par lane, ganks, envahir à 15 min (junglers Engage), early/late, mix de dégâts, duels (1 contre 1) à or égal. Détails sur la branche `analyse`.
+- 25/10/2026 : lien avec le client League (lecture de la sélection, pré-picks de son équipe compris).
 
 ## Format des données
 
