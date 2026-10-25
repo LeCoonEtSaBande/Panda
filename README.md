@@ -24,6 +24,14 @@ Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la
 - **Un poste sans champion dans le profil** = tous les champions de ce poste sont proposés.
 - **Seulement ce qui est confirmé** sur nos parties jamais vues (tas C) : force du patch et contres (Lolalytics), or à 15 min par lane, ganks, envahir à 15 min pour les junglers Engage (tanks et bruisers), early/late, mix de dégâts. Les effets du recuit teamfight, non confirmés, ont été retirés (24/10/2026).
 
+## Voir les picks du client League automatiquement
+
+- Sous Windows : télécharger `Assistant Draft - Lien client.exe` (même endroit que la page, bouton « Download raw file »), le mettre dans le même dossier que la page et le lancer avant de jouer. Une petite fenêtre reste ouverte ; elle ouvre la page.
+- Sur Mac, ou si Python est installé : `python3 assistant/lien_client.py`.
+- La page affiche en haut « Client relié » ; pendant la sélection, elle remplit seule les deux équipes (picks verrouillés seulement), ton poste et les bans (exclus des propositions), passe au récapitulatif à la fin de la sélection et repart de zéro à la sélection suivante. Ce que tu tapes dans une case encore vide est gardé.
+- Le lien ne fait que **lire** ce que ton client affiche déjà (champions, postes, bans) : jamais le nom ni les stats des autres joueurs, jamais d'action à ta place (règles de Riot pour les applications tierces). L'interface locale du client n'est pas officiellement prise en charge par Riot : elle peut changer avec un patch.
+- Windows peut avertir au premier lancement (programme non signé) : « Informations complémentaires » puis « Exécuter quand même ».
+
 ## D'où viennent les chiffres
 
 | Chiffre | Source |
@@ -45,7 +53,8 @@ Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la
 | `assistant/construire.py` | Assemble les données (Lolalytics, export des analyses, contrôles des sorts) dans `modele.html`. |
 | `assistant/modele.html` | La page elle-même (mise en page et calculs), sans données. |
 | `assistant/sorts.py`, `assistant/sorts.json` | Les contrôles de chaque champion, d'après Data Dragon, rafraîchis à chaque génération. |
-| `assistant/tests/` | Tests de la détection des contrôles : `python3 -m unittest discover -s assistant/tests`. |
+| `assistant/lien_client.py`, `Assistant Draft - Lien client.exe` | Le lien avec le client League (lecture de la sélection) ; l'exécutable Windows est reconstruit par le workflow quand le code change. |
+| `assistant/tests/` | Tests des contrôles et du lien client : `python3 -m unittest discover -s assistant/tests`. |
 
 En local : récupérer Lolalytics (branche `scraping`) et l'export des analyses (branche `analyse`, `analyse/export/assistant_donnees.json`), puis
 `python3 assistant/construire.py --lolalytics <dossier du patch> --export <assistant_donnees.json>`.

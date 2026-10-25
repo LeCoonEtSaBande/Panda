@@ -33,10 +33,10 @@ def nombre(x):
         return None
 
 
-def lire_sorts():
-    """Contrôles de chaque champion (assistant/sorts.json, écrit par sorts.py) ; vide s'il manque."""
+def lire_sorts(cle="champions"):
+    """Contrôles de chaque champion (« champions ») ou identifiants Riot -> noms (« ids ») de assistant/sorts.json."""
     chemin = ICI / "sorts.json"
-    return json.loads(chemin.read_text(encoding="utf-8"))["champions"] if chemin.exists() else {}
+    return json.loads(chemin.read_text(encoding="utf-8")).get(cle, {}) if chemin.exists() else {}
 
 
 def duree_degats(dd):
@@ -98,6 +98,7 @@ def construire(dossier_lola, export, sortie):
         # Ce qui est confirmé sur C (l'export a déjà retiré le reste) et contrôles des sorts (Data Dragon).
         "conf": ex.get("confirmation_C") or {},
         "cc": lire_sorts(),
+        "ids": lire_sorts("ids"),
         # Duels de junglers à or égal (seulement les forces confirmées sur C ; None si non confirmé).
         "duel": ex.get("duels"),
     }

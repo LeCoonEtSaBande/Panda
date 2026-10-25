@@ -93,7 +93,8 @@ def main():
         en = telecharger(f"{DDRAGON}/cdn/{version}/data/en_US/championFull.json")
         fr = telecharger(f"{DDRAGON}/cdn/{version}/data/fr_FR/championFull.json")
     sorts = extraire(en, fr)
-    SORTIE.write_text(json.dumps({"version": en.get("version"), "champions": sorts}, ensure_ascii=False, indent=0) + "\n",
+    ids = {c["key"]: c["name"] for c in en["data"].values()}      # identifiant Riot -> nom (pour le lien client)
+    SORTIE.write_text(json.dumps({"version": en.get("version"), "champions": sorts, "ids": ids}, ensure_ascii=False, indent=0) + "\n",
                       encoding="utf-8")
     avec = sum(bool(v) for v in sorts.values())
     print(f"Sorts : {SORTIE} (Data Dragon {en.get('version')}), {len(sorts)} champions, {avec} avec au moins un contrôle.")

@@ -141,6 +141,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .touche{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:4px;background:var(--fond);border:1px solid var(--ligne);
   font-family:var(--chiffres);font-size:.72rem;margin-right:4px}
 .puce.style{background:var(--nous-doux)}
+.lien{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;color:var(--doux)}
+.lien::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ligne)}
+.lien.relie::before{background:var(--bon)} .lien.attente::before{background:var(--physique)}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -152,6 +155,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <button type="button" role="tab" id="onglet-draft" data-onglet="draft">Draft</button>
       <button type="button" role="tab" id="onglet-profils" data-onglet="profils">Profils</button>
     </div>
+    <span class="lien" id="lien" title="Lance « Assistant Draft - Lien client » sur ton PC pour que la page voie les picks de ton client League.">Lien client non lancé</span>
     <span class="meta" id="meta"></span>
   </header>
 
@@ -163,6 +167,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <label for="poste-joue">Je joue</label>
         <select id="poste-joue"></select>
         <span class="petit" id="rappel-pool"></span>
+        <span class="petit" id="bans"></span>
       </div>
 
       <div class="equipes">
@@ -447,8 +452,8 @@ function gank(jungler, lane, allies, adverses) {
 function dessinerBarre() {
   const pr = profil();
   document.getElementById("profil-actif").innerHTML = etat.profils.map(p => `<option value="${p.id}"${p.id === pr.id ? " selected" : ""}>${esc(p.nom)}</option>`).join("");
-  if (!pr.postes.includes(etat.poste)) etat.poste = pr.postes[0] || "jgl";
-  const postes = pr.postes.length ? pr.postes : POSTES;
+  const postes = [...new Set([...(pr.postes.length ? pr.postes : POSTES), ...(etat.posteClient ? [etat.posteClient] : [])])];
+  if (!postes.includes(etat.poste)) etat.poste = postes[0] || "jgl";
   document.getElementById("poste-joue").innerHTML = postes.map(p => `<option value="${p}"${p === etat.poste ? " selected" : ""}>${NOM_POSTE[p]}</option>`).join("");
   const pool = (pr.pool[etat.poste] || []);
   document.getElementById("rappel-pool").textContent = pool.length ? `Tes champions : ${pool.join(", ")}` : "Aucun champion choisi à ce poste : tous les champions du poste sont proposés.";
@@ -497,7 +502,7 @@ function dessinerTempo(nous, eux) {
 function dessinerReco() {
   const R = etat.poste, nous = equipe("nous"), eux = equipe("eux"), pr = profil();
   document.getElementById("titre-reco").textContent = `Quel champion prendre en ${NOM_POSTE[R]}`;
-  const pris = new Set([...Object.entries(nous).filter(([p]) => p !== R).map(([, c]) => c), ...Object.values(eux)]);
+  const pris = new Set([...Object.entries(nous).filter(([p]) => p !== R).map(([, c]) => c), ...Object.values(eux), ...(etat.bans || [])]);
   // Aucun champion choisi à ce poste dans le profil = il les joue tous.
   const tousLesChamps = etat.tous || !(pr.pool[R] || []).length;
   let cands = tousLesChamps ? Object.keys(D.tier[R]).filter(c => D.tier[R][c][1] >= 1500).flatMap(c => c === "Kayn" ? ["Kayn rouge", "Kayn bleu"] : [c])
@@ -812,9 +817,59 @@ document.addEventListener("click", e => {
   else if (b.id === "echanger") { const n = equipe("nous"), x = equipe("eux");
     etat.nous = POSTES.map(p => ({poste: p, champ: x[p] || ""})); etat.eux = POSTES.map(p => ({poste: "", champ: n[p] || ""})); etat.choix = ""; etat.manuel = false; toutDraft(); }
 });
+// --- Lien avec le client League (assistant/lien_client.py, sur le PC du joueur) ------------------------
+const LIEN = "http://127.0.0.1:47123/draft";
+let signatureClient = "";
+function nomClient(id, ancien) {
+  const n = (D.ids || {})[String(id)];
+  if (!n) return "";
+  if (n === "Kayn") return ancien && ancien.startsWith("Kayn ") ? ancien : "Kayn bleu";   // la forme se choisit en jeu
+  return n;
+}
+function majLien(r) {
+  const el = document.getElementById("lien");
+  const [classe, texte] = !r ? ["", "Lien client non lancé"] : r.etat === "client_ferme" ? ["attente", "Lien lancé, client League fermé"]
+    : r.etat === "hors_selection" ? ["attente", "Client relié : en attente d'une sélection"] : ["relie", "Client relié : sélection en cours"];
+  el.className = "lien " + classe; el.textContent = texte;
+}
+function appliquerSelection(r) {
+  const sig = JSON.stringify(r);
+  if (sig === signatureClient) return;
+  signatureClient = sig;
+  if (r.partie !== etat.clientPartie) {        // nouvelle sélection : nouvelle draft
+    etat.clientPartie = r.partie; etat.valide = false; etat.recapAuto = false; etat.choix = ""; etat.manuel = false;
+    etat.nous = POSTES.map(p => ({poste: p, champ: ""})); etat.eux = POSTES.map(() => ({poste: "", champ: ""}));
+  }
+  const postesClient = r.nous.map(j => j.poste).filter(Boolean);
+  const complets = new Set(postesClient).size === 5;
+  etat.nous = r.nous.slice(0, 5).map((j, i) => ({poste: complets ? j.poste : (etat.nous[i] || {}).poste || POSTES[i],
+                                                 champ: nomClient(j.champion, (etat.nous[i] || {}).champ) || (etat.nous[i] || {}).champ || ""}));
+  while (etat.nous.length < 5) etat.nous.push({poste: POSTES.find(p => !etat.nous.some(l => l.poste === p)), champ: ""});
+  etat.eux = r.eux.slice(0, 5).map((j, i) => {
+    const avant = etat.eux[i] || {}, champ = nomClient(j.champion, avant.champ) || avant.champ || "";
+    return {poste: champ && champ === avant.champ ? avant.poste : "", champ};
+  });
+  while (etat.eux.length < 5) etat.eux.push({poste: "", champ: ""});
+  const moi = r.nous.find(j => j.moi);
+  if (moi && moi.poste) { etat.posteClient = moi.poste; etat.poste = moi.poste; }
+  etat.bans = (r.bans || []).map(id => nomClient(id)).filter(Boolean).flatMap(n => n.startsWith("Kayn ") ? ["Kayn rouge", "Kayn bleu"] : [n]);
+  document.getElementById("bans").textContent = etat.bans.length ? `Bannis : ${etat.bans.filter(n => n !== "Kayn rouge").map(n => n === "Kayn bleu" ? "Kayn" : n).join(", ")}` : "";
+  // Fin de la sélection : récapitulatif automatique (une fois par partie).
+  if (["FINALIZATION", "GAME_STARTING"].includes(r.phase) && compoComplete() === 10 && !etat.recapAuto) { etat.recapAuto = true; etat.valide = true; }
+  if (etat.onglet !== "profils") montrer(); else garder();
+}
+async function interrogerClient() {
+  let r = null;
+  try { const rep = await fetch(LIEN, {cache: "no-store"}); r = await rep.json(); } catch (e) { r = null; }
+  majLien(r);
+  if (r && r.etat === "selection") { try { appliquerSelection(r); } catch (e) { console.warn(e); } }
+  setTimeout(interrogerClient, r ? 1000 : 5000);
+}
+
 document.getElementById("tous").checked = !!etat.tous;
 document.getElementById("meta").textContent = `Patch ${D.meta.patch} (Lolalytics, Platine et plus) · nos analyses du ${D.meta.export} (${D.meta.parties_lanes} parties)`;
 montrer();
+interrogerClient();
 </script>
 </body>
 </html>
