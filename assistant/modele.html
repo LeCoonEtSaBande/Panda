@@ -141,6 +141,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .touche{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:4px;background:var(--fond);border:1px solid var(--ligne);
   font-family:var(--chiffres);font-size:.72rem;margin-right:4px}
 .puce.style{background:var(--nous-doux)}
+.ligne input.prevu{border-style:dashed;font-style:italic;color:var(--doux)}
 .lien{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;color:var(--doux)}
 .lien::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ligne)}
 .lien.relie::before{background:var(--bon)} .lien.attente::before{background:var(--physique)}
@@ -463,7 +464,7 @@ function dessinerEquipes() {
   document.getElementById("nous").innerHTML = etat.nous.map((l, i) => `<div class="ligne${l.poste === etat.poste ? " moi" : ""}"><span class="ordre">${i + 1}</span>
     <select data-cote="nous" data-i="${i}" class="poste" aria-label="Poste du pick ${i + 1}">
       ${POSTES.map(p => `<option value="${p}"${l.poste === p ? " selected" : ""}>${NOM_POSTE[p]}${p === etat.poste ? " (toi)" : ""}</option>`).join("")}</select>
-    <div class="auto"><input type="text" data-ac="draft" data-cote="nous" data-i="${i}" value="${esc(l.champ)}" placeholder="Champion" autocomplete="off" aria-label="Champion du pick ${i + 1}"></div></div>`).join("");
+    <div class="auto"><input type="text" data-ac="draft" data-cote="nous" data-i="${i}" value="${esc(l.champ)}" placeholder="Champion" autocomplete="off" aria-label="Champion du pick ${i + 1}"${l.prevu ? ' class="prevu" title="Pré-pick annoncé par ton coéquipier, pas encore verrouillé"' : ""}></div></div>`).join("");
   document.getElementById("eux").innerHTML = etat.eux.map((l, i) => `<div class="ligne"><span class="ordre">${i + 1}</span>
     <select data-cote="eux" data-i="${i}" class="poste" aria-label="Poste adverse ${i + 1}">
       <option value=""${!l.poste ? " selected" : ""}>${l.champ && d[i] ? "auto : " + NOM_POSTE[d[i]] : "auto"}</option>
@@ -749,7 +750,7 @@ function valider(input, nom) {
     dessinerProfils(); garder(); const nv = document.querySelector(`input[data-ac="pool"][data-id="${p.id}"][data-p="${q}"]`); if (nv) nv.focus(); return;
   }
   const cote = input.dataset.cote, i = +input.dataset.i;
-  etat[cote][i].champ = nom; if (cote === "eux" && !nom) etat.eux[i].poste = "";
+  etat[cote][i].champ = nom; delete etat[cote][i].prevu; if (cote === "eux" && !nom) etat.eux[i].poste = "";
   toutDraft();
   const suivant = document.querySelector(`input[data-ac="draft"][data-cote="${cote}"][data-i="${i + 1}"]`); if (suivant && nom && !suivant.value) suivant.focus();
 }
@@ -842,8 +843,15 @@ function appliquerSelection(r) {
   }
   const postesClient = r.nous.map(j => j.poste).filter(Boolean);
   const complets = new Set(postesClient).size === 5;
-  etat.nous = r.nous.slice(0, 5).map((j, i) => ({poste: complets ? j.poste : (etat.nous[i] || {}).poste || POSTES[i],
-                                                 champ: nomClient(j.champion, (etat.nous[i] || {}).champ) || (etat.nous[i] || {}).champ || ""}));
+  etat.nous = r.nous.slice(0, 5).map((j, i) => {
+    const avant = etat.nous[i] || {}, poste = complets ? j.poste : avant.poste || POSTES[i];
+    const verrou = nomClient(j.champion, avant.champ);
+    if (verrou) return {poste, champ: verrou};
+    // Pré-pick d'un coéquipier (pas le tien : les propositions restent ouvertes pour toi).
+    const prevu = !j.moi && j.intention ? nomClient(j.intention, avant.champ) : "";
+    if (prevu) return {poste, champ: prevu, prevu: true};
+    return {poste, champ: avant.prevu ? "" : avant.champ || ""};
+  });
   while (etat.nous.length < 5) etat.nous.push({poste: POSTES.find(p => !etat.nous.some(l => l.poste === p)), champ: ""});
   etat.eux = r.eux.slice(0, 5).map((j, i) => {
     const avant = etat.eux[i] || {}, champ = nomClient(j.champion, avant.champ) || avant.champ || "";
@@ -852,6 +860,8 @@ function appliquerSelection(r) {
   while (etat.eux.length < 5) etat.eux.push({poste: "", champ: ""});
   const moi = r.nous.find(j => j.moi);
   if (moi && moi.poste) { etat.posteClient = moi.poste; etat.poste = moi.poste; }
+  // Ton survol ou ton pré-pick : « Comment jouer » le montre (sans le mettre dans ta ligne, pour garder les propositions).
+  if (moi && !moi.champion && moi.intention) { etat.choix = nomClient(moi.intention); etat.manuel = true; }
   etat.bans = (r.bans || []).map(id => nomClient(id)).filter(Boolean).flatMap(n => n.startsWith("Kayn ") ? ["Kayn rouge", "Kayn bleu"] : [n]);
   document.getElementById("bans").textContent = etat.bans.length ? `Bannis : ${etat.bans.filter(n => n !== "Kayn rouge").map(n => n === "Kayn bleu" ? "Kayn" : n).join(", ")}` : "";
   // Fin de la sélection : récapitulatif automatique (une fois par partie).

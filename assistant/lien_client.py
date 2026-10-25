@@ -3,7 +3,7 @@
 Le client League expose, sur ton propre PC seulement, une interface locale (« LCU ») qui donne l'état de la
 sélection des champions. Ce programme la lit toutes les secondes et la met à disposition de la page, sur
 http://127.0.0.1:47123/draft. Il ne fait QUE lire ce que tu vois déjà dans ton client : champions choisis et
-bannis, ton poste et ceux de ton équipe. Il ne lit jamais le nom ni les stats des autres joueurs, et ne clique
+bannis, les pré-picks de ton équipe, ton poste et ceux de ton équipe. Il ne lit jamais le nom ni les stats des autres joueurs, et ne clique
 jamais à ta place (règles de Riot pour les applications tierces).
 
 Utilisation : lancer ce programme (ou « Assistant Draft - Lien client.exe » sous Windows) avant ou pendant une
@@ -104,7 +104,8 @@ class Client:
 
 
 def resumer(session):
-    """Ce que la page a besoin de savoir : rien sur les joueurs, seulement champions, postes, bans et phase."""
+    """Ce que la page a besoin de savoir : rien sur les joueurs, seulement champions (verrouillés, et pré-picks
+    de ton équipe), postes, bans et phase."""
     if not session:
         return {"etat": "hors_selection"}
     moi = session.get("localPlayerCellId")
@@ -115,11 +116,16 @@ def resumer(session):
     # Un champion compte quand son choix est verrouillé (action « pick » terminée) ; sans actions (partie à
     # l'aveugle), on prend le champion affiché.
     verrouille = (lambda j: choisis.get(j.get("cellId"), 0)) if actions else (lambda j: j.get("championId") or 0)
+    # Pré-picks de TON équipe (ce que le client t'affiche aussi) : le champion survolé pendant son tour, sinon
+    # celui annoncé avant (« intention »). Ceux de l'équipe adverse ne sont jamais envoyés au client.
+    survols = {a["actorCellId"]: a["championId"] for a in actions
+               if a.get("type") == "pick" and not a.get("completed") and a.get("championId")}
     nous = []
     for j in sorted(session.get("myTeam", []), key=lambda j: j.get("cellId", 0)):
         cid = verrouille(j)
+        intention = 0 if cid else (survols.get(j.get("cellId")) or j.get("championPickIntent") or 0)
         nous.append({"poste": POSTES.get((j.get("assignedPosition") or "").lower(), ""), "champion": cid or 0,
-                     "moi": j.get("cellId") == moi})
+                     "intention": intention, "moi": j.get("cellId") == moi})
     eux = []
     for j in sorted(session.get("theirTeam", []), key=lambda j: j.get("cellId", 0)):
         eux.append({"champion": verrouille(j) or 0})

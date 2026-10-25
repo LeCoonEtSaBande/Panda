@@ -29,6 +29,14 @@ class ResumerTest(unittest.TestCase):
         self.assertEqual([j["poste"] for j in r["nous"]], ["top", "jgl"])
         self.assertTrue(r["nous"][1]["moi"])
 
+    def test_pre_picks_de_mon_equipe(self):
+        s = self.session()
+        s["myTeam"].append({"cellId": 2, "assignedPosition": "middle", "championId": 0, "championPickIntent": 61})
+        s["theirTeam"][1]["championPickIntent"] = 99          # jamais envoyé par le client, et ignoré de toute façon
+        r = L.resumer(s)
+        self.assertEqual([j["intention"] for j in r["nous"]], [0, 9, 61])   # survol de Fiddlesticks, annonce d'Orianna
+        self.assertNotIn("intention", r["eux"][1])
+
     def test_rien_sur_les_joueurs(self):
         texte = str(L.resumer(self.session()))
         self.assertNotIn("secret", texte)
