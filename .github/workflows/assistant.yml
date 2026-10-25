@@ -4,7 +4,8 @@ name: Générer l'assistant Draft
 #   collecte/, donnees/, archives/ (main), analyse/ (branche analyse), lolalytics/ (branche scraping),
 # recalcule nos modèles sur toutes les données à jour, rafraîchit les contrôles des sorts (Data Dragon),
 # puis génère « Assistant Draft - DL - <date>.html », committé à la racine de la branche « assistant »
-# (l'ancienne version est retirée). Pour le télécharger : ouvrir le fichier sur GitHub, « Download raw file ».
+# (l’ancienne version est retirée). Pour le télécharger : ouvrir le fichier sur GitHub, « Download raw file ».
+# Un second job, sous Windows, reconstruit « Assistant Draft - Lien client.exe » quand assistant/lien_client.py change.
 on:
   workflow_dispatch:
 
@@ -66,6 +67,41 @@ jobs:
           git add "$nouveau" assistant/sorts.json
           if git diff --cached --quiet; then echo "Page inchangée."; exit 0; fi
           git commit -q -m "Assistant Draft régénéré : $nouveau"
+          for essai in 1 2 3; do
+            if git pull -q --rebase origin assistant && git push -q origin HEAD:assistant; then exit 0; fi
+            git rebase --abort 2>/dev/null; sleep 10
+          done
+          exit 1
+
+  # Le lien avec le client League, en programme Windows (.exe), reconstruit seulement quand son code change.
+  lien-client:
+    needs: assistant
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: assistant
+          fetch-depth: 0
+
+      - name: Construire « Assistant Draft - Lien client.exe » si le code a changé
+        run: |
+          git pull -q origin assistant
+          empreinte="$(sha256sum assistant/lien_client.py | cut -d' ' -f1)"
+          if [ -f assistant/lien_client.sha256 ] && [ "$(cat assistant/lien_client.sha256)" = "$empreinte" ] && [ -f "Assistant Draft - Lien client.exe" ]; then
+            echo "Lien client inchangé."; exit 0
+          fi
+          python -m pip install -q pyinstaller
+          python -m PyInstaller --onefile --name "Assistant Draft - Lien client" assistant/lien_client.py
+          cp "dist/Assistant Draft - Lien client.exe" .
+          echo "$empreinte" > assistant/lien_client.sha256
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "Assistant Draft - Lien client.exe" assistant/lien_client.sha256
+          git commit -q -m "Lien client reconstruit (Windows)"
           for essai in 1 2 3; do
             if git pull -q --rebase origin assistant && git push -q origin HEAD:assistant; then exit 0; fi
             git rebase --abort 2>/dev/null; sleep 10
