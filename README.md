@@ -24,8 +24,8 @@ Le bouton « Générer l'assistant Draft » (sur `main`) fait tout cela lui-mêm
 | `analyse/base/` | La base commune : table des drafts et découpage en tas A, B, C (`commun.py`, `decoupage.json`), force des champions et régressions (`bloc3_biais.py`), index des drafts (`bloc2_compos.py`). |
 | `analyse/catalogues/` | Le catalogue unifié (`catalogue_unifie.csv`, relu avec le propriétaire le 24/10/2026), et la version utilisée par le recuit. |
 | `analyse/contres/` | Le modèle des contres par lane : force de lane de chaque champion et effet propre de chaque paire, mesurés sur l'écart d'or à 15 min. |
-| `analyse/lanes/` | Ce que l'assistant calcule : or à 15 min par lane (`dynamique.py`), ganks réussis avant 15 min (`ganks.py`), envahir à 5, 10, 15 et 20 min (`envahir.py`), early/late et mix de dégâts (`duree_degats.py`). Résultats dans `lanes/resultats/`. |
-| `analyse/confirmation/` | Les confirmations sur C (parties jamais vues) et leurs résultats : `confirmation_C.py` (Lolalytics, lanes, ganks, envahir), `confirmer_duree_degats.py`, `confirmer_pistes.py` (recuit). |
+| `analyse/lanes/` | Ce que l'assistant calcule : or à 15 min par lane (`dynamique.py`), ganks réussis avant 15 min (`ganks.py`), envahir à 5, 10, 15 et 20 min (`envahir.py`), duels à or égal de tous les champions (`duels.py`), early/late et mix de dégâts (`duree_degats.py`). Résultats dans `lanes/resultats/`. |
+| `analyse/confirmation/` | Les confirmations sur C (parties jamais vues) et leurs résultats : `confirmation_C.py` (Lolalytics, lanes, ganks, envahir), `confirmer_duree_degats.py`, `confirmer_duels.py` (avec son propre découpage, `decoupage_duels.json`), `confirmer_pistes.py` (recuit). |
 | `analyse/recuit/` | Le recuit simulé n° 2 (pistes « scénarios » et « teamfight ») et son test au hasard. Gardé pour la trace : **non confirmé sur C**. |
 | `analyse/export/` | `exporter.py` : rassemble les modèles pour l'assistant et **ne garde que ce qui est confirmé sur C**. |
 | `analyse/tests/` | Tests (après `preparer.sh`). |
@@ -34,7 +34,8 @@ Le bouton « Générer l'assistant Draft » (sur `main`) fait tout cela lui-mêm
 
 - **A** (apprendre, 3/4) et **B** (vérifier, 1/4) : l'archive et les parties de `donnees/parties.csv` jusqu'au **gel**, Émeraude-Diamant seulement, partagées par empreinte du numéro de partie (`base/decoupage.json`).
 - **C** (confirmer) : les parties collectées après le gel, jamais lues avant une confirmation. Une fois une confirmation faite, C est « consommé » : on pose un nouveau gel et les parties suivantes forment le nouveau C.
-- Historique : gel n° 2 le 23/10/2026 (C lu le 24/10/2026 pour les confirmations ci-dessous), gel n° 3 le 24/10/2026 au soir.
+- Historique : gel n° 2 le 23/10/2026 (C lu le 24/10/2026 pour les confirmations ci-dessous), gel n° 3 le 24/10/2026 au soir (42 101 parties : C repart de zéro et se remplit avec les prochaines collectes).
+- Sans nouvelle collecte, on peut confirmer sur un C pris dans le temps (les parties les plus récentes), à condition de fixer les règles et les tests avant de lancer le calcul : c'est ce qui a été fait pour les duels (`confirmation/decoupage_duels.json`).
 
 ## Ce qui est confirmé (C, 24/10/2026, 12 600 à 14 900 parties jamais vues)
 
