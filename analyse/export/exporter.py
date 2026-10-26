@@ -40,6 +40,8 @@ CONFIRMATION_RES = ANALYSE / "confirmation" / "resultats"
 SORTIE = ICI / "assistant_donnees.json"
 
 
+MIX_IMPOSE = {"magique < 20 %": -3.0, "magique > 70 %": -3.0}   # points de victoire, choix du propriétaire
+
 TYPES = ("carry", "enchanteur", "assassin", "plongeur", "attrapeur", "tank", "bloqueur", "dueliste", "splitpusher", "teamfighter")
 
 
@@ -178,6 +180,11 @@ def main():
           if (LANES_RES / "duree_degats.json").exists() else None)
     if dd:
         dd["mix"] = {k: dict(m, tient=m["tient"] and k in conf["mix"]) for k, m in dd["mix"].items()}
+        # Choix du propriétaire (26/10/2026) : une équipe presque toute AD (moins de 20 % de magique) ou toute AP (plus de
+        # 70 %) compte toujours −3 points, même si l'effet n'est qu'« à surveiller » sur B (−4 à −5 points mesurés).
+        for k, pts in MIX_IMPOSE.items():
+            if k in dd["mix"]:
+                dd["mix"][k].update(tient=True, AB=math.log((0.5 + pts / 100) / (0.5 - pts / 100)), impose=True)
         if not conf["tempo"]:
             dd["coef_late"]["retenu"] = 0.0
     envm = json.loads((LANES_RES / "envahir.json").read_text(encoding="utf-8"))
