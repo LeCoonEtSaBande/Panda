@@ -47,17 +47,19 @@ SEUIL = 70
 MIN_PARTIES = 150
 POSTES = ("top", "jgl", "mid", "adc", "sup")
 
-# Les mesures de chaque type (choisies avec le propriétaire, 26/10/2026).
+# Les mesures de chaque type. Version 2 (26/10/2026) : pour chaque type, parmi les mesures qui ont du sens pour lui,
+# la combinaison (4 mesures au plus) qui retrouve le mieux les références sans les avoir vues, sans gonfler le nombre
+# de champions retenus. Carry, tank, bloqueur, plongeur et splitpusher ont changé ; les autres n'ont pas trouvé mieux.
 MESURES = {
-    "carry": ["part_degats", "dpm", "or_min", "part_subis", "encaisse_min"],
+    "carry": ["or_min", "profondeur"],
     "enchanteur": ["soins_allies_min", "boucliers_allies_min"],
     "assassin": ["assassin", "part_carry", "part_subis", "encaisse_min"],
-    "plongeur": ["part_carry", "carry_tf_10", "encaisse_min", "part_subis"],
+    "plongeur": ["part_subis", "profondeur"],
     "attrapeur": ["pick_kill", "immob_kill", "cc_min"],
-    "tank": ["encaisse_min", "part_subis", "part_degats"],
-    "bloqueur": ["cc_min", "immob_min", "sauve", "encaisse_min"],
+    "tank": ["encaisse_min"],
+    "bloqueur": ["cc_min", "immob_min"],
     "dueliste": ["solo", "en_inferiorite"],
-    "splitpusher": ["seul_cote"],
+    "splitpusher": ["seul_cote_poste"],
     "teamfighter": ["presence_tf_poste", "td_par_combat", "kills_par_combat", "cc_min"],
 }
 # Mesures très étalées (beaucoup de zéros, quelques très grandes valeurs) : comparées en logarithme.
@@ -73,6 +75,8 @@ LIBELLES = {
     "sauve": "alliés sauvés de la mort", "solo": "solo kills", "en_inferiorite": "kills en infériorité numérique",
     "seul_cote": "seul sur une lane de côté à 20, 25 et 30 min", "presence_tf_poste": "présence en combat d'équipe (comparée à son poste)",
     "td_par_combat": "participations par combat", "kills_par_combat": "kills par combat",
+    "profondeur": "où il meurt après 14 min (0 = chez lui, 1 = base adverse)",
+    "seul_cote_poste": "seul sur une lane de côté, comparé aux champions de son poste",
 }
 
 
@@ -153,10 +157,17 @@ def combats(e, j):
     par = k.groupby(["match", "participant"]).agg(td=("tf", "size"), tf_n=("tf_n", "sum"), sur_carry=("carry", "sum"),
                                                   carry_tf=("carry_tf", "sum"), assassin=("assassin", "sum"), kills_tf=("kill_tf", "sum")).reset_index()
     vict = e[e.tf].groupby(["match", "victime"]).combat.nunique().rename("morts_tf").reset_index().rename(columns={"victime": "participant"})
+    # Où il meurt après 14 min : distance de sa propre base, de 0 (chez lui) à 1 (la base adverse).
+    equipe = j.set_index(["match", "participant"]).equipe
+    d = e[(e.t_ms >= 14 * 60000) & (e.victime > 0)].copy()
+    base = np.where([equipe.get((m, v)) == "b" for m, v in zip(d.match, d.victime)], 500.0, 14300.0)
+    d["profondeur"] = np.clip(np.hypot(d.x - base, d.y - base) / 19500, 0, 1)
+    prof = d.groupby(["match", "victime"]).profondeur.mean().reset_index().rename(columns={"victime": "participant"})
     pres = pd.concat([k[k.tf][["match", "participant", "combat"]],
                       e[e.tf][["match", "victime", "combat"]].rename(columns={"victime": "participant"})]).drop_duplicates()
     pres = pres.groupby(["match", "participant"]).size().rename("combats").reset_index()
-    return par.merge(vict, on=["match", "participant"], how="outer").merge(pres, on=["match", "participant"], how="outer").fillna(0)
+    sortie = par.merge(vict, on=["match", "participant"], how="outer").merge(pres, on=["match", "participant"], how="outer").fillna(0)
+    return sortie.merge(prof, on=["match", "participant"], how="left")
 
 
 def mesures_joueurs(j, t, e):
@@ -189,7 +200,7 @@ def mesures_joueurs(j, t, e):
 def par_champion(f):
     """Moyennes par champion et par poste (au moins 150 parties), et mesures de combat rapportées aux totaux."""
     moy = ["part_degats", "part_subis", "encaisse_min", "soins_allies_min", "boucliers_allies_min", "cc_min", "immob_min", "batiments_min",
-           "solo", "pick_kill", "immob_kill", "sauve", "en_inferiorite", "dpm", "or_min", "seul_cote", "assassin", "tf_10", "carry_tf_10"]
+           "solo", "pick_kill", "immob_kill", "sauve", "en_inferiorite", "dpm", "or_min", "seul_cote", "assassin", "tf_10", "carry_tf_10", "profondeur"]
     g = f.groupby(["champion", "poste"])
     a = g[moy].mean()
     a["n"] = g.size()
@@ -199,6 +210,8 @@ def par_champion(f):
     a["kills_par_combat"] = s.kills_tf / s.combats.where(s.combats > 0)
     a = a.reset_index()
     a["presence_tf_poste"] = a.tf_10 / a.groupby("poste").tf_10.transform("mean")
+    a = a[a.n >= MIN_PARTIES].copy()
+    a["seul_cote_poste"] = (a.seul_cote - a.groupby("poste").seul_cote.transform("mean")) / a.groupby("poste").seul_cote.transform("std")
     return a[a.n >= MIN_PARTIES].reset_index(drop=True).fillna(0)
 
 

@@ -1,25 +1,22 @@
 {
  "carry": {
   "poids": {
-   "part_degats": 0.48,
-   "dpm": 0.6,
-   "or_min": 1.27,
-   "part_subis": -0.74,
-   "encaisse_min": -0.42
+   "or_min": 1.59,
+   "profondeur": -0.94
   },
   "references_sans_voir": {
-   "Aurelion Sol": 56,
-   "Caitlyn": 82,
-   "Gangplank": 58,
-   "Jinx": 87,
-   "Kindred": 35,
-   "Nilah": 55,
-   "Samira": 85,
-   "Viktor": 62,
-   "Yunara": 89
+   "Aurelion Sol": 68,
+   "Caitlyn": 84,
+   "Gangplank": 35,
+   "Jinx": 88,
+   "Kindred": 57,
+   "Nilah": 73,
+   "Samira": 72,
+   "Viktor": 50,
+   "Yunara": 91
   },
-  "accord_A_B": 0.997,
-  "meme_decision_A_B": 0.979,
+  "accord_A_B": 0.989,
+  "meme_decision_A_B": 0.984,
   "postes_compares": 187
  },
  "enchanteur": {
@@ -54,20 +51,18 @@
  },
  "plongeur": {
   "poids": {
-   "part_carry": 0.33,
-   "carry_tf_10": -1.51,
-   "encaisse_min": 2.52,
-   "part_subis": -2.18
+   "part_subis": -0.95,
+   "profondeur": 2.21
   },
   "references_sans_voir": {
-   "Diana": 70,
-   "Jax": 68,
-   "Olaf": 63,
-   "Yasuo": 89,
-   "Yone": 82
+   "Diana": 68,
+   "Jax": 79,
+   "Olaf": 94,
+   "Yasuo": 94,
+   "Yone": 78
   },
-  "accord_A_B": 0.989,
-  "meme_decision_A_B": 0.995,
+  "accord_A_B": 0.954,
+  "meme_decision_A_B": 0.963,
   "postes_compares": 187
  },
  "attrapeur": {
@@ -89,39 +84,35 @@
  },
  "tank": {
   "poids": {
-   "encaisse_min": 2.03,
-   "part_subis": 1.35,
-   "part_degats": -0.55
+   "encaisse_min": 3.02
   },
   "references_sans_voir": {
-   "Cho'Gath": 75,
-   "Dr. Mundo": 100,
-   "Rammus": 54,
-   "Sejuani": 84,
+   "Cho'Gath": 67,
+   "Dr. Mundo": 97,
+   "Rammus": 88,
+   "Sejuani": 86,
    "Sion": 99
   },
-  "accord_A_B": 0.999,
-  "meme_decision_A_B": 1.0,
+  "accord_A_B": 0.998,
+  "meme_decision_A_B": 0.995,
   "postes_compares": 187
  },
  "bloqueur": {
   "poids": {
-   "cc_min": 0.94,
-   "immob_min": 1.37,
-   "sauve": 0.34,
-   "encaisse_min": 1.0
+   "cc_min": 1.11,
+   "immob_min": 1.32
   },
   "references_sans_voir": {
-   "Alistar": 100,
-   "Amumu": 64,
-   "Blitzcrank": 77,
-   "Rammus": 94,
-   "Rell": 95,
-   "Skarner": 37,
-   "Thresh": 74
+   "Alistar": 99,
+   "Amumu": 79,
+   "Blitzcrank": 87,
+   "Rammus": 82,
+   "Rell": 94,
+   "Skarner": 22,
+   "Thresh": 79
   },
   "accord_A_B": 0.999,
-  "meme_decision_A_B": 0.995,
+  "meme_decision_A_B": 1.0,
   "postes_compares": 187
  },
  "dueliste": {
@@ -141,16 +132,16 @@
  },
  "splitpusher": {
   "poids": {
-   "seul_cote": 1.27
+   "seul_cote_poste": 2.04
   },
   "references_sans_voir": {
-   "Fiora": 82,
-   "Illaoi": 86,
-   "Sion": 60,
-   "Yorick": 86
+   "Fiora": 84,
+   "Illaoi": 96,
+   "Sion": 79,
+   "Yorick": 95
   },
-  "accord_A_B": 0.99,
-  "meme_decision_A_B": 0.941,
+  "accord_A_B": 0.749,
+  "meme_decision_A_B": 0.936,
   "postes_compares": 187
  },
  "teamfighter": {
