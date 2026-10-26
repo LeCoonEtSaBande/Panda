@@ -146,22 +146,20 @@
  },
  "teamfighter": {
   "poids": {
-   "presence_tf_poste": 0.34,
-   "td_par_combat": 0.28,
-   "kills_par_combat": 0.39,
-   "cc_min": 0.87
+   "kp_combat": 1.0
   },
   "references_sans_voir": {
-   "Amumu": 48,
-   "Aurelion Sol": 53,
-   "Darius": 17,
-   "Fiddlesticks": 55,
-   "Malphite": 52,
-   "Swain": 84,
-   "Viktor": 40
+   "Amumu": 67,
+   "Aurelion Sol": 98,
+   "Darius": 30,
+   "Fiddlesticks": 41,
+   "Malphite": 89,
+   "Swain": 98,
+   "Viktor": 69
   },
-  "accord_A_B": 0.961,
-  "meme_decision_A_B": 0.968,
+  "direct": "rang dans son poste",
+  "accord_A_B": 0.908,
+  "meme_decision_A_B": 0.866,
   "postes_compares": 187
  }
 }

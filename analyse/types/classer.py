@@ -60,8 +60,12 @@ MESURES = {
     "bloqueur": ["cc_min", "immob_min"],
     "dueliste": ["solo", "en_inferiorite"],
     "splitpusher": ["seul_cote_poste"],
-    "teamfighter": ["presence_tf_poste", "td_par_combat", "kills_par_combat", "cc_min"],
+    "teamfighter": ["kp_combat"],
 }
+# Teamfighter (choix du propriétaire, 26/10/2026) : pas de modèle appris, directement ses kills et assists en combat
+# d'équipe (part des kills de son équipe en combat où il participe), classé parmi les champions de son poste : un
+# support participe toujours plus qu'un top, on compare donc à son poste. Note = rang dans son poste, de 0 à 100.
+DIRECTS = {"teamfighter": "kp_combat"}
 # Mesures très étalées (beaucoup de zéros, quelques très grandes valeurs) : comparées en logarithme.
 LOG = {"soins_allies_min", "boucliers_allies_min", "batiments_min", "solo", "assassin", "sauve", "pick_kill", "immob_kill",
        "en_inferiorite", "encaisse_min", "dpm"}
@@ -77,6 +81,8 @@ LIBELLES = {
     "td_par_combat": "participations par combat", "kills_par_combat": "kills par combat",
     "profondeur": "où il meurt après 14 min (0 = chez lui, 1 = base adverse)",
     "seul_cote_poste": "seul sur une lane de côté, comparé aux champions de son poste",
+    "kp_combat": "kills et assists en combat d'équipe (part des kills de son équipe en combat)",
+    "tf_10": "kills et assists en combat d'équipe, par 10 minutes",
 }
 
 
@@ -141,6 +147,7 @@ def combats(e, j):
         num[i] = g; pm, pt, px, py = m, t, x, y
     e["combat"] = num
     e["tf"] = e.combat.map(e.groupby("combat").size()) >= 3
+    equipe = j.set_index(["match", "participant"]).equipe
     poste = j.set_index(["match", "participant"]).poste
     e["poste_v"] = [poste.get((m, v)) for m, v in zip(e.match, e.victime)]
     lignes = []
@@ -158,7 +165,6 @@ def combats(e, j):
                                                   carry_tf=("carry_tf", "sum"), assassin=("assassin", "sum"), kills_tf=("kill_tf", "sum")).reset_index()
     vict = e[e.tf].groupby(["match", "victime"]).combat.nunique().rename("morts_tf").reset_index().rename(columns={"victime": "participant"})
     # Où il meurt après 14 min : distance de sa propre base, de 0 (chez lui) à 1 (la base adverse).
-    equipe = j.set_index(["match", "participant"]).equipe
     d = e[(e.t_ms >= 14 * 60000) & (e.victime > 0)].copy()
     base = np.where([equipe.get((m, v)) == "b" for m, v in zip(d.match, d.victime)], 500.0, 14300.0)
     d["profondeur"] = np.clip(np.hypot(d.x - base, d.y - base) / 19500, 0, 1)
@@ -166,7 +172,14 @@ def combats(e, j):
     pres = pd.concat([k[k.tf][["match", "participant", "combat"]],
                       e[e.tf][["match", "victime", "combat"]].rename(columns={"victime": "participant"})]).drop_duplicates()
     pres = pres.groupby(["match", "participant"]).size().rename("combats").reset_index()
+    # Kills de son équipe en combat d'équipe : l'équipe du tueur, ou l'équipe opposée à la victime (tué par une tour…).
+    eq_v = np.array([equipe.get((m, v)) for m, v in zip(e.match, e.victime)])
+    eq_k = np.array([equipe.get((m, p)) if p > 0 else None for m, p in zip(e.match, e.participant)])
+    e["eq_tueur"] = np.where(eq_k != None, eq_k, np.where(eq_v == "b", "r", "b"))  # noqa: E711
+    kills_eq = e[e.tf].groupby(["match", "eq_tueur"]).size().rename("kills_tf_equipe").reset_index().rename(columns={"eq_tueur": "equipe"})
     sortie = par.merge(vict, on=["match", "participant"], how="outer").merge(pres, on=["match", "participant"], how="outer").fillna(0)
+    sortie["equipe"] = [equipe.get((m, p)) for m, p in zip(sortie.match, sortie.participant)]
+    sortie = sortie.merge(kills_eq, on=["match", "equipe"], how="left").fillna({"kills_tf_equipe": 0}).drop(columns="equipe")
     return sortie.merge(prof, on=["match", "participant"], how="left")
 
 
@@ -191,7 +204,7 @@ def mesures_joueurs(j, t, e):
     f["or_min"] = j.goldPerMinute
     f["minutes"] = mn
     f = f.merge(seul_sur_le_cote(t, j), on=["match", "participant"], how="left")
-    f = f.merge(combats(e, j), on=["match", "participant"], how="left").fillna({c: 0 for c in ("td", "tf_n", "sur_carry", "carry_tf", "assassin", "kills_tf", "morts_tf", "combats")})
+    f = f.merge(combats(e, j), on=["match", "participant"], how="left").fillna({c: 0 for c in ("td", "tf_n", "sur_carry", "carry_tf", "assassin", "kills_tf", "morts_tf", "combats", "kills_tf_equipe")})
     f["tf_10"] = f.tf_n / (f.minutes / 10)
     f["carry_tf_10"] = f.carry_tf / (f.minutes / 10)
     return f
@@ -204,10 +217,12 @@ def par_champion(f):
     g = f.groupby(["champion", "poste"])
     a = g[moy].mean()
     a["n"] = g.size()
-    s = g[["td", "sur_carry", "kills_tf", "tf_n", "combats"]].sum()
+    s = g[["td", "sur_carry", "kills_tf", "tf_n", "combats", "kills_tf_equipe"]].sum()
     a["part_carry"] = s.sur_carry / s.td.where(s.td > 0)
     a["td_par_combat"] = s.tf_n / s.combats.where(s.combats > 0)
     a["kills_par_combat"] = s.kills_tf / s.combats.where(s.combats > 0)
+    # Kills et assists en combat d'équipe : part des kills de son équipe en combat où il a un kill ou une assist.
+    a["kp_combat"] = s.tf_n / s.kills_tf_equipe.where(s.kills_tf_equipe > 0)
     a = a.reset_index()
     a["presence_tf_poste"] = a.tf_10 / a.groupby("poste").tf_10.transform("mean")
     a = a[a.n >= MIN_PARTIES].copy()
@@ -261,6 +276,19 @@ def classer(a_A, a_B, a_tout, refs):
     bilan, notes = {}, pd.DataFrame({"champion": a_tout.champion, "poste": a_tout.poste, "n": a_tout.n})
     for t in TYPES:
         ms = MESURES[t]
+        if t in DIRECTS:
+            m_ = DIRECTS[t]
+            rang = lambda a: 100 * a.groupby("poste")[m_].rank(pct=True)
+            n_A = pd.Series(rang(a_A).values, index=a_A.champion + "|" + a_A.poste)
+            n_B = pd.Series(rang(a_B).values, index=a_B.champion + "|" + a_B.poste)
+            communs = n_A.index.intersection(n_B.index)
+            notes[t] = rang(a_tout).values
+            sans_voir = {c: round(float(n_A[a_A.champion.values == c].max())) for c in sorted(refs[t]) if (a_A.champion == c).any()}
+            bilan[t] = {"poids": {m_: 1.0}, "references_sans_voir": sans_voir, "direct": "rang dans son poste",
+                        "accord_A_B": round(float(np.corrcoef(n_A[communs], n_B[communs])[0, 1]), 3),
+                        "meme_decision_A_B": round(float(np.mean((n_A[communs] >= SEUIL) == (n_B[communs] >= SEUIL))), 3),
+                        "postes_compares": int(len(communs))}
+            continue
         y = a_A.champion.isin(refs[t]).astype(int).values
         if y.sum() < 2:
             bilan[t] = {"erreur": "moins de 2 références"}

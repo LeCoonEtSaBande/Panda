@@ -14,4 +14,4 @@
 | bloqueur | 19 | 6 sur 7 (ratées : Skarner 22) | 100 % | temps de contrôle infligé +1.11, immobilisations par minute +1.32 |
 | dueliste | 19 | 3 sur 4 (ratées : Jax 65) | 98 % | solo kills +1.32, kills en infériorité numérique +0.56 |
 | splitpusher | 9 | 4 sur 4 | 94 % | seul sur une lane de côté, comparé aux champions de son poste +2.04 |
-| teamfighter | 17 | 1 sur 7 (ratées : Amumu 48, Aurelion Sol 53, Darius 17, Fiddlesticks 55, Malphite 52, Viktor 40) | 97 % | présence en combat d'équipe (comparée à son poste) +0.34, participations par combat +0.28, kills par combat +0.39, temps de contrôle infligé +0.87 |
+| teamfighter | 58 | 3 sur 7 (ratées : Amumu 67, Darius 30, Fiddlesticks 41, Viktor 69) | 87 % | kills et assists en combat d'équipe (part des kills de son équipe en combat) +1.00 |

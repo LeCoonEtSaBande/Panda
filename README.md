@@ -9,14 +9,14 @@ Elle ne garde **aucune copie des données** : elle les lit depuis `main`.
 
 ```
 bash analyse/preparer.sh            # récupère collecte/, donnees/, archives/ (main) et lolalytics/ (scraping), ignorés par git
-python3 analyse/catalogues/datadragon.py   # catalogue et sorts (fait aussi par le bouton « Mettre à jour le catalogue (Data Dragon) »)
-python3 analyse/types/classer.py         # types des champions (après validation du propriétaire)
+python3 analyse/catalogues/datadragon.py   # catalogue et sorts (fait aussi par le bouton « 3 · Data Dragon »)
+python3 analyse/types/classer.py         # types des champions (ses choix de validations.csv passent avant le calcul)
 python3 analyse/lanes/dynamique.py  # puis envahir.py, ganks.py, duels.py, duree_degats.py --lolalytics lolalytics/<patch>
 python3 analyse/export/exporter.py  # écrit analyse/export/assistant_donnees.json pour l'assistant
 python3 -m unittest discover -s analyse/tests
 ```
 
-Le bouton « Générer l'assistant Draft » (sur `main`) recalcule lui-même les lanes, les ganks, envahir, les duels, les dégâts et l'export sur les données à jour, puis génère la page. Le catalogue (Data Dragon) a son propre bouton ; la classification en types se relance à la main, après validation du propriétaire.
+Le bouton « 5 · Générer l'assistant Draft » (sur `main`) recalcule lui-même les lanes, les ganks, envahir, les duels, les dégâts, les types et l'export sur les données à jour, puis génère la page (sans committer ces recalculs ici). Le catalogue a son bouton (« 3 · Data Dragon »), le recuit aussi (« 4 · Recuit »).
 
 ## Les dossiers
 
@@ -29,7 +29,7 @@ Le bouton « Générer l'assistant Draft » (sur `main`) recalcule lui-même les
 | `analyse/contres/` | Le modèle des contres par lane : force de lane de chaque champion et effet propre de chaque paire, mesurés sur l'écart d'or à 15 min. |
 | `analyse/lanes/` | Ce que l'assistant calcule : or à 15 min par lane (`dynamique.py`), ganks réussis avant 15 min (`ganks.py`), envahir à 5, 10, 15 et 20 min (`envahir.py`), duels de tous les champions, chacun avec l'or et le niveau habituels de son poste, vérifiés sur B (`duels.py`), early/late et mix de dégâts (`duree_degats.py`). Résultats dans `lanes/resultats/`. |
 | `analyse/confirmation/` | Les confirmations sur C (parties jamais vues) et leurs résultats : `confirmation_C.py` (Lolalytics, lanes, ganks, envahir), `confirmer_duree_degats.py`, `confirmer_duels.py` (avec son propre découpage, `decoupage_duels.json`), `confirmer_pistes.py` (recuit). |
-| `analyse/recuit/` | Le recuit simulé n° 2 (pistes « scénarios » et « teamfight ») et son test au hasard, lancé par le bouton « Lancer un recuit simulé », confirmé par « Confirmer un recuit sur C ». Le recuit teamfight du 24/10/2026 n'a **pas été confirmé sur C**. |
+| `analyse/recuit/` | Le recuit simulé n° 2 (pistes « scénarios » et « teamfight ») et son test au hasard, lancé par le bouton « 4 · Recuit », qui enchaîne tout seul le recuit (A et B), la confirmation sur C s'il y a au moins 5 000 parties C (`apres_recuit.py`), puis un nouveau gel. Le recuit teamfight du 24/10/2026 n'a **pas été confirmé sur C**. |
 | `analyse/export/` | `exporter.py` : rassemble les modèles pour l'assistant et **ne garde que ce qui a passé sa vérification** (C pour les recuits et les analyses confirmées avant le 26/10/2026, B pour les duels et les types), avec les types, les sorts et les identifiants Riot. |
 | `analyse/tests/` | Tests (après `preparer.sh`). |
 
@@ -43,7 +43,8 @@ Le bouton « Générer l'assistant Draft » (sur `main`) recalcule lui-même les
 ## Le découpage A, B, C
 
 - **A** (apprendre, 3/4) et **B** (vérifier, 1/4) : l'archive et les parties de `donnees/parties.csv` jusqu'au **gel**, Émeraude-Diamant seulement, partagées par empreinte du numéro de partie (`base/decoupage.json`).
-- **C** (confirmer) : les parties collectées après le gel, jamais lues avant une confirmation. Une fois une confirmation faite, C est « consommé » : on pose un nouveau gel et les parties suivantes forment le nouveau C.
+- **C** (confirmer) : les parties collectées après le gel, jamais lues avant une confirmation. Une fois une confirmation faite, C est « consommé » : le bouton 4 pose lui-même un nouveau gel (même graine, chaque partie garde son tas), les parties suivantes forment le nouveau C.
+- Attention : les analyses « nos parties » qui lisent les tas avec `commun.drafts` (or à 15 min, ganks, envahir, duels) n'utilisent que A et B, donc les parties **jusqu'au gel** ; les parties collectées après le gel ne leur servent qu'au gel suivant. La classification en types, elle, partage toutes les parties en A et B.
 - Historique : gel n° 2 le 23/10/2026 (C lu le 24/10/2026 pour les confirmations ci-dessous), gel n° 3 le 24/10/2026 au soir (42 101 parties : C repart de zéro et se remplit avec les prochaines collectes).
 - Sans nouvelle collecte, on peut confirmer sur un C pris dans le temps (les parties les plus récentes), à condition de fixer les règles et les tests avant de lancer le calcul : c'est ce qui a été fait pour les duels (`confirmation/decoupage_duels.json`).
 
