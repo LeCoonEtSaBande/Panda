@@ -47,25 +47,26 @@ VALIDATIONS = ICI / "validations.csv"
 RESULTATS = ICI / "resultats"
 CATALOGUE = ANALYSE / "catalogues" / "catalogue_unifie.csv"
 SEUIL = 50
-MAX_TYPES = 3      # le propriétaire donne 1 à 3 types à presque chaque champion (4 une seule fois sur 65)
+MAX_TYPES = 3      # champion pas encore revu : 3 types au plus (les mieux notés)
+FRAGILE = -0.5     # fragile : dégâts encaissés et atténués par minute à plus d'un demi-écart-type sous la moyenne des champions
 MIN_PARTIES = 150
 POSTES = ("top", "jgl", "mid", "adc", "sup")
 SORTS = ANALYSE / "catalogues" / "sorts.csv"
 
-# Les mesures de chaque type et la régularisation (C), choisies le 26/10/2026 sur les 65 champions revus par le
+# Les mesures de chaque type et la régularisation (C), choisies le 26/10/2026 sur les 173 champions revus par le
 # propriétaire : la combinaison de 1 à 3 mesures (parmi celles qui ont du sens pour le type) qui retrouve le mieux ses
-# choix sans les avoir vus. Justesse sans les voir : 85 à 100 % selon le type (voir resultats/types.md).
+# choix sans les avoir vus (justesse 87 à 99 % selon le type, voir resultats/types.md).
 MESURES = {
-    "carry": (["part_adc", "or_min_p", "profondeur_p"], 3.0),
-    "enchanteur": (["sauve", "boucliers_allies_min", "encaisse_min_p"], 0.3),
-    "assassin": (["en_inferiorite_p", "part_adc", "encaisse_min"], 3.0),
-    "plongeur": (["profondeur", "assassin_p", "batiments_min_p"], 0.3),
-    "attrapeur": (["pick_kill", "part_sup", "part_degats"], 0.3),
-    "tank": (["encaisse_min"], 1.0),
-    "bloqueur": (["cc_min", "immob_min", "encaisse_min_p"], 0.3),
-    "dueliste": (["solo", "solo_p", "encaisse_min"], 1.0),
-    "splitpusher": (["seul_cote_p", "batiments_min_p", "n_protection"], 0.3),
-    "teamfighter": (["kp_combat_p", "kills_par_combat", "dpm"], 3.0),
+    "carry": (["part_adc", "or_min_p", "profondeur_p"], 0.3),
+    "enchanteur": (["sauve", "encaisse_min_p"], 3.0),
+    "assassin": (["assassin_p", "part_top", "part_adc"], 3.0),
+    "plongeur": (["profondeur_p", "encaisse_min", "batiments_min_p"], 0.3),
+    "attrapeur": (["pick_kill", "cc_min", "n_controle"], 0.3),
+    "tank": (["part_subis", "encaisse_min", "assassin_p"], 3.0),
+    "bloqueur": (["cc_min", "encaisse_min_p", "batiments_min_p"], 0.3),
+    "dueliste": (["solo_p", "seul_cote", "encaisse_min"], 1.0),
+    "splitpusher": (["seul_cote_p", "n_protection", "part_top"], 1.0),
+    "teamfighter": (["kp_combat_p", "kills_par_combat_p", "dpm"], 3.0),
 }
 # Les mesures de base, chacune aussi comparée aux champions de son poste (suffixe _p).
 BASE = ["part_degats", "part_subis", "encaisse_min", "soins_allies_min", "boucliers_allies_min", "cc_min", "immob_min",
@@ -89,7 +90,8 @@ LIBELLES = {
     "kp_combat": "kills et assists en combat d'équipe (part des kills de son équipe en combat)",
     "tf_10": "kills et assists en combat d'équipe, par 10 minutes",
     "part_adc": "part de ses parties en ADC", "part_sup": "part de ses parties en support",
-    "n_protection": "nombre de sorts de protection (Data Dragon)", "batiments_min": "dégâts aux bâtiments par minute",
+    "n_protection": "nombre de sorts de protection (Data Dragon)", "n_controle": "nombre de sorts de contrôle (Data Dragon)",
+    "part_top": "part de ses parties en top", "batiments_min": "dégâts aux bâtiments par minute",
 }
 
 
@@ -323,6 +325,8 @@ def classer(x_A, x_B, x_tout, validations, refs):
         bilan[t] = {"poids": {c: round(float(w), 2) for c, w in zip(ms, m.coef_[0])}, "C": C, "revus": len(revus),
                     "oui_retrouves": tp, "oui": int(y.sum()), "faux_oui": fp, "justesse": round(float((d == y).mean()), 3),
                     "erreurs": [c for c, dd, yy in zip(revus, d, y) if dd != yy],
+                    "en_plus": sorted([[c, round(100 * v)] for c, v, yy in zip(revus, sans_voir, y) if v >= SEUIL / 100 and not yy], key=lambda x: -x[1]),
+                    "en_moins": sorted([[c, round(100 * v)] for c, v, yy in zip(revus, sans_voir, y) if v < SEUIL / 100 and yy], key=lambda x: x[1]),
                     "meme_decision_A_B": round(float(np.mean((n_A[communs] >= SEUIL / 100) == (n_B[communs] >= SEUIL / 100))), 3)}
     return notes, bilan
 
@@ -341,12 +345,15 @@ def main():
     postes = a_T.groupby("champion").apply(lambda g: ", ".join(f"{p} {int(n)}" for p, n in sorted(zip(g.poste, g.n), key=lambda x: -x[1])),
                                            include_groups=False)
     parties = a_T.groupby("champion").n.sum()
+    # Fragile : encaisse peu (dégâts subis et atténués par minute, en logarithme), comparé à tous les champions.
+    encaisse = (x_T["encaisse_min"] - x_T["encaisse_min"].mean()) / x_T["encaisse_min"].std()
     RESULTATS.mkdir(parents=True, exist_ok=True)
     with open(RESULTATS / "notes.csv", "w", encoding="utf-8", newline="") as fo:
         w = csv.writer(fo, delimiter=";", lineterminator="\n")
-        w.writerow(["champion", "postes", "parties", "revu"] + list(TYPES))
+        w.writerow(["champion", "postes", "parties", "revu", "fragile", "encaisse_z"] + list(TYPES))
         for c in sorted(notes.index, key=str.lower):
-            w.writerow([c, postes[c], int(parties[c]), "oui" if c in validations else ""] + [round(notes[t][c]) if t in notes else "" for t in TYPES])
+            w.writerow([c, postes[c], int(parties[c]), "oui" if c in validations else "", "oui" if encaisse[c] < FRAGILE else "",
+                        round(float(encaisse[c]), 2)] + [round(notes[t][c]) if t in notes else "" for t in TYPES])
 
     with open(CATALOGUE, encoding="utf-8", newline="") as fi:
         lecteur = csv.DictReader(fi, delimiter=";")
@@ -375,7 +382,9 @@ def main():
     (RESULTATS / "types.json").write_text(json.dumps(bilan, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     texte = ["# Types des champions", "",
              f"- Appris sur les choix du propriétaire : {len(validations)} champions revus (10 types chacun), plus ses références ; "
-             f"mesures du tas A, vérifiées sur B. Type proposé à partir de {SEUIL} sur 100, {MAX_TYPES} au plus par champion (les mieux notés), au moins un ; un champion revu garde ses choix.",
+             f"mesures du tas A, vérifiées sur B. Un champion revu garde ses choix ; un autre prend les types à {SEUIL} sur 100 ou plus ({MAX_TYPES} au plus, au moins un).",
+             f"- L'assistant affiche Carry ou Enchanteur, plus les deux autres styles les mieux notés de chaque champion ; « fragile » (cible même sans être carry ni enchanteur) : "
+             f"encaisse par minute à plus d'un demi-écart-type sous la moyenne des champions ({sum(encaisse < FRAGILE)} champions).",
              f"- Parties de 15 min et plus : A {int((f.tas == 'A').sum() / 10)}, B {int((f.tas == 'B').sum() / 10)} environ ; postes avec au moins {MIN_PARTIES} parties.", "",
              "| Type | Champions retenus | Ses oui retrouvés sans les voir | Faux oui | Justesse sans les voir | Même décision A et B | Mesures (poids) |",
              "|---|---|---|---|---|---|---|"]
@@ -387,8 +396,13 @@ def main():
         nb = sum(1 for l in lignes if l[t] == "oui")
         texte.append(f"| {t} | {nb} | {b['oui_retrouves']} sur {b['oui']} | {b['faux_oui']} | {100 * b['justesse']:.0f} % | "
                      f"{100 * b['meme_decision_A_B']:.0f} % | " + ", ".join(f"{libelle(m)} {w:+.2f}" for m, w in b["poids"].items()) + " |")
-    texte += ["", "Erreurs sans les voir (le calcul seul se tromperait ; tes choix restent appliqués) :", ""]
-    texte += [f"- {t} : {', '.join(bilan[t]['erreurs']) or 'aucune'}" for t in TYPES if "erreurs" in bilan.get(t, {})]
+    texte += ["", "Ce que l'algorithme voit autrement que le propriétaire (note sans avoir vu ses choix ; ses choix restent appliqués) :", ""]
+    for t in TYPES:
+        b = bilan.get(t, {})
+        if "en_plus" not in b:
+            continue
+        texte.append(f"- **{t}** : en plus de tes choix : {', '.join(f'{c} {n}' for c, n in b['en_plus']) or 'aucun'} ; "
+                     f"tes oui qu'il ne voit pas : {', '.join(f'{c} {n}' for c, n in b['en_moins']) or 'aucun'}")
     (RESULTATS / "types.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
     print("\n".join(texte))
     return 0

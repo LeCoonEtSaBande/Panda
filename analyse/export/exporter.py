@@ -33,6 +33,8 @@ import contres  # noqa: E402
 
 CATALOGUE = ANALYSE / "catalogues" / "catalogue_unifie.csv"          # les 10 types (classification) et l'identifiant Riot
 ANCIEN = ANALYSE / "catalogues" / "ancien_catalogue_2026-10-24.csv"  # catégories de jungler des ganks et d'envahir
+NOTES = ANALYSE / "types" / "resultats" / "notes.csv"                # notes de chaque type, et « fragile »
+STYLES_AFFICHES = 2                                                   # en plus de Carry ou Enchanteur
 SORTS = ANALYSE / "catalogues" / "sorts.csv"                         # sorts par catégorie (Data Dragon)
 LANES_RES = ANALYSE / "lanes" / "resultats"
 RECUIT_RES = ANALYSE / "recuit" / "resultats"
@@ -46,16 +48,29 @@ TYPES = ("carry", "enchanteur", "assassin", "plongeur", "attrapeur", "tank", "bl
 
 
 def catalogue():
-    """Pour chaque champion : ses types (catalogue unifié) et sa catégorie de jungler de l'ancien catalogue
-    (« groupe », seulement pour les ganks et envahir, confirmés avec ces catégories)."""
+    """Pour chaque champion : ses types et sa catégorie de jungler de l'ancien catalogue (« groupe », seulement pour les
+    ganks et envahir, confirmés avec ces catégories).
+    - « tous » : tous ses types du catalogue unifié ;
+    - « types » : ceux que l'assistant affiche : Carry ou Enchanteur s'il l'est, plus ses deux autres types les mieux notés
+      (notes de analyse/types/resultats/notes.csv), choix du propriétaire du 26/10/2026 ;
+    - « fragile » : il encaisse peu (notes.csv) ; l'assistant en fait une cible même s'il n'est ni carry ni enchanteur."""
+    notes = {}
+    if NOTES.exists():
+        with open(NOTES, encoding="utf-8", newline="") as f:
+            notes = {l["champion"]: l for l in csv.DictReader(f, delimiter=";")}
+    note = lambda c, t: float((notes.get(c) or {}).get(t) or 0)
     sortie = {}
     with open(CATALOGUE, encoding="utf-8", newline="") as f:
         for l in csv.DictReader(f, delimiter=";"):
-            sortie[l["champion"]] = {"types": [t for t in TYPES if l.get(t) == "oui"], "id": l.get("id_riot", ""), "groupe": ""}
+            c, tous = l["champion"], [t for t in TYPES if l.get(t) == "oui"]
+            cible = [t for t in ("carry", "enchanteur") if t in tous]
+            autres = sorted((t for t in tous if t not in cible), key=lambda t: (-note(c, t), TYPES.index(t)))[:STYLES_AFFICHES]
+            sortie[c] = {"types": cible + autres, "tous": tous, "id": l.get("id_riot", ""), "groupe": "",
+                         "fragile": (notes.get(c) or {}).get("fragile") == "oui" and "tank" not in tous}
     if ANCIEN.exists():
         with open(ANCIEN, encoding="utf-8", newline="") as f:
             for l in csv.DictReader(f, delimiter=";"):
-                sortie.setdefault(l["champion"], {"types": [], "id": "", "groupe": ""})["groupe"] = l["groupe_teamfight"]
+                sortie.setdefault(l["champion"], {"types": [], "tous": [], "id": "", "groupe": "", "fragile": False})["groupe"] = l["groupe_teamfight"]
     return sortie
 
 
