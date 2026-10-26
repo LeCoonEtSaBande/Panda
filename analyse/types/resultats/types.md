@@ -19,13 +19,13 @@
 
 Ce que l'algorithme voit autrement que le propriétaire (note sans avoir vu ses choix ; ses choix restent appliqués) :
 
-- **carry** : en plus de tes choix : Zyra 63, Urgot 55, Zilean 55, Bard 54, Shyvana 54, Sona 53 ; tes oui qu'il ne voit pas : Cassiopeia 18, Kindred 26, Vladimir 27, Viego 29, Viktor 34, Azir 37, Fiddlesticks 38, Orianna 45, Brand 46
-- **enchanteur** : en plus de tes choix : Nilah 97, Senna 67 ; tes oui qu'il ne voit pas : aucun
-- **assassin** : en plus de tes choix : Pyke 100, Annie 80, Aurora 78, Xerath 76, Azir 67, Kindred 66, Graves 65, Hecarim 62, Bel'Veth 57, Senna 57, Vel'Koz 57, Lux 55 ; tes oui qu'il ne voit pas : Sylas 29, Zoe 40
+- **carry** : en plus de tes choix : Zyra 63, Urgot 55, Zilean 55, Bard 54, Shyvana 54 ; tes oui qu'il ne voit pas : Cassiopeia 18, Kindred 26, Vladimir 27, Viego 29, Viktor 34, Azir 37, Fiddlesticks 38, Orianna 45, Brand 46
+- **enchanteur** : en plus de tes choix : Senna 67 ; tes oui qu'il ne voit pas : aucun
+- **assassin** : en plus de tes choix : Annie 80, Aurora 78, Xerath 76, Azir 67, Kindred 66, Graves 65, Hecarim 62, Bel'Veth 57, Senna 57, Vel'Koz 57, Lux 55 ; tes oui qu'il ne voit pas : Sylas 29, Zoe 40
 - **plongeur** : en plus de tes choix : Dr. Mundo 99, Illaoi 99, Sion 99, Rengar 85, Xin Zhao 77, Bel'Veth 70, Talon 70, K'Sante 68, Kalista 68, Ekko 67, Rell 64, Taric 63, Poppy 60, Briar 58, Jarvan IV 56, Aatrox 53, Leona 52, Kayn bleu 51, Sylas 51 ; tes oui qu'il ne voit pas : Pantheon 18, Vi 40, Urgot 45, Mordekaiser 48
-- **attrapeur** : en plus de tes choix : Maokai 99, Rell 98, Zyra 91, Braum 89, Neeko 82, Galio 81, Lulu 79, Poppy 79, Taric 78, Briar 74, Fiddlesticks 74, Soraka 65, Ashe 60, Lissandra 59, Karma 58, Yuumi 57, Taliyah 55 ; tes oui qu'il ne voit pas : Tahm Kench 27, Vi 43
+- **attrapeur** : en plus de tes choix : Maokai 99, Zyra 91, Braum 89, Neeko 82, Galio 81, Poppy 79, Taric 78, Briar 74, Fiddlesticks 74, Ashe 60, Lissandra 59, Karma 58, Taliyah 55 ; tes oui qu'il ne voit pas : Tahm Kench 27, Vi 43
 - **tank** : en plus de tes choix : Galio 96, Alistar 89, Shyvana 84, Poppy 83, Singed 76, Nunu & Willump 67, Renekton 66, Kled 64, Zaahen 60, Garen 59, Urgot 59, Volibear 58, Taric 57, Jarvan IV 52, Trundle 52, Ambessa 51 ; tes oui qu'il ne voit pas : Mordekaiser 17, Maokai 42
-- **bloqueur** : en plus de tes choix : Nocturne 100, Swain 96, Briar 79, Aurelion Sol 77, Lissandra 69, Cassiopeia 66, Lillia 58, Sylas 53 ; tes oui qu'il ne voit pas : Lulu 22, Syndra 25, Pyke 27, Vi 39, Rek'Sai 41, Gnar 46
+- **bloqueur** : en plus de tes choix : Swain 96, Briar 79, Aurelion Sol 77, Lissandra 69, Cassiopeia 66, Lillia 58, Sylas 53 ; tes oui qu'il ne voit pas : Lulu 22, Syndra 25, Pyke 27, Vi 39, Rek'Sai 41, Gnar 46
 - **dueliste** : en plus de tes choix : Rengar 96, Yorick 84, Dr. Mundo 83, Talon 82, Katarina 80, Tahm Kench 80, Zed 79, Kayn bleu 74, Pantheon 59, LeBlanc 58, Fizz 57, Jayce 54 ; tes oui qu'il ne voit pas : Aurora 11, Nocturne 35
-- **splitpusher** : en plus de tes choix : Nilah 98, Shen 97, Zaahen 93, Kassadin 85, Hecarim 81, Bard 68, Gangplank 67, Vayne 56, Nocturne 54, Taric 54 ; tes oui qu'il ne voit pas : aucun
+- **splitpusher** : en plus de tes choix : Shen 97, Zaahen 93, Kassadin 85, Hecarim 81, Bard 68, Gangplank 67, Vayne 56, Nocturne 54, Taric 54 ; tes oui qu'il ne voit pas : aucun
 - **teamfighter** : en plus de tes choix : Alistar 96, Akshan 91, Ashe 87, Jhin 80, Locke 76, Zoe 70, Renekton 52 ; tes oui qu'il ne voit pas : Darius 5, Neeko 5, Viego 10, Brand 15, Syndra 20, Azir 21, Gragas 25, Vel'Koz 27, Vladimir 29, Master Yi 32, Mel 33, Tahm Kench 33, Zaahen 37, Graves 45, Varus 46, Fiddlesticks 49, Veigar 49

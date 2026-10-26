@@ -52,6 +52,7 @@ FRAGILE = -0.5     # fragile : dégâts encaissés et atténués par minute à p
 MIN_PARTIES = 150
 POSTES = ("top", "jgl", "mid", "adc", "sup")
 SORTS = ANALYSE / "catalogues" / "sorts.csv"
+REFUS = set()      # (champion, type) refusés exprès par le propriétaire (validations.csv), rempli par main()
 
 # Les mesures de chaque type et la régularisation (C), choisies le 26/10/2026 sur les 173 champions revus par le
 # propriétaire : la combinaison de 1 à 3 mesures (parmi celles qui ont du sens pour le type) qui retrouve le mieux ses
@@ -283,15 +284,23 @@ def lire_references():
 
 
 def lire_validations():
-    """{champion: {type: True | False}} : les choix du propriétaire, champion par champion (10 types pour un champion revu)."""
+    """{champion: {type: True | False}} : les choix du propriétaire, champion par champion (10 types pour un champion revu).
+    « oui » ; « non » = refusé exprès ; case vide = pas coché, compté non aussi."""
     if not VALIDATIONS.exists():
         return {}
     v = defaultdict(dict)
     with open(VALIDATIONS, encoding="utf-8", newline="") as f:
         for l in csv.DictReader(f, delimiter=";"):
-            if l.get("choix") in ("oui", "non"):
-                v[l["champion"]][l["type"]] = l["choix"] == "oui"
+            v[l["champion"]][l["type"]] = l.get("choix") == "oui"
     return dict(v)
+
+
+def lire_refus():
+    """{(champion, type)} refusés exprès par le propriétaire : jamais montrés comme « vu en plus par les parties »."""
+    if not VALIDATIONS.exists():
+        return set()
+    with open(VALIDATIONS, encoding="utf-8", newline="") as f:
+        return {(l["champion"], l["type"]) for l in csv.DictReader(f, delimiter=";") if l.get("choix") == "non"}
 
 
 def classer(x_A, x_B, x_tout, validations, refs):
@@ -325,7 +334,8 @@ def classer(x_A, x_B, x_tout, validations, refs):
         bilan[t] = {"poids": {c: round(float(w), 2) for c, w in zip(ms, m.coef_[0])}, "C": C, "revus": len(revus),
                     "oui_retrouves": tp, "oui": int(y.sum()), "faux_oui": fp, "justesse": round(float((d == y).mean()), 3),
                     "erreurs": [c for c, dd, yy in zip(revus, d, y) if dd != yy],
-                    "en_plus": sorted([[c, round(100 * v)] for c, v, yy in zip(revus, sans_voir, y) if v >= SEUIL / 100 and not yy], key=lambda x: -x[1]),
+                    "en_plus": sorted([[c, round(100 * v)] for c, v, yy in zip(revus, sans_voir, y) if v >= SEUIL / 100 and not yy and (c, t) not in REFUS],
+                                     key=lambda x: -x[1]),
                     "en_moins": sorted([[c, round(100 * v)] for c, v, yy in zip(revus, sans_voir, y) if v < SEUIL / 100 and yy], key=lambda x: x[1]),
                     "meme_decision_A_B": round(float(np.mean((n_A[communs] >= SEUIL / 100) == (n_B[communs] >= SEUIL / 100))), 3)}
     return notes, bilan
@@ -340,6 +350,7 @@ def main():
     a_A, a_B, a_T = par_champion(f[f.tas == "A"]), par_champion(f[f.tas == "B"]), par_champion(f)
     x_A, x_B, x_T = table_champions(a_A), table_champions(a_B), table_champions(a_T)
     validations, refs = lire_validations(), lire_references()
+    REFUS.update(lire_refus())
     notes, bilan = classer(x_A, x_B, x_T, validations, refs)
 
     postes = a_T.groupby("champion").apply(lambda g: ", ".join(f"{p} {int(n)}" for p, n in sorted(zip(g.poste, g.n), key=lambda x: -x[1])),
