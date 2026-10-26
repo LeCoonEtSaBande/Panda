@@ -111,8 +111,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .cles dt{font-family:var(--titre);color:var(--doux)}
 .cles dd{margin:0}
 @media (max-width:520px){.cles{grid-template-columns:1fr;gap:2px}.cles dd{margin-bottom:8px}}
-.recap-corps{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
-@media (max-width:900px){.recap-corps{grid-template-columns:1fr}}
+.recap-haut{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:16px;align-items:start}
+@media (max-width:900px){.recap-haut{grid-template-columns:1fr}}
+.plan-gras dd{font-weight:600}
+.plan-gras dd .petit{font-weight:400}
 .carte{position:relative;width:100%;max-width:560px;aspect-ratio:1/1;margin:0 auto;border-radius:14px;overflow:hidden}
 .carte svg{position:absolute;inset:0;width:100%;height:100%}
 .carte .route{stroke:#d9c9a3;stroke-width:8.5;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
@@ -123,6 +125,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .carte .chip .petit{color:#5a6a74}
 .carte .chip.devant{border-left-color:#21844b} .carte .chip.derriere{border-left-color:#c0392b}
 .carte .chip.moi{outline:2px solid var(--nous);outline-offset:1px}
+.recap-haut .carte .chip{font-size:.66rem;padding:2px 6px}
 @media (max-width:480px){.carte .chip{font-size:.62rem;padding:2px 5px}}
 .n{color:var(--nous);font-weight:600} .e{color:var(--eux);font-weight:600}
 .carte .chip .n{color:#1f6fbf} .carte .chip .e{color:#c0452c}
@@ -130,13 +133,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .barre-j{height:12px;border-radius:6px;background:var(--eux);overflow:hidden;position:relative;display:block}
 .barre-j span{display:block;height:100%;background:var(--nous)}
 .barre-j i{position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(255,255,255,.85)}
-table.ganks{border-collapse:collapse;width:100%;font-size:.85rem}
-table.ganks th,table.ganks td{padding:4px 6px;text-align:left} table.ganks th{font-weight:600;color:var(--doux);font-size:.75rem}
-table.ganks tr+tr td,table.ganks tbody tr:first-child td{border-top:1px solid var(--ligne)}
-.mini{display:inline-flex;align-items:center;gap:6px} .mini .b{width:64px;height:7px;border-radius:4px;background:var(--carte2);overflow:hidden;display:inline-block}
-.mini .b span{display:block;height:100%} .fort{font-weight:700}
 .qui-cadre{overflow-x:auto}
-.qui{display:grid;grid-template-columns:96px repeat(5,minmax(150px,1fr));gap:8px;min-width:880px}
+.qui{display:grid;grid-template-columns:96px repeat(5,minmax(110px,1fr));gap:8px;min-width:660px}
+.ch .emo{font-size:1.35rem;letter-spacing:.12em;line-height:1.2}
 .qui .cote{display:flex;align-items:center;font-family:var(--titre);border-radius:8px;padding:8px;color:#fff}
 .qui .cote.eux{background:var(--eux)} .qui .cote.nous{background:var(--nous)}
 :root{--fam-cible:#c98a00;--fam-menace:#8a3fa3;--fam-tank:#2e8b57;--fam-protecteur:#2f7fbf;--fam-autre:var(--ligne)}
@@ -156,6 +155,10 @@ table.ganks tr+tr td,table.ganks tbody tr:first-child td{border-top:1px solid va
 .bloc{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .bloc.eux{border-top:4px solid var(--eux)} .bloc.nous{border-top:4px solid var(--nous)}
 .b-ligne{display:grid;grid-template-columns:140px 1fr;gap:10px;padding:8px 10px;border-radius:8px;background:var(--carte2)}
+.b-titre{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--doux);margin-top:2px}
+.cibles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.cible{background:var(--carte2);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:3px;font-size:.84rem;min-width:0;border-top:3px solid var(--fam-cible)}
+.cible .qui-c{font-family:var(--titre);font-size:.95rem}
 @media (max-width:520px){.b-ligne{grid-template-columns:1fr}}
 .qui-c small{display:block;color:var(--doux);font-weight:400}
 .obst{display:flex;flex-direction:column;gap:3px;font-size:.84rem;min-width:0}
@@ -241,19 +244,6 @@ table.ganks tr+tr td,table.ganks tbody tr:first-child td{border-top:1px solid va
           l'apprentissage n'a jamais vues (tas B). Ordres de grandeur, pas des certitudes.</p></details>
       </section>
 
-      <section class="panneau">
-        <h2 id="titre-plan">Comment jouer</h2>
-        <div id="tempo" style="display:flex;flex-direction:column;gap:6px"></div>
-        <div class="lanes" id="lanes"></div>
-        <div id="duels" style="display:flex;flex-direction:column;gap:6px"></div>
-        <ul class="conseils" id="conseils"></ul>
-        <details class="aide"><summary>Comment lire ces chiffres</summary>
-          <p>Or à 15 min : écart attendu d'après les champions de la lane. Gank réussi : chance que le jungler participe à au moins un kill
-          sur cette lane avant 15 min. Selon la durée : chance de gagner due au seul tempo des deux compos (early ou late), à draft égale par
-          ailleurs. 1 contre 1 : si deux champions se croisent seuls, chance de gagner à or et niveau égaux (forces vérifiées
-          seulement, les autres champions comptent comme moyens). Envahir : seulement quand c'est confirmé pour ce type de jungler ; c'est ce que font les junglers qui gagnent, à écart
-          d'or égal, pas une cause prouvée. Nos parties Émeraude-Diamant : appris sur le tas A, et seulement ce qui est vérifié sur le tas B (parties jamais vues par l'apprentissage).</p></details>
-      </section>
     </div>
   </div>
 
@@ -264,22 +254,33 @@ table.ganks tr+tr td,table.ganks tbody tr:first-child td{border-top:1px solid va
         <div class="boutons"><button type="button" id="modifier">Modifier la draft</button>
           <button type="button" id="nouvelle" class="principal">Nouvelle draft</button></div>
       </div>
-      <section class="panneau"><h2>Le plan</h2><dl class="cles" id="recap-plan"></dl></section>
-      <section class="panneau"><h2>Qui est qui</h2><div id="qui-est-qui"></div>
-        <p class="note">🎯 cible prioritaire (Carry, Enchanteur) · 💀 menace pour vos cibles (Assassin, Plongeur, Attrapeur) · 💚 tank · 🛡️ protecteur (Bloqueur).
-          Types : 🎯 Carry, ✨ Enchanteur, 🗡️ Assassin, 🤿 Plongeur, 🪝 Attrapeur, 💚 Tank, 🛡️ Bloqueur, ⚔️ Dueliste, ♜ Splitpusher, 🧑‍🤝‍🧑 Teamfighter.
-          Chaque sort est rangé une seule fois : contrôle, protection ou déplacement (« fuite » pour une cible, « mobilité » pour un assassin ou un plongeur).</p></section>
-      <div class="blocs" id="blocs"></div>
-      <div class="recap-corps">
+      <div class="recap-haut">
+        <section class="panneau"><h2>Le plan</h2><dl class="cles plan-gras" id="recap-plan"></dl></section>
         <section class="panneau">
           <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline">
             <h2>Sur la carte</h2><label class="petit"><input type="checkbox" id="cote-rouge"> on est côté rouge <span id="cote-auto"></span></label>
           </div>
           <div class="carte" id="carte"></div>
-          <div id="carte-bas" style="display:flex;flex-direction:column;gap:8px"></div>
+          <div id="carte-bas" style="display:flex;flex-direction:column;gap:6px"></div>
         </section>
-        <section class="panneau" id="recap-duels-panneau"><div id="recap-duels" style="display:flex;flex-direction:column;gap:6px"></div></section>
       </div>
+      <section class="panneau" id="comment-jouer">
+        <h2 id="titre-plan">Comment jouer</h2>
+        <div id="tempo" style="display:flex;flex-direction:column;gap:6px"></div>
+        <div class="lanes" id="lanes"></div>
+        <div id="duels" style="display:flex;flex-direction:column;gap:6px"></div>
+        <ul class="conseils" id="conseils"></ul>
+        <details class="aide"><summary>Comment lire ces chiffres</summary>
+          <p>Or à 15 min : écart attendu d'après les champions de la lane. Gank réussi : chance que le jungler participe à au moins un kill
+          sur cette lane avant 15 min. Selon la durée : chance de gagner due au seul tempo des deux compos (early ou late), à draft égale par
+          ailleurs. 1 contre 1 : si deux champions se croisent seuls, chance de gagner, chacun avec l'or et le niveau habituels de son poste (forces vérifiées
+          seulement, les autres champions comptent comme moyens). Nos parties Émeraude-Diamant : appris sur le tas A, et seulement ce qui est vérifié sur le tas B (parties jamais vues par l'apprentissage).</p></details>
+      </section>
+      <div class="blocs" id="blocs"></div>
+      <section class="panneau"><h2>Qui est qui</h2><div id="qui-est-qui"></div>
+        <p class="note">Au-dessus de chaque nom : 🎯 cible (Carry, Enchanteur ou fragile) · 💀 menace pour vos cibles (Assassin, Plongeur, Attrapeur) · 💚 tank · 🛡️ protecteur (Bloqueur).
+          Styles : 🎯 Carry, ✨ Enchanteur, 🗡️ Assassin, 🤿 Plongeur, 🪝 Attrapeur, 💚 Tank, 🛡️ Bloqueur, ⚔️ Dueliste, ♜ Splitpusher, 🧑‍🤝‍🧑 Teamfighter
+          (Carry ou Enchanteur, plus ses deux styles principaux). Survole un champion pour voir ses styles en toutes lettres.</p></section>
     </div>
   </div>
 
@@ -566,12 +567,8 @@ function dessinerTempo(nous, eux) {
   const S = a.s - b.s, cases = [["moins de 20 min", -1.25], ["20-25 min", -0.75], ["25-30 min", -0.25], ["30-35 min", 0.25], ["35 min et plus", 1.0]];
   const cellules = cases.map(([nom, t]) => { const v = 50 + points(DD.k * S * t);
     return `<div><span class="petit">${nom}</span><b class="chiffre ${cls((v - 50) / 2)}">${v.toFixed(0)} %</b></div>`; }).join("");
-  const ecart = points(DD.k * S);
-  const verdict = Math.abs(ecart) < 1.5 ? "Les deux compos ont à peu près le même tempo : la durée ne change presque rien."
-    : (S > 0 ? `Votre compo est <b>${Math.abs(ecart) < 4 ? "un peu " : ""}plus late</b> : pas de combat décisif avant 25 min, farm et vision, la partie tourne pour vous après 30 min.`
-             : `Votre compo est <b>${Math.abs(ecart) < 4 ? "un peu " : ""}plus early</b> : prenez l'avantage avant 25 min (ganks, plaques, dragons, héraut) et cherchez à finir avant 30 min.`);
   el.innerHTML = `<span class="petit">Chance de gagner selon la durée de la partie (seul effet du tempo des deux compos${a.n < 5 || b.n < 5 ? ", compos incomplètes" : ""})</span>
-    <div class="tempo">${cellules}</div><p class="note" style="font-size:.88rem;color:var(--texte)">${verdict}</p>`;
+    <div class="tempo">${cellules}</div>`;
 }
 function dessinerReco() {
   const R = etat.poste, nous = equipe("nous"), eux = equipe("eux"), pr = profil();
@@ -591,11 +588,10 @@ function dessinerReco() {
       <span class="score ${cls(r.total)}" title="Points de victoire estimés">≈ ${pts(r.total)}</span>
       <span class="puces">${r.puces.map(p => `<span class="puce ${cls(p.v)}${p.detail ? " detail" : ""}">${esc(p.t)}</span>`).join("")}</span>
     </button>`).join("") : `<p class="petit">Aucun champion à proposer pour ce poste.</p>`;
-  dessinerPlan(R, nous, eux);
   dessinerMix();
 }
-function dessinerPlan(R, nous, eux) {
-  const c = etat.choix, avec = Object.assign({}, nous, c ? {[R]: c} : {}), maLane = laneDuPoste(R);
+function dessinerPlan(R, nous, eux, c) {
+  const avec = Object.assign({}, nous, c ? {[R]: c} : {}), maLane = laneDuPoste(R);
   document.getElementById("titre-plan").textContent = c ? `Comment jouer ${c} en ${NOM_POSTE[R]}` : "Comment jouer";
   const infos = {}, cartes = [];
   for (const [lane, roles] of LANES) {
@@ -629,12 +625,6 @@ function dessinerPlan(R, nous, eux) {
     if (g.length) conseils.push(`Où ton gank a le plus de chances de finir en kill : <b>${g[0]}</b> (${pc(infos[g[0]].pg)}), puis ${g.slice(1).map(l => `${l} (${pc(infos[l].pg)})`).join(", ")}.`);
     const m = ["top", "mid", "bot"].filter(l => infos[l].pe !== null).sort((a, b) => infos[b].pe - infos[a].pe);
     if (m.length) conseils.push(`Lane la plus exposée aux ganks adverses : <b>${m[0]}</b> (${pc(infos[m[0]].pe)}).`);
-    if (c) {
-      const inv = envahirConfirme(groupe(c));
-      if (inv.length) conseils.push(`Envahis la jungle adverse vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> : pour un jungler ${groupe(c)}, `
-        + `ça va avec ${inv.map(x => pts(x.points)).join(" / ")} points de victoire, à écart d'or égal.`);
-      if (infos.jgl.o) conseils.push(`Or à 15 min face à leur jungler : ${infos.jgl.o.proba >= 0.5 ? "devant" : "derrière"} dans ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} des cas (farm, kills et objectifs ; ce n'est pas l'issue d'un combat entre vous deux).`);
-    }
   } else {
     const i = infos[maLane];
     if (i.o) conseils.push(`Ta lane est annoncée ${i.o.or >= 0 ? "devant" : "derrière"} à 15 min : <b>${pc(i.o.proba)}</b> de chances d'être devant (${pts(i.o.or / 1000).replace(".", ",")} k or attendus).`);
@@ -644,10 +634,6 @@ function dessinerPlan(R, nous, eux) {
     if (i.pg !== null) conseils.push(`Chance que ton jungler (${avec.jgl}) réussisse un gank sur ta lane : <b>${pc(i.pg)}</b>.`);
     const autresDevant = devant.filter(l => l !== maLane);
     if (autresDevant.length) conseils.push(`Autres lanes annoncées devant : ${autresDevant.join(", ")}.`);
-  }
-  const me = mixEquipe(eux);
-  if (me && me.connus >= 3) {
-    conseils.push(conseilResist(me, "Leur équipe fait"));
   }
   document.getElementById("conseils").innerHTML = conseils.map(x => `<li>${x}</li>`).join("") || `<li class="petit">Entre des champions pour voir les lanes.</li>`;
 }
@@ -668,32 +654,33 @@ function majValider() {
 const TYPE = {carry: ["🎯", "Carry"], enchanteur: ["✨", "Enchanteur"], assassin: ["🗡️", "Assassin"], plongeur: ["🤿", "Plongeur"],
   attrapeur: ["🪝", "Attrapeur"], tank: ["💚", "Tank"], bloqueur: ["🛡️", "Bloqueur"], dueliste: ["⚔️", "Dueliste"],
   splitpusher: ["♜", "Splitpusher"], teamfighter: ["🧑‍🤝‍🧑", "Teamfighter"]};
-const FAMILLES = [["cible", "🎯", "Cible prioritaire", ["carry", "enchanteur"]], ["menace", "💀", "Menace", ["assassin", "plongeur", "attrapeur"]],
+const FAMILLES = [["cible", "🎯", "Cible", ["carry", "enchanteur"]], ["menace", "💀", "Menace", ["assassin", "plongeur", "attrapeur"]],
   ["tank", "💚", "Tank", ["tank"]], ["protecteur", "🛡️", "Protecteur", ["bloqueur"]]];
+// D.cat[c] = [catégorie de jungler (ganks, envahir), styles affichés (Carry ou Enchanteur, plus ses deux styles principaux), fragile].
 const typesDe = c => ((D.cat[c] || [])[1]) || [];
 const aType = (c, t) => typesDe(c).includes(t);
-const familles = c => FAMILLES.filter(f => f[3].some(t => aType(c, t)));
-const estCible = c => aType(c, "carry") || aType(c, "enchanteur");
+const estFragile = c => !!((D.cat[c] || [])[2]);
+// Les cibles : les carrys, les enchanteurs et les autres champions fragiles.
+const estCible = c => !!c && (aType(c, "carry") || aType(c, "enchanteur") || estFragile(c));
+const familles = c => FAMILLES.filter(f => f[0] === "cible" ? estCible(c) : f[3].some(t => aType(c, t)));
 const estMenace = c => aType(c, "assassin") || aType(c, "plongeur") || aType(c, "attrapeur");
 const estProtecteur = c => aType(c, "bloqueur") || aType(c, "enchanteur");
 const iconesTypes = c => typesDe(c).map(t => TYPE[t][0]).join(" ");
+const nomsTypes = c => typesDe(c).map(t => TYPE[t][1]).join(", ");
+const pourquoiCible = c => typesDe(c).filter(t => t === "carry" || t === "enchanteur").map(t => TYPE[t][1]).concat(estFragile(c) ? ["fragile"] : []).join(", ");
 // Sorts par catégorie exclusive (Data Dragon) : [touche, nom, catégorie, détail].
 function sortsDe(c, cat) { const S = D.sorts || {}; return (S[c] || S[lola(c)] || []).filter(s => !cat || s[2] === cat); }
 const unSort = ([k, nom, , det], qui) => `<span class="sort"><span class="touche">${k}</span>${esc(nom)}${qui ? ` <span class="petit">(${esc(qui)})</span>` : ""}${det ? ` <span class="petit">— ${esc(det)}</span>` : ""}</span>`;
-const listeSorts = (L, vide) => L.length ? L.map(s => unSort(s)).join("") : `<span class="petit">${vide}</span>`;
+const listeSorts = (L, vide) => L.length ? L.map(s => unSort(s)).join(" ") : `<span class="petit">${vide}</span>`;
 function poidsSorts(c) { return sortsDe(c, "deplacement").length + sortsDe(c, "protection").length; }
 
-// Une colonne du tableau « Qui est qui » : tout le monde a ses contrôles ; une cible, ses protections et ses fuites ;
-// un assassin ou un plongeur, sa mobilité. Chaque sort n'apparaît qu'une fois.
+// « Qui est qui » : le nom, l'étiquette et les émoticônes de ses styles.
 function colonneChampion(c, p, cote) {
-  const f = familles(c), rubs = [["Contrôles", sortsDe(c, "controle"), "aucun"]];
-  if (estCible(c)) rubs.push(["Protection", sortsDe(c, "protection"), "aucune"], ["Fuite", sortsDe(c, "deplacement"), "aucune"]);
-  else if (aType(c, "assassin") || aType(c, "plongeur")) rubs.push(["Mobilité", sortsDe(c, "deplacement"), "aucune"]);
-  return `<div class="ch ${cote}" style="--fam:var(--fam-${(f[0] || ["autre"])[0]})">
+  const f = familles(c);
+  return `<div class="ch ${cote}" style="--fam:var(--fam-${(f[0] || ["autre"])[0]})" title="${esc(c)} : ${esc(nomsTypes(c) || "aucun style net")}">
     <div class="eti">${f.length ? f.slice(0, 2).map(x => `<span class="f-${x[0]}">${x[1]} ${x[2]}</span>`).join("") : `<span class="petit">—</span>`}</div>
     <div class="ch-nom">${esc(c)} <span class="petit">${NOM_POSTE[p]}</span></div>
-    <div class="types">${typesDe(c).map(t => `<span class="t">${TYPE[t][0]} ${TYPE[t][1]}</span>`).join("") || '<span class="petit">aucun type net</span>'}</div>
-    ${rubs.map(([titre, L, vide]) => `<div class="rub">${titre}</div><div class="sorts">${listeSorts(L, vide)}</div>`).join("")}
+    <div class="emo" aria-label="${esc(nomsTypes(c) || "aucun style net")}">${iconesTypes(c) || '<span class="petit">—</span>'}</div>
   </div>`;
 }
 function quiEstQui(nous, eux) {
@@ -703,63 +690,74 @@ function quiEstQui(nous, eux) {
   </div></div>`;
 }
 
-// Atteindre leurs cibles : pour chaque cible, ses fuites, ses protections, ses contrôles pour se défendre et qui la protège.
-function blocAtteindre(nous, eux, moi) {
-  const cibles = POSTES.filter(p => estCible(eux[p]));
-  const protecteurs = POSTES.filter(p => estProtecteur(eux[p]));
-  if (!cibles.length) return `<p class="petit">Pas de cible prioritaire nette en face : aucun carry ni enchanteur dans leur équipe.</p>`;
-  const lignes = cibles.map(p => {
-    const c = eux[p], fuite = sortsDe(c, "deplacement"), prot = sortsDe(c, "protection"), ctrl = sortsDe(c, "controle");
-    const gardes = protecteurs.filter(q => q !== p).map(q => ({q, c: eux[q], proche: (p === "adc" && q === "sup") || (p === "sup" && q === "adc")}));
-    const sortsGardes = g => [...sortsDe(g.c, "controle"), ...sortsDe(g.c, "protection")];
-    const obstacle = fuite.length + prot.length + 0.5 * ctrl.length + gardes.reduce((s, g) => s + (g.proche ? 2 : 0.5), 0);
-    return {c, p, obstacle, fuite, prot, html: `<div class="b-ligne"><div class="qui-c">🎯 <span class="e">${esc(c)}</span><small>${NOM_POSTE[p]} · ${typesDe(c).filter(t => t === "carry" || t === "enchanteur").map(t => TYPE[t][1]).join(", ")}</small></div><div class="obst">
-      <span><b>Sa fuite</b> : ${listeSorts(fuite, "aucune")}</span>
-      <span><b>Sa protection</b> : ${listeSorts(prot, "aucune")}</span>
-      ${ctrl.length ? `<span><b>Ses contrôles pour se défendre</b> : ${listeSorts(ctrl, "")}</span>` : ""}
-      <span><b>Qui la protège</b> : ${gardes.length ? gardes.map(g => `🛡️ <span class="e">${esc(g.c)}</span>${g.proche ? " (à côté d'elle en bot)" : ""} ${sortsGardes(g).map(s => unSort(s)).join("")}`).join(" · ") : "personne"}</span>
-    </div></div>`};
-  }).sort((a, b) => a.obstacle - b.obstacle);
-  const m = lignes[0], n = (L, mot) => L.length ? `${L.length} ${mot}${L.length > 1 ? "s" : ""}` : `pas de ${mot}`;
-  let lecture = `🎯 <b>Cible la plus accessible : <span class="e">${esc(m.c)}</span></b> (${n(m.fuite, "fuite")}, ${n(m.prot, "protection")}).`;
-  if (lignes.length > 1) { const d = lignes[lignes.length - 1];
-    lecture += ` La plus protégée : <span class="e">${esc(d.c)}</span> (${n(d.fuite, "fuite")}, ${n(d.prot, "protection")}${protecteurs.some(q => q !== d.p) ? ", et des protecteurs" : ""}) : fais tomber ces sorts avant d'y aller.`; }
-  return lignes.map(l => l.html).join("") + `<div class="lecture">${lecture}</div>`;
+// Les cibles d'une équipe, en haut : chacune avec sa fuite et sa propre protection.
+function cartesCibles(eq, cote) {
+  const cl = cote === "eux" ? "e" : "n";
+  return `<div class="cibles">${eq.map(({p, c}) => `<div class="cible"><div class="qui-c">🎯 <span class="${cl}">${esc(c)}</span> <span class="petit">${NOM_POSTE[p]} · ${esc(pourquoiCible(c))}</span></div>
+    <span><b>Fuite</b> : ${listeSorts(sortsDe(c, "deplacement"), "aucune")}</span>
+    <span><b>Se protège</b> : ${listeSorts(sortsDe(c, "protection"), "rien")}</span></div>`).join("")}</div>`;
+}
+// En dessous : qui les protège, avec ses contrôles et ses protections (le support compte comme « à côté » de son ADC).
+function protecteursDe(eq, cibles, cote) {
+  const cl = cote === "eux" ? "e" : "n", lignes = [];
+  for (const p of POSTES) { const c = eq[p]; if (!c) continue;
+    const prot = sortsDe(c, "protection").filter(s => estProtecteur(c) || /allié/.test(s[3]));
+    const ctrl = estProtecteur(c) ? sortsDe(c, "controle") : [];
+    if (!prot.length && !ctrl.length) continue;
+    const proche = cibles.filter(x => x.p !== p && ((x.p === "adc" && p === "sup") || (x.p === "sup" && p === "adc"))).map(x => x.c);
+    lignes.push({p, c, n: ctrl.length + prot.length, html: `<div class="b-ligne"><div class="qui-c">🛡️ <span class="${cl}">${esc(c)}</span><small>${NOM_POSTE[p]}${proche.length ? ` · à côté de ${esc(proche.join(", "))}` : ""}</small></div><div class="obst">
+      ${ctrl.length ? `<span><b>Contrôles</b> : ${listeSorts(ctrl, "")}</span>` : ""}
+      ${prot.length ? `<span><b>Protections</b> : ${listeSorts(prot, "")}</span>` : ""}</div></div>`});
+  }
+  return lignes;
 }
 
-// Protéger nos cibles : leurs menaces (comment elles arrivent), nos cibles (la plus fragile), et nos sorts pour les protéger.
+// Atteindre leurs cibles : en haut leurs cibles et leurs fuites ; en dessous qui les protège ; puis la lecture.
+function blocAtteindre(nous, eux, moi) {
+  const cibles = POSTES.filter(p => estCible(eux[p])).map(p => ({p, c: eux[p]}));
+  if (!cibles.length) return `<p class="petit">Pas de cible nette en face : ni carry, ni enchanteur, ni champion fragile.</p>`;
+  const gardes = protecteursDe(eux, cibles, "eux");
+  const garde = x => gardes.filter(g => g.p !== x.p).reduce((s, g) => s + (((x.p === "adc" && g.p === "sup") || (x.p === "sup" && g.p === "adc")) ? 2 : 0.5), 0);
+  const notees = cibles.map(x => ({...x, fuite: sortsDe(x.c, "deplacement"), prot: sortsDe(x.c, "protection")}))
+    .map(x => ({...x, obstacle: x.fuite.length + x.prot.length + 0.5 * sortsDe(x.c, "controle").length + garde(x)})).sort((a, b) => a.obstacle - b.obstacle);
+  const m = notees[0], n = (L, mot) => L.length ? `${L.length} ${mot}${L.length > 1 ? "s" : ""}` : `pas de ${mot}`;
+  let lecture = `🎯 <b>Cible la plus accessible : <span class="e">${esc(m.c)}</span></b> (${n(m.fuite, "fuite")}, ${n(m.prot, "protection")}).`;
+  if (notees.length > 1) { const d = notees[notees.length - 1];
+    lecture += ` La plus protégée : <span class="e">${esc(d.c)}</span> (${n(d.fuite, "fuite")}, ${n(d.prot, "protection")}${gardes.some(g => g.p !== d.p) ? ", et des protecteurs" : ""}) : fais tomber ces sorts avant d'y aller.`; }
+  return `<div class="b-titre">Leurs cibles et leurs fuites</div>${cartesCibles(notees, "eux")}
+    <div class="b-titre">Qui les protège</div>${gardes.length ? gardes.map(g => g.html).join("") : `<p class="petit" style="margin:0">Personne : pas de bloqueur ni d'enchanteur en face.</p>`}
+    <div class="lecture">${lecture}</div>`;
+}
+
+// Protéger vos cibles : en haut vos cibles et leurs fuites ; en dessous qui les protège ; puis leurs menaces et la lecture.
 function blocProteger(nous, eux, moi) {
   const nosCibles = POSTES.filter(p => estCible(nous[p])).map(p => ({p, c: nous[p], poids: poidsSorts(nous[p])})).sort((a, b) => a.poids - b.poids || (b.p === "adc") - (a.p === "adc"));
   const ordre = c => aType(c, "assassin") ? 0 : (aType(c, "plongeur") ? 1 : 2);
   const menaces = POSTES.filter(p => estMenace(eux[p])).map(p => ({p, c: eux[p]})).sort((a, b) => ordre(a.c) - ordre(b.c) || sortsDe(b.c, "deplacement").length - sortsDe(a.c, "deplacement").length);
-  if (!menaces.length && !nosCibles.length) return `<p class="petit">Ni menace nette en face, ni cible prioritaire chez vous.</p>`;
-  const fragile = nosCibles[0];
-  const lignes = menaces.map(({p, c}) => {
+  if (!menaces.length && !nosCibles.length) return `<p class="petit">Ni menace nette en face, ni cible chez vous.</p>`;
+  const fragile = nosCibles[0], gardes = protecteursDe(nous, nosCibles, "nous");
+  const lignesMenaces = menaces.map(({p, c}) => {
     const genre = ["assassin", "plongeur", "attrapeur"].filter(t => aType(c, t)).map(t => TYPE[t][1]).join(", ");
     const arrive = sortsDe(c, "deplacement"), attrape = aType(c, "attrapeur") ? sortsDe(c, "controle") : [];
     return `<div class="b-ligne"><div class="qui-c">💀 <span class="e">${esc(c)}</span><small>${NOM_POSTE[p]} · ${genre}</small></div><div class="obst">
       ${aType(c, "assassin") || aType(c, "plongeur") ? `<span><b>Comment il arrive</b> : ${listeSorts(arrive, "sans sort de mobilité")}</span>` : ""}
-      ${attrape.length ? `<span><b>Comment il attrape</b> : ${listeSorts(attrape, "")}</span>` : ""}
-      ${fragile ? `<span><b>Sur qui</b> : la cible isolée ; la plus fragile chez vous : <span class="n">${esc(fragile.c)}</span></span>` : ""}
-    </div></div>`;
+      ${attrape.length ? `<span><b>Comment il attrape</b> : ${listeSorts(attrape, "")}</span>` : ""}</div></div>`;
   });
-  const nosProt = [];
-  for (const p of POSTES) { const c = nous[p]; if (!c) continue;
-    for (const s of sortsDe(c, "protection")) if (/allié/.test(s[3]) || estProtecteur(c)) nosProt.push([s, c]);
-    if (estProtecteur(c)) for (const s of sortsDe(c, "controle")) nosProt.push([s, c]); }
-  lignes.push(`<div class="b-ligne"><div class="qui-c">🛡️ <span class="n">Vos protections</span></div><div class="obst"><span>${nosProt.length ? nosProt.map(([s, c]) => unSort(s, c)).join(" ") : '<span class="petit">aucun sort pour protéger vos cibles</span>'}</span></div></div>`);
   let lecture = fragile ? `🎯 <b>Reste près de <span class="n">${esc(fragile.c)}</span></b> (${poidsSorts(fragile.c) ? `${poidsSorts(fragile.c)} sort${poidsSorts(fragile.c) > 1 ? "s" : ""} pour se sauver` : "aucune fuite ni protection"}).` : "";
   if (menaces.length) {
     const m = menaces[0], mienCtrl = moi ? sortsDe(moi, "controle").slice().sort((a, b) => rangCtrl(a) - rangCtrl(b)) : [];
-    const arrive = sortsDe(m.c, "deplacement")[0];
-    const garde = mienCtrl.length ? `<b>${mienCtrl[0][0]} ${esc(mienCtrl[0][1])}</b>` : (nosProt.length ? `<b>${esc(nosProt[0][0][1])}</b> (${esc(nosProt[0][1])})` : "");
+    const arrive = sortsDe(m.c, "deplacement")[0], g0 = gardes[0];
+    const garde = mienCtrl.length ? `<b>${mienCtrl[0][0]} ${esc(mienCtrl[0][1])}</b>` : (g0 ? `les sorts de <b>${esc(g0.c)}</b>` : "");
     if (garde) lecture += ` Garde ${garde} pour <span class="e">${esc(m.c)}</span>${arrive ? ` : il arrive avec ${arrive[0]} ${esc(arrive[1])}${arrive[3] ? " (" + esc(arrive[3]) + ")" : ""}` : ""}.`;
   }
-  return lignes.join("") + (lecture ? `<div class="lecture">${lecture}</div>` : "");
+  return `${nosCibles.length ? `<div class="b-titre">Vos cibles et leurs fuites</div>${cartesCibles(nosCibles, "nous")}` : ""}
+    <div class="b-titre">Qui les protège</div>${gardes.length ? gardes.map(g => g.html).join("") : `<p class="petit" style="margin:0">Aucun sort pour protéger vos cibles.</p>`}
+    ${lignesMenaces.length ? `<div class="b-titre">Leurs menaces</div>${lignesMenaces.join("")}` : ""}
+    ${lecture ? `<div class="lecture">${lecture}</div>` : ""}`;
 }
 
 // La carte : chaque lane est une jauge (bleu = ton équipe, toujours) qui part de ta base ; la carte ne tourne jamais,
-// côté rouge ta base est simplement en haut à droite. La jungle a sa jauge sous la carte, avec les ganks.
+// côté rouge ta base (« Nous ») est simplement en haut à droite. La jungle a sa jauge sous la carte.
 const TRACE = {top: "M10 82 L10 22 Q10 10 22 10 L82 10", mid: "M17 83 C38 66 62 40 83 17", bot: "M18 90 L78 90 Q90 90 90 78 L90 18"};
 const TRACE_ROUGE = {top: "M82 10 L22 10 Q10 10 10 22 L10 82", mid: "M83 17 C62 40 38 66 17 83", bot: "M90 18 L90 78 Q90 90 78 90 L18 90"};
 function hexa(cx, cy, r) { return [0, 1, 2, 3, 4, 5].map(i => { const a = Math.PI / 3 * i + Math.PI / 6; return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`; }).join(" "); }
@@ -780,8 +778,10 @@ function dessinerCarte(nous, eux, infos, R) {
     ${lanes}<g class="tours"></g>
     <circle cx="33.9" cy="29" r="5.2" fill="#3b2a5c" stroke="#b49be8" stroke-width=".8"/><text x="33.9" y="30.9" font-size="5.4" text-anchor="middle">🪱</text>
     <circle cx="66.7" cy="70.2" r="5.2" fill="#5c3418" stroke="#f0a64b" stroke-width=".8"/><text x="66.7" y="72.1" font-size="5.4" text-anchor="middle">🐉</text>
-    <polygon points="${hexa(...(rouge ? [92, 8] : [8, 92]), 7)}" fill="var(--nous)" stroke="#fff" stroke-width="1.1"/>
-    <polygon points="${hexa(...(rouge ? [8, 92] : [92, 8]), 7)}" fill="var(--eux)" stroke="#fff" stroke-width="1.1"/>
+    <polygon points="${hexa(...(rouge ? [92, 8] : [8, 92]), 7.5)}" fill="var(--nous)" stroke="#fff" stroke-width="1.1"/>
+    <polygon points="${hexa(...(rouge ? [8, 92] : [92, 8]), 7.5)}" fill="var(--eux)" stroke="#fff" stroke-width="1.1"/>
+    <text x="${rouge ? 92 : 8}" y="${rouge ? 9.4 : 93.4}" font-size="4" font-weight="700" fill="#fff" text-anchor="middle">Nous</text>
+    <text x="${rouge ? 8 : 92}" y="${rouge ? 93.4 : 9.4}" font-size="4" font-weight="700" fill="#fff" text-anchor="middle">Eux</text>
     <g class="fronts"></g></svg>`;
   const tours = el.querySelector(".tours"), fronts = el.querySelector(".fronts");
   el.querySelectorAll(".mesure").forEach(m => {
@@ -791,7 +791,7 @@ function dessinerCarte(nous, eux, infos, R) {
     if (infos[l].o) { const pt = m.getPointAtLength(tot * proba(l));
       fronts.insertAdjacentHTML("beforeend", `<circle cx="${pt.x.toFixed(2)}" cy="${pt.y.toFixed(2)}" r="3.3" fill="#fff" stroke="${proba(l) >= .5 ? "var(--nous)" : "var(--eux)"}" stroke-width="1.4"/>`); }
   });
-  const places = {top: [28, 21], mid: [64, 50], bot: [72, 80]}, roles = {top: ["top"], mid: ["mid"], bot: ["adc", "sup"]};
+  const places = {top: [40, 21], mid: [58, 50], bot: [60, 80]}, roles = {top: ["top"], mid: ["mid"], bot: ["adc", "sup"]};
   for (const l of ["top", "mid", "bot"]) {
     const o = infos[l].o, [x, y] = places[l], etatL = !o ? "egal" : (o.proba >= .55 ? "devant" : (o.proba <= .45 ? "derriere" : "egal"));
     el.insertAdjacentHTML("beforeend", `<div class="chip ${etatL}${l === maLane ? " moi" : ""}" style="left:${x}%;top:${y}%">
@@ -799,14 +799,9 @@ function dessinerCarte(nous, eux, infos, R) {
       <span class="n">${roles[l].map(p => esc(nous[p])).join(" + ")}</span> vs <span class="e">${roles[l].map(p => esc(eux[p])).join(" + ")}</span></div>`);
   }
   const pc = x => (100 * x).toFixed(0) + " %", j = infos.jgl.o;
-  const g = ["top", "mid", "bot"].filter(l => infos[l].pg !== null && infos[l].pg !== undefined);
-  const meilleur = g.slice().sort((a, b) => infos[b].pg - infos[a].pg)[0], expose = g.slice().sort((a, b) => infos[b].pe - infos[a].pe)[0];
-  const mini = (v, coul, fort) => v === null || v === undefined ? "—" : `<span class="mini"><span class="b"><span style="width:${(100 * v).toFixed(0)}%;background:var(${coul})"></span></span><span class="${fort ? "fort" : ""}">${pc(v)}</span></span>`;
   document.getElementById("carte-bas").innerHTML = `
     <div class="jauge-j"><b>Jungle</b><span class="barre-j"><span style="width:${j ? (100 * j.proba).toFixed(0) : 50}%"></span><i></i></span><b>${j ? pc(j.proba) : "—"}</b></div>
-    <p class="petit" style="margin:0">${j ? `<span class="n">${esc(nous.jgl)}</span> vs <span class="e">${esc(eux.jgl)}</span> : devant en or à 15 min dans ${pc(j.proba)} des cas (${j.or >= 0 ? "+" : "−"}${Math.abs(Math.round(j.or / 10) * 10)} or attendus).` : ""}</p>
-    <table class="ganks"><thead><tr><th scope="col">Gank réussi avant 15 min</th><th scope="col"><span class="n">Ton jungler</span></th><th scope="col"><span class="e">Leur jungler</span></th></tr></thead>
-    <tbody>${["top", "mid", "bot"].map(l => `<tr><td>${LANE_NOM[l]}</td><td>${mini(infos[l].pg, "--nous", l === meilleur)}</td><td>${mini(infos[l].pe, "--eux", l === expose)}</td></tr>`).join("")}</tbody></table>`;
+    <p class="petit" style="margin:0">${j ? `<span class="n">${esc(nous.jgl)}</span> vs <span class="e">${esc(eux.jgl)}</span> : devant en or à 15 min dans ${pc(j.proba)} des cas (${j.or >= 0 ? "+" : "−"}${Math.abs(Math.round(j.or / 10) * 10)} or attendus).` : ""}</p>`;
 }
 
 function dessinerRecap() {
@@ -819,11 +814,8 @@ function dessinerRecap() {
     infos[lane] = {o: orLane(roles, nous, eux)};
     if (lane !== "jgl") { infos[lane].pg = gank(nous.jgl, lane, nous, eux); infos[lane].pe = gank(eux.jgl, lane, eux, nous); }
   }
-  const trois = ["top", "mid", "bot"];
-  const meilleurGank = trois.filter(l => infos[l].pg !== null && infos[l].pg !== undefined).sort((a, b) => infos[b].pg - infos[a].pg)[0];
-  const exposee = trois.filter(l => infos[l].pe !== null && infos[l].pe !== undefined).sort((a, b) => infos[b].pe - infos[a].pe)[0];
 
-  // Le plan : quatre ou cinq lignes au plus.
+  // Le plan : le tempo, les dégâts et ce qu'il faut surveiller.
   const plan = [];
   const a = tempoEquipe(nous), b = tempoEquipe(eux);
   if (DD && DD.k && a.n && b.n) {
@@ -832,23 +824,6 @@ function dessinerRecap() {
       : (S > 0 ? "Vous êtes <b>plus late</b> : pas de combat décisif avant 25 min, farm et vision, la partie tourne pour vous après 30 min."
                : "Vous êtes <b>plus early</b> : prenez l'avantage avant 25 min (ganks, plaques, dragons, héraut), cherchez à finir avant 30 min.");
     plan.push(["Tempo", `${quoi} <span class="petit">Chance de gagner : ${avant.toFixed(0)} % si la partie finit avant 20 min, ${apres.toFixed(0)} % après 35 min.</span>`]);
-  }
-  const devant = trois.filter(l => infos[l].o && infos[l].o.proba >= 0.55), derriere = trois.filter(l => infos[l].o && infos[l].o.proba <= 0.45);
-  plan.push(["Lanes", (devant.length ? `Devant à 15 min : <b>${devant.map(l => `${LANE_NOM[l]} ${pc(infos[l].o.proba)}`).join(", ")}</b>. ` : "Aucune lane nettement devant. ")
-    + (derriere.length ? `Derrière : <b>${derriere.map(l => `${LANE_NOM[l]} ${pc(infos[l].o.proba)}`).join(", ")}</b>.` : "")]);
-  if (R === "jgl") {
-    let t = meilleurGank ? `Ganke en priorité <b>${LANE_NOM[meilleurGank]}</b> (${pc(infos[meilleurGank].pg)} de gank réussi).` : "";
-    if (exposee) t += ` Lane la plus exposée à leur jungler : <b>${LANE_NOM[exposee]}</b> (${pc(infos[exposee].pe)}).`;
-    const inv = envahirConfirme(groupe(moi));
-    if (inv.length) t += ` Envahis vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> (${inv.map(x => pts(x.points)).join(" / ")} points).`;
-    if (infos.jgl.o) t += ` Or à 15 min face à leur jungler : ${infos.jgl.o.proba >= 0.5 ? "devant" : "derrière"} dans ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} des cas.`;
-    plan.push(["Ta jungle", t.trim()]);
-  } else {
-    const i = infos[maLane];
-    let t = i.o ? `Devant à 15 min : <b>${pc(i.o.proba)}</b>.` : "";
-    if (i.pe !== null && i.pe !== undefined) t += ` Leur jungler (${esc(eux.jgl)}) réussit un gank sur ta lane dans ${pc(i.pe)} des cas${i.pe >= 0.7 ? " : <b>balises et prudence</b>" : ""}.`;
-    if (i.pg !== null && i.pg !== undefined) t += ` Ton jungler (${esc(nous.jgl)}) : ${pc(i.pg)}.`;
-    plan.push(["Ta lane", t.trim()]);
   }
   const me = mixEquipe(eux), mn = mixEquipe(nous);
   if (me) {
@@ -862,9 +837,8 @@ function dessinerRecap() {
   if (gros.length) plan.push(["À surveiller", `Leurs ultimes qui contrôlent : <b>${gros.join(", ")}</b>.`]);
   document.getElementById("recap-plan").innerHTML = plan.map(([dt, dd]) => `<dt>${dt}</dt><dd>${dd}</dd>`).join("");
 
-  document.getElementById("recap-duels").innerHTML = blocDuels(moi, R, eux);
-  document.getElementById("recap-duels-panneau").hidden = !D.duel;
   dessinerCarte(nous, eux, infos, R);
+  dessinerPlan(R, nous, eux, moi);
   document.getElementById("qui-est-qui").innerHTML = quiEstQui(nous, eux);
   // Les deux blocs ; celui qui correspond à ton rôle d'abord (un protecteur protège, les autres vont chercher les cibles).
   const proteger = estProtecteur(moi) && !aType(moi, "assassin");
