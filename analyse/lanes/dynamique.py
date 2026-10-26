@@ -77,7 +77,7 @@ def lire_catalogue():
 def main():
     donnees = contres.dossier_donnees()
     regle = commun.lire_decoupage()
-    table = commun.drafts(regle, donnees)
+    table = commun.drafts_ab(regle, donnees)   # toutes les parties, A et B (pas de C : analyse de nos parties)
     table = table[table["tas"].isin(["A", "B"])].reset_index(drop=True)
     tas = dict(zip(table["match"], table["tas"]))
     lignes, _ = contres.lire(donnees)

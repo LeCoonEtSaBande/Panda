@@ -97,7 +97,7 @@ def main():
     parser.add_argument("--lolalytics", help="dossier du patch Lolalytics (avec profils.csv)")
     args = parser.parse_args()
     donnees = contres.dossier_donnees()
-    table = commun.drafts(commun.lire_decoupage(), donnees)
+    table = commun.drafts_ab(commun.lire_decoupage(), donnees)   # toutes les parties, A et B
     table = table[table["tas"].isin(["A", "B"])].reset_index(drop=True)
     duree = {}
     for r in lecture.lire_details("details_parties", donnees):

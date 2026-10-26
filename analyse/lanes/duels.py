@@ -163,7 +163,7 @@ def test_gain(y, p_simple, p_complet):
 def main():
     donnees = contres.dossier_donnees()
     regle = commun.lire_decoupage()
-    table = commun.drafts(regle, donnees)
+    table = commun.drafts_ab(regle, donnees)   # toutes les parties, A et B
     tas = dict(zip(table["match"], table["tas"]))
     duels = lire_duels(donnees, tas)
     compte, compte_a, compte_b = defaultdict(int), defaultdict(int), defaultdict(int)

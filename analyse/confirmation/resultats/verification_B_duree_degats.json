@@ -1,0 +1,77 @@
+{
+ "parties_C": 13923,
+ "parties_C_avec_duree": 10487,
+ "late": {
+  "coef_C": 4.053972107317449,
+  "erreur_C": 0.44889506176195015,
+  "coef_AB": 4.1639225198860546,
+  "p": 8.50536525948542e-20,
+  "q": 3.402146103794168e-19,
+  "verdict": "confirmé",
+  "tranches_C": [
+   {
+    "de": 0,
+    "a": 20,
+    "parties": 386,
+    "late_gagne": 36.8
+   },
+   {
+    "de": 20,
+    "a": 25,
+    "parties": 930,
+    "late_gagne": 41.2
+   },
+   {
+    "de": 25,
+    "a": 30,
+    "parties": 1786,
+    "late_gagne": 50.9
+   },
+   {
+    "de": 30,
+    "a": 35,
+    "parties": 1392,
+    "late_gagne": 55.5
+   },
+   {
+    "de": 35,
+    "a": 40,
+    "parties": 536,
+    "late_gagne": 61.0
+   },
+   {
+    "de": 40,
+    "a": 999,
+    "parties": 213,
+    "late_gagne": 54.0
+   }
+  ]
+ },
+ "mix": {
+  "magique < 20 %": {
+   "points_AB": -4.0,
+   "points_C": -3.6,
+   "equipes_C": 572,
+   "p": 0.04177563825474861,
+   "q": 0.05570085100633148,
+   "verdict": "à surveiller"
+  },
+  "magique 20-30 %": {
+   "points_AB": -1.6,
+   "points_C": -1.4,
+   "equipes_C": 2592,
+   "p": 0.07979155229991601,
+   "q": 0.07979155229991601,
+   "verdict": "rien"
+  },
+  "magique > 70 %": {
+   "points_AB": -4.1,
+   "points_C": -5.1,
+   "equipes_C": 351,
+   "p": 0.028409823406283757,
+   "q": 0.05570085100633148,
+   "verdict": "à surveiller"
+  }
+ },
+ "mesure": "B"
+}

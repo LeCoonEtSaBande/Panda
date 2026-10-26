@@ -76,6 +76,35 @@ def drafts(regle=None, donnees=None):
     return _drafts_v2(regle, donnees)
 
 
+def drafts_ab(regle=None, donnees=None):
+    """Table des drafts de TOUTES les parties (archive comprise), partagées en A (3/4) et B (1/4) par empreinte.
+
+    Pour les analyses de nos parties (or à 15 min, ganks, envahir, duels, dégâts, types) : apprises sur A, vérifiées
+    sur B, sans C (26/10/2026). Le gel ne concerne que le recuit (`drafts`, tas A, B, C). Même graine que le gel :
+    une partie a le même tas A ou B dans les deux découpages."""
+    import pandas as pd
+
+    regle = regle or lire_decoupage()
+    donnees = Path(donnees or dossier_donnees())
+    rangs = set(regle["rangs"])
+    lignes, vus = [], set()
+    for l in _lire(donnees / "parties.csv"):
+        m = l["match"]
+        if m in vus or l["palier"][:1] not in rangs:
+            continue
+        vus.add(m)
+        lignes.append({**l, "source": "neuf", "tas": tas_ab(m, regle)})
+    if ARCHIVE.exists() and regle.get("archive", True):
+        for l in _lire(ARCHIVE):
+            if l["palier"][:1] in rangs and l["match"] not in vus:
+                vus.add(l["match"])
+                lignes.append({**l, "source": "archive", "tas": tas_ab(l["match"], regle)})
+    table = pd.DataFrame(lignes)
+    table["rang"] = table["palier"].str[:1]
+    table["bleu_gagne"] = (table["gagnant"] == "b").astype(int)
+    return table.reset_index(drop=True)
+
+
 def _drafts_v2(regle, donnees):
     """Découpage n° 2 (gel du 23/10 au soir) : tout ce qui était connu au gel sert à l'apprentissage.
 

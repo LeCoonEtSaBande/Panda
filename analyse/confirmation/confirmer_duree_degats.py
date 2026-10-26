@@ -5,6 +5,8 @@
 Écrit confirmation/resultats/confirmation_C_duree_degats.md et .json.
 
     python3 analyse/confirmation/confirmer_duree_degats.py
+    python3 analyse/confirmation/confirmer_duree_degats.py --sur B   (toutes les parties : appris sur A, mesuré sur B ;
+                                                                    sens du mix pris sur A ; écrit verification_B_duree_degats.*)
 """
 
 import json
@@ -43,11 +45,19 @@ def p_unilaterale(z):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--sur", choices=("C", "B"), default="C")
+    mesure = parser.parse_args().sur
     dd = json.loads((LANES_RES / "duree_degats.json").read_text(encoding="utf-8"))
     donnees = contres.dossier_donnees()
     regle = commun.lire_decoupage()
     commun.exiger_validation(regle)
-    table = commun.drafts(regle, donnees).reset_index(drop=True)
+    if mesure == "B":
+        table = commun.drafts_ab(regle, donnees)
+        table["tas"] = table["tas"].map({"A": "A", "B": "C"})   # B prend la place de C, apprentissage sur A seul
+    else:
+        table = commun.drafts(regle, donnees).reset_index(drop=True)
     duree = {r["match"]: float(r["duree_s"]) / 60 for r in lecture.lire_details("details_parties", donnees) if r["duree_s"]}
     index = bloc2.Index(table)
     lab = np.where(table["tas"].isin(["A", "B"]))[0]; lc = np.where(table["tas"] == "C")[0]
@@ -85,7 +95,7 @@ def main():
         x = (((mag["b"] >= m["de"]) & (mag["b"] < m["a"] + (m["a"] >= 1))).astype(float)
              - ((mag["r"] >= m["de"]) & (mag["r"] < m["a"] + (m["a"] >= 1))).astype(float))
         bm, em = coef_et_erreur(x, y, dec_c)
-        sens = -1 if m["AB"] < 0 else 1
+        sens = -1 if (m["A"] if mesure == "B" else m["AB"]) < 0 else 1
         pm = p_unilaterale(sens * bm / em)
         mix[titre] = {"points_AB": round(points(m["AB"]), 1), "points_C": round(points(bm), 1), "equipes_C": int(np.abs(x).sum()), "p": pm}
     tests = [p_late] + [m["p"] for m in mix.values()]
@@ -95,7 +105,9 @@ def main():
               "late": {"coef_C": b, "erreur_C": e, "coef_AB": dd["coef_late"]["AB"], "p": p_late, "q": float(q[0]),
                        "verdict": verdict(p_late, q[0]), "tranches_C": tranches},
               "mix": {t: dict(m, q=float(qq), verdict=verdict(m["p"], qq)) for (t, m), qq in zip(mix.items(), q[1:])}}
-    (RESULTATS_C / "confirmation_C_duree_degats.json").write_text(json.dumps(sortie, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    nom = "verification_B_duree_degats" if mesure == "B" else "confirmation_C_duree_degats"
+    sortie["mesure"] = mesure
+    (RESULTATS_C / f"{nom}.json").write_text(json.dumps(sortie, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     L = sortie["late"]
     texte = ["# Confirmation sur C : early / late et mix de dégâts", "",
              f"- Profils et sens figés sur A + B (duree_degats.py, profils {', '.join(f'{k} {v}' for k, v in dd['sources'].items())}). "
@@ -108,7 +120,10 @@ def main():
     texte += ["", "## Mix de dégâts", "", "| Part magique | Sur A + B | Sur C | Équipes de C | Verdict |", "|---|---|---|---|---|"]
     texte += [f"| {t} | {m['points_AB']:+.1f} | {m['points_C']:+.1f} | {m['equipes_C']} | {m['verdict']} |" for t, m in sortie["mix"].items()]
     texte.append("")
-    (RESULTATS_C / "confirmation_C_duree_degats.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
+    if mesure == "B":
+        texte = [t.replace("Confirmation sur C", "Vérification sur B").replace("sur A + B", "sur A").replace("Sur A + B", "Sur A")
+                  .replace("sur C", "sur B").replace("Sur C", "Sur B").replace("de C", "de B") for t in texte]
+    (RESULTATS_C / f"{nom}.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
     print("\n".join(texte))
     return 0
 

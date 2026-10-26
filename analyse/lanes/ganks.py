@@ -86,7 +86,7 @@ def main():
     from sklearn.linear_model import LogisticRegression
 
     donnees = contres.dossier_donnees()
-    table = commun.drafts(commun.lire_decoupage(), donnees)
+    table = commun.drafts_ab(commun.lire_decoupage(), donnees)   # toutes les parties, A et B
     tas = dict(zip(table["match"], table["tas"]))
     groupe = lire_catalogue()
     lignes = lignes_ganks(donnees, tas)

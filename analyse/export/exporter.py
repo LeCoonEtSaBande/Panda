@@ -123,13 +123,16 @@ def confirmation_c():
     un bloc est considéré comme non confirmé."""
     lire = lambda chemin: json.loads(chemin.read_text(encoding="utf-8")) if chemin.exists() else None
     ok = lambda d: bool(d) and d.get("verdict") == "confirmé"
-    gen = lire(CONFIRMATION_RES / "confirmation_C.json") or {}
-    dd = lire(CONFIRMATION_RES / "confirmation_C_duree_degats.json") or {}
+    # Analyses de nos parties : la vérification sur B (toutes les parties, recalculée à chaque génération) passe avant
+    # l'ancienne confirmation sur C du 24/10/2026, qui ne sert plus que si B n'a pas été calculé.
+    gen = lire(CONFIRMATION_RES / "verification_B.json") or lire(CONFIRMATION_RES / "confirmation_C.json") or {}
+    dd = lire(CONFIRMATION_RES / "verification_B_duree_degats.json") or lire(CONFIRMATION_RES / "confirmation_C_duree_degats.json") or {}
     recuits = sorted(CONFIRMATION_RES.glob("confirmation_C_recuit2_teamfight_*.json"))
     rec = lire(recuits[-1]) if recuits else None
     lola = {t["nom"]: ok(t) for t in gen.get("lolalytics", {}).get("tests", [])}
     return {
         "parties_C": gen.get("lolalytics", {}).get("parties"),
+        "mesure": gen.get("mesure", "C"),
         "force": lola.get("Force du patch", False),
         "contre_direct": lola.get("Contre de l'adversaire direct", False),
         "contres_autres": lola.get("Contres des autres adversaires", False),

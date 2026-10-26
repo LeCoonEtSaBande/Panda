@@ -11,6 +11,10 @@ Verdict par test : confirmé (q < 5 % après correction pour le nombre de tests 
 Écrit confirmation/resultats/confirmation_C.json et .md, lus par l'export de l'assistant.
 
     python3 analyse/confirmation/confirmation_C.py --lolalytics <dossier du patch>
+    python3 analyse/confirmation/confirmation_C.py --lolalytics <dossier du patch> --sur B
+
+Avec --sur B (analyses de nos parties, depuis le 26/10/2026) : TOUTES les parties, apprises sur A, mesurées sur B
+(rien n'a été appris sur B), mêmes tests ; écrit verification_B.json et .md. C'est ce que lance la génération.
 """
 
 import argparse
@@ -38,6 +42,7 @@ import ganks  # noqa: E402
 from envahir import zone  # noqa: E402
 
 SORTIE = ICI / "resultats"
+MESURE = "C"   # « B » avec --sur B : la mesure se fait sur B, l'apprentissage sur A seulement
 POSTES = ("top", "jgl", "mid", "adc", "sup")
 POSTES_LOLA = {"top": "top", "jgl": "jgl", "mid": "mid", "adc": "adc", "sup": "sup"}
 
@@ -244,10 +249,14 @@ def bloc_envahir(donnees, table, lignes_lanes):
             rangs.append(k); lignes.append(x)
         rangs = np.array(rangs); X = np.array(lignes)
         beta, se = logit_se(X, y[rangs], dec_c[rangs])
-        # Les effets que l'assistant affiche : même sens sur A et B, au moins 1 point, 100 junglers qui envahissent.
+        # Les effets que l'assistant afficherait : même sens sur A et B, au moins 1 point, 100 junglers qui envahissent.
+        # Mesure sur B : le choix et le sens ne viennent que de A (B ne doit rien avoir appris).
         for gi, g in enumerate(dynamique.GROUPES):
             d = s["groupes"].get(g)
-            if not d or d["envahisseurs"] < 100 or d["A"] * d["B"] <= 0 or min(abs(d["A"]), abs(d["B"])) < 1:
+            if MESURE == "B":
+                if not d or d["envahisseurs"] < 100 or abs(d["A"]) < 1:
+                    continue
+            elif not d or d["envahisseurs"] < 100 or d["A"] * d["B"] <= 0 or min(abs(d["A"]), abs(d["B"])) < 1:
                 continue
             sens = 1 if d["A"] > 0 else -1
             b, e = beta[2 + gi], se[2 + gi]
@@ -259,11 +268,19 @@ def bloc_envahir(donnees, table, lignes_lanes):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--lolalytics", required=True)
+    parser.add_argument("--sur", choices=("C", "B"), default="C", help="C : parties après le gel ; B : toutes les parties, tas B")
     args = parser.parse_args()
+    global MESURE
+    MESURE = args.sur
     donnees = contres.dossier_donnees()
     regle = commun.lire_decoupage()
     commun.exiger_validation(regle)
-    table = commun.drafts(regle, donnees).reset_index(drop=True)
+    if MESURE == "B":
+        # Toutes les parties ; B prend la place de C (mesure), l'apprentissage se fait sur A seul.
+        table = commun.drafts_ab(regle, donnees)
+        table["tas"] = table["tas"].map({"A": "A", "B": "C"})
+    else:
+        table = commun.drafts(regle, donnees).reset_index(drop=True)
     tas = dict(zip(table["match"], table["tas"]))
     print(f"Parties : A {sum(t == 'A' for t in tas.values())}, B {sum(t == 'B' for t in tas.values())}, "
           f"C {sum(t == 'C' for t in tas.values())}.", flush=True)
@@ -277,7 +294,9 @@ def main():
     sortie["envahir"] = bloc_envahir(donnees, table, lignes)
     print("4. Envahir fait.", flush=True)
     SORTIE.mkdir(exist_ok=True)
-    (SORTIE / "confirmation_C.json").write_text(json.dumps(sortie, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    nom = "verification_B" if MESURE == "B" else "confirmation_C"
+    sortie["mesure"] = MESURE
+    (SORTIE / f"{nom}.json").write_text(json.dumps(sortie, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
     pc = lambda x: f"{100 * x:.0f} %"
     L = sortie["lolalytics"]
@@ -304,7 +323,11 @@ def main():
     texte += [f"| {t['minute']} | {t['groupe']} | {t['A']:+.1f} | {t['B']:+.1f} | {t['C']:+.1f} | {t['verdict']} |"
               for t in sortie["envahir"]["tests"]]
     texte.append("")
-    (SORTIE / "confirmation_C.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
+    if MESURE == "B":
+        texte = [t.replace("Confirmation sur C", "Vérification sur B").replace("Appris sur A + B", "Appris sur A").replace("mesuré sur C", "mesuré sur B")
+                  .replace("parties de C", "parties de B").replace("sur C", "sur B").replace("| A | B | C |", "| A | B (envahir.py) | B (mesure) |")
+                 for t in texte]
+    (SORTIE / f"{nom}.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
     print("\n".join(texte))
     return 0
 
