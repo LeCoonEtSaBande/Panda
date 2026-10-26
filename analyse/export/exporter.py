@@ -144,21 +144,25 @@ def confirmation_c():
 
 
 def duels():
-    """Duels de junglers à or égal (lanes/duels.py, modèle sur toutes les parties), seulement si confirmé sur C
-    (confirmation/confirmer_duels.py) : forces des seuls junglers confirmés un par un (les autres comptent comme
-    un jungler moyen), évolution avec la minute seulement si elle est confirmée."""
-    modele, conf = LANES_RES / "duels.json", CONFIRMATION_RES / "confirmation_duels.json"
-    if not modele.exists() or not conf.exists():
+    """Duels (lanes/duels.py), analyse à deux tas : appris sur A, vérifié sur B. Rien si le modèle d'ensemble ne tient
+    pas sur B. Un champion dont la force n'est pas vérifiée sur B compte comme un champion moyen de son poste : sa force
+    ET son évolution avec la minute valent 0 (avant le 26/10/2026, l'évolution restait : il n'était pas vraiment moyen).
+    L'évolution avec la minute n'est gardée que si elle est vérifiée sur B. Or et niveau : avance sur la normale du poste."""
+    modele = LANES_RES / "duels.json"
+    if not modele.exists():
         return None
-    m, c = json.loads(modele.read_text(encoding="utf-8")), json.loads(conf.read_text(encoding="utf-8"))
-    ensemble, minute = (t["verdict"] == "confirmé" for t in c["ensemble"])
+    m = json.loads(modele.read_text(encoding="utf-8"))
+    if "verification_B" not in m or "postes" not in m:
+        return None
+    ensemble, minute = (t["verdict"] == "vérifié" for t in m["verification_B"]["ensemble"])
     if not ensemble:
         return None
-    confirmes = {t["jungler"] for t in c["junglers"] if t["verdict"] == "confirmé"}
+    verifies = {ch for ch, v in m["champions"].items() if v.get("verdict_B") == "vérifié"}
     return {"or_1000": m["coef_or_1000"], "niveau": m["coef_niveau"], "minute_ref": m["minute_reference"],
-            "champions": {ch: [round(v["force"], 4) if ch in confirmes else 0.0, round(v["pente_10min"], 4) if minute else 0.0]
+            "postes": {p: [round(v["effet"], 4), round(v["pente_10min"], 4) if minute else 0.0] for p, v in m["postes"].items()},
+            "champions": {ch: [round(v["force"], 4), round(v["pente_10min"], 4) if minute else 0.0] if ch in verifies else [0.0, 0.0]
                           for ch, v in m["champions"].items() if v["duels"] >= 150},
-            "confirmes": sorted(confirmes), "duels": m["duels"]}
+            "confirmes": sorted(verifies), "duels": m["duels"]}
 
 
 def main():
