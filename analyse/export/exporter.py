@@ -33,6 +33,7 @@ import contres  # noqa: E402
 
 CATALOGUE = ANALYSE / "catalogues" / "catalogue_unifie.csv"          # les 10 types (classification) et l'identifiant Riot
 ANCIEN = ANALYSE / "catalogues" / "ancien_catalogue_2026-10-24.csv"  # catégories de jungler des ganks et d'envahir
+ULTIMES = ANALYSE / "catalogues" / "ultimes_a_surveiller.csv"       # ultimes à surveiller, relus à la main
 NOTES = ANALYSE / "types" / "resultats" / "notes.csv"                # notes de chaque type, et « fragile »
 STYLES_AFFICHES = 2                                                   # en plus de Carry ou Enchanteur
 SORTS = ANALYSE / "catalogues" / "sorts.csv"                         # sorts par catégorie (Data Dragon)
@@ -72,6 +73,15 @@ def catalogue():
             for l in csv.DictReader(f, delimiter=";"):
                 sortie.setdefault(l["champion"], {"types": [], "tous": [], "id": "", "groupe": "", "fragile": False})["groupe"] = l["groupe_teamfight"]
     return sortie
+
+
+def ultimes():
+    """Les ultimes à surveiller que les catégories de sorts ne voient pas seules (combinaisons avec un passif, grosses zones
+    de dégâts, repoussements), relus à la main : {champion: raison} (catalogues/ultimes_a_surveiller.csv)."""
+    if not ULTIMES.exists():
+        return {}
+    with open(ULTIMES, encoding="utf-8", newline="") as f:
+        return {l["champion"]: l["raison"] for l in csv.DictReader(f, delimiter=";")}
 
 
 def sorts():
@@ -209,6 +219,7 @@ def main():
         "date": datetime.now(ZoneInfo("Europe/Paris")).strftime("%d/%m/%Y %H:%M"),
         "catalogue": catalogue(),
         "sorts": sorts(),
+        "ultimes": ultimes(),
         "lanes": lanes(),
         "ganks": json.loads((LANES_RES / "ganks_modele.json").read_text(encoding="utf-8")),
         "teamfight": tf,
