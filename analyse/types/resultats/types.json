@@ -1,165 +1,199 @@
 {
  "carry": {
   "poids": {
-   "or_min": 1.59,
-   "profondeur": -0.94
+   "part_adc": 2.68,
+   "or_min_p": 1.55,
+   "profondeur_p": -1.8
   },
-  "references_sans_voir": {
-   "Aurelion Sol": 68,
-   "Caitlyn": 84,
-   "Gangplank": 35,
-   "Jinx": 88,
-   "Kindred": 57,
-   "Nilah": 73,
-   "Samira": 72,
-   "Viktor": 50,
-   "Yunara": 91
-  },
-  "accord_A_B": 0.989,
-  "meme_decision_A_B": 0.984,
-  "postes_compares": 187
+  "C": 3.0,
+  "revus": 65,
+  "oui_retrouves": 19,
+  "oui": 22,
+  "faux_oui": 1,
+  "justesse": 0.938,
+  "erreurs": [
+   "Azir",
+   "Bard",
+   "Cassiopeia",
+   "Kindred"
+  ],
+  "meme_decision_A_B": 0.902
  },
  "enchanteur": {
   "poids": {
-   "soins_allies_min": 0.72,
-   "boucliers_allies_min": 2.63
+   "sauve": 0.93,
+   "boucliers_allies_min": 1.15,
+   "encaisse_min_p": -0.54
   },
-  "references_sans_voir": {
-   "Ivern": 97,
-   "Karma": 93,
-   "Lulu": 85,
-   "Milio": 97
-  },
-  "accord_A_B": 0.999,
-  "meme_decision_A_B": 1.0,
-  "postes_compares": 187
+  "C": 0.3,
+  "revus": 65,
+  "oui_retrouves": 3,
+  "oui": 3,
+  "faux_oui": 0,
+  "justesse": 1.0,
+  "erreurs": [],
+  "meme_decision_A_B": 1.0
  },
  "assassin": {
   "poids": {
-   "assassin": 3.57,
-   "part_carry": -1.01,
-   "part_subis": 1.5,
-   "encaisse_min": -1.01
+   "en_inferiorite_p": 3.84,
+   "part_adc": -1.65,
+   "encaisse_min": -2.06
   },
-  "references_sans_voir": {
-   "Kayn bleu": 93,
-   "Kha'Zix": 71
-  },
-  "accord_A_B": 0.966,
-  "meme_decision_A_B": 0.979,
-  "postes_compares": 187
+  "C": 3.0,
+  "revus": 65,
+  "oui_retrouves": 11,
+  "oui": 11,
+  "faux_oui": 2,
+  "justesse": 0.969,
+  "erreurs": [
+   "Aurora",
+   "Irelia"
+  ],
+  "meme_decision_A_B": 0.896
  },
  "plongeur": {
   "poids": {
-   "part_subis": -0.95,
-   "profondeur": 2.21
+   "profondeur": 1.26,
+   "assassin_p": 0.22,
+   "batiments_min_p": 0.7
   },
-  "references_sans_voir": {
-   "Diana": 68,
-   "Jax": 79,
-   "Olaf": 94,
-   "Yasuo": 94,
-   "Yone": 78
-  },
-  "accord_A_B": 0.954,
-  "meme_decision_A_B": 0.963,
-  "postes_compares": 187
+  "C": 0.3,
+  "revus": 65,
+  "oui_retrouves": 8,
+  "oui": 9,
+  "faux_oui": 6,
+  "justesse": 0.892,
+  "erreurs": [
+   "Dr. Mundo",
+   "Ekko",
+   "Fizz",
+   "Illaoi",
+   "Kalista",
+   "Kayn bleu",
+   "Kayn rouge"
+  ],
+  "meme_decision_A_B": 0.951
  },
  "attrapeur": {
   "poids": {
-   "pick_kill": 1.36,
-   "immob_kill": 0.69,
-   "cc_min": 1.39
+   "pick_kill": 0.75,
+   "part_sup": 0.4,
+   "part_degats": -1.02
   },
-  "references_sans_voir": {
-   "Bard": 88,
-   "Blitzcrank": 89,
-   "Lux": 74,
-   "Morgana": 94,
-   "Thresh": 81
-  },
-  "accord_A_B": 0.996,
-  "meme_decision_A_B": 0.984,
-  "postes_compares": 187
+  "C": 0.3,
+  "revus": 65,
+  "oui_retrouves": 7,
+  "oui": 8,
+  "faux_oui": 2,
+  "justesse": 0.954,
+  "erreurs": [
+   "Braum",
+   "Cho'Gath",
+   "Karma"
+  ],
+  "meme_decision_A_B": 0.976
  },
  "tank": {
   "poids": {
-   "encaisse_min": 3.02
+   "encaisse_min": 3.12
   },
-  "references_sans_voir": {
-   "Cho'Gath": 67,
-   "Dr. Mundo": 97,
-   "Rammus": 88,
-   "Sejuani": 86,
-   "Sion": 99
-  },
-  "accord_A_B": 0.998,
-  "meme_decision_A_B": 0.995,
-  "postes_compares": 187
+  "C": 1.0,
+  "revus": 65,
+  "oui_retrouves": 4,
+  "oui": 4,
+  "faux_oui": 1,
+  "justesse": 0.985,
+  "erreurs": [
+   "Garen"
+  ],
+  "meme_decision_A_B": 0.982
  },
  "bloqueur": {
   "poids": {
-   "cc_min": 1.11,
-   "immob_min": 1.32
+   "cc_min": 1.36,
+   "immob_min": 0.94,
+   "encaisse_min_p": 0.77
   },
-  "references_sans_voir": {
-   "Alistar": 99,
-   "Amumu": 79,
-   "Blitzcrank": 87,
-   "Rammus": 82,
-   "Rell": 94,
-   "Skarner": 22,
-   "Thresh": 79
-  },
-  "accord_A_B": 0.999,
-  "meme_decision_A_B": 1.0,
-  "postes_compares": 187
+  "C": 0.3,
+  "revus": 65,
+  "oui_retrouves": 10,
+  "oui": 11,
+  "faux_oui": 2,
+  "justesse": 0.954,
+  "erreurs": [
+   "Aatrox",
+   "Fiddlesticks",
+   "Gragas"
+  ],
+  "meme_decision_A_B": 0.963
  },
  "dueliste": {
   "poids": {
-   "solo": 1.32,
-   "en_inferiorite": 0.56
+   "solo": 2.07,
+   "solo_p": 0.68,
+   "encaisse_min": 1.32
   },
-  "references_sans_voir": {
-   "Fiora": 73,
-   "Illaoi": 76,
-   "Jax": 65,
-   "Tryndamere": 83
-  },
-  "accord_A_B": 0.995,
-  "meme_decision_A_B": 0.984,
-  "postes_compares": 187
+  "C": 1.0,
+  "revus": 65,
+  "oui_retrouves": 18,
+  "oui": 19,
+  "faux_oui": 6,
+  "justesse": 0.892,
+  "erreurs": [
+   "Akshan",
+   "Aurora",
+   "Cho'Gath",
+   "Dr. Mundo",
+   "Fizz",
+   "Katarina",
+   "Kayn bleu"
+  ],
+  "meme_decision_A_B": 0.963
  },
  "splitpusher": {
   "poids": {
-   "seul_cote_poste": 2.04
+   "seul_cote_p": 1.35,
+   "batiments_min_p": 1.04,
+   "n_protection": 0.65
   },
-  "references_sans_voir": {
-   "Fiora": 84,
-   "Illaoi": 96,
-   "Sion": 79,
-   "Yorick": 95
-  },
-  "accord_A_B": 0.749,
-  "meme_decision_A_B": 0.936,
-  "postes_compares": 187
+  "C": 0.3,
+  "revus": 65,
+  "oui_retrouves": 9,
+  "oui": 9,
+  "faux_oui": 3,
+  "justesse": 0.954,
+  "erreurs": [
+   "Diana",
+   "Ekko",
+   "Kassadin"
+  ],
+  "meme_decision_A_B": 0.89
  },
  "teamfighter": {
   "poids": {
-   "kp_combat": 1.0
+   "kp_combat_p": 2.69,
+   "kills_par_combat": -1.27,
+   "dpm": 1.55
   },
-  "references_sans_voir": {
-   "Amumu": 67,
-   "Aurelion Sol": 98,
-   "Darius": 30,
-   "Fiddlesticks": 41,
-   "Malphite": 89,
-   "Swain": 98,
-   "Viktor": 69
-  },
-  "direct": "rang dans son poste",
-  "accord_A_B": 0.908,
-  "meme_decision_A_B": 0.866,
-  "postes_compares": 187
+  "C": 3.0,
+  "revus": 65,
+  "oui_retrouves": 30,
+  "oui": 35,
+  "faux_oui": 5,
+  "justesse": 0.846,
+  "erreurs": [
+   "Akshan",
+   "Alistar",
+   "Ashe",
+   "Azir",
+   "Darius",
+   "Dr. Mundo",
+   "Fiddlesticks",
+   "Gragas",
+   "Graves",
+   "Jhin"
+  ],
+  "meme_decision_A_B": 0.866
  }
 }

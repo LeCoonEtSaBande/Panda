@@ -1,22 +1,25 @@
-"""Classification des champions en 10 types, à partir de nos parties et des champions de référence du propriétaire.
+"""Classification des champions en 10 types, apprise sur les choix du propriétaire.
 
 Les types (non exclusifs : un champion peut en avoir plusieurs) :
     carry, enchanteur, assassin, plongeur, attrapeur, tank, bloqueur, dueliste, splitpusher, teamfighter.
 
-Comment :
-1. Pour chaque champion à chaque poste (au moins 150 parties), des mesures tirées des parties : part des dégâts de
-   l'équipe, dégâts encaissés, soins et boucliers sur les alliés, contrôle infligé, solo kills, position à 20, 25 et
-   30 min (seul sur une lane de côté), kills sur les ADC et mids, participation aux combats d'équipe…
-2. Pour chaque type, une régression logistique sur quelques mesures choisies, apprise sur les références du
-   propriétaire (analyse/types/references.csv) contre tous les autres champions. Note de 0 à 100 ; type proposé à 70.
-3. Analyse à deux tas : les mesures et le modèle viennent de A ; on vérifie sur B (jamais vu) que les notes sont les
-   mêmes, et on retrouve chaque référence sans l'avoir montrée au modèle.
-4. Les choix du propriétaire (analyse/types/validations.csv, venus de la page « Types des champions ») passent avant
-   le calcul. Le catalogue unifié reçoit le résultat : « oui » dans la colonne de chaque type retenu.
+Comment (version 4, 26/10/2026) :
+1. Pour chaque champion, des mesures tirées des parties (moyenne de ses postes, pondérée par les parties) : part des
+   dégâts et de l'or, dégâts encaissés, soins et boucliers sur les alliés, contrôle infligé, solo kills, position à 20,
+   25 et 30 min, où il meurt, kills sur les ADC et mids, kills et assists en combat d'équipe… ; chacune aussi comparée
+   aux champions de son poste (suffixe _p) ; la part de ses parties à chaque poste ; et ses sorts (Data Dragon).
+2. Les choix du propriétaire (analyse/types/validations.csv, venus de la page « Types des champions ») : pour chaque
+   champion revu, les 10 types en oui ou non. Plus ses champions de référence (references.csv), comptés oui.
+3. Pour chaque type, une régression logistique sur 1 à 3 mesures, choisies parmi celles qui ont du sens pour ce type :
+   la combinaison qui retrouve le mieux ses choix sans les avoir vus (on retire chaque champion revu, on apprend sur les
+   autres, on le reclasse). Note de 0 à 100 ; type proposé à partir de 50, 3 au plus par champion (les mieux notés),
+   au moins un.
+4. Deux tas : les mesures de l'apprentissage viennent de A ; on vérifie que B donne les mêmes décisions.
+5. Un champion revu garde ses choix ; les autres prennent le calcul. Le catalogue unifié reçoit le résultat.
 
     python3 analyse/types/classer.py              (après analyse/preparer.sh)
 
-Écrit analyse/types/resultats/notes.csv, analyse/types/resultats/types.md, et les colonnes des types de
+Écrit analyse/types/resultats/notes.csv, analyse/types/resultats/types.md et .json, et les colonnes des types de
 analyse/catalogues/catalogue_unifie.csv.
 """
 
@@ -43,29 +46,31 @@ REFERENCES = ICI / "references.csv"
 VALIDATIONS = ICI / "validations.csv"
 RESULTATS = ICI / "resultats"
 CATALOGUE = ANALYSE / "catalogues" / "catalogue_unifie.csv"
-SEUIL = 70
+SEUIL = 50
+MAX_TYPES = 3      # le propriétaire donne 1 à 3 types à presque chaque champion (4 une seule fois sur 65)
 MIN_PARTIES = 150
 POSTES = ("top", "jgl", "mid", "adc", "sup")
+SORTS = ANALYSE / "catalogues" / "sorts.csv"
 
-# Les mesures de chaque type. Version 2 (26/10/2026) : pour chaque type, parmi les mesures qui ont du sens pour lui,
-# la combinaison (4 mesures au plus) qui retrouve le mieux les références sans les avoir vues, sans gonfler le nombre
-# de champions retenus. Carry, tank, bloqueur, plongeur et splitpusher ont changé ; les autres n'ont pas trouvé mieux.
+# Les mesures de chaque type et la régularisation (C), choisies le 26/10/2026 sur les 65 champions revus par le
+# propriétaire : la combinaison de 1 à 3 mesures (parmi celles qui ont du sens pour le type) qui retrouve le mieux ses
+# choix sans les avoir vus. Justesse sans les voir : 85 à 100 % selon le type (voir resultats/types.md).
 MESURES = {
-    "carry": ["or_min", "profondeur"],
-    "enchanteur": ["soins_allies_min", "boucliers_allies_min"],
-    "assassin": ["assassin", "part_carry", "part_subis", "encaisse_min"],
-    "plongeur": ["part_subis", "profondeur"],
-    "attrapeur": ["pick_kill", "immob_kill", "cc_min"],
-    "tank": ["encaisse_min"],
-    "bloqueur": ["cc_min", "immob_min"],
-    "dueliste": ["solo", "en_inferiorite"],
-    "splitpusher": ["seul_cote_poste"],
-    "teamfighter": ["kp_combat"],
+    "carry": (["part_adc", "or_min_p", "profondeur_p"], 3.0),
+    "enchanteur": (["sauve", "boucliers_allies_min", "encaisse_min_p"], 0.3),
+    "assassin": (["en_inferiorite_p", "part_adc", "encaisse_min"], 3.0),
+    "plongeur": (["profondeur", "assassin_p", "batiments_min_p"], 0.3),
+    "attrapeur": (["pick_kill", "part_sup", "part_degats"], 0.3),
+    "tank": (["encaisse_min"], 1.0),
+    "bloqueur": (["cc_min", "immob_min", "encaisse_min_p"], 0.3),
+    "dueliste": (["solo", "solo_p", "encaisse_min"], 1.0),
+    "splitpusher": (["seul_cote_p", "batiments_min_p", "n_protection"], 0.3),
+    "teamfighter": (["kp_combat_p", "kills_par_combat", "dpm"], 3.0),
 }
-# Teamfighter (choix du propriétaire, 26/10/2026) : pas de modèle appris, directement ses kills et assists en combat
-# d'équipe (part des kills de son équipe en combat où il participe), classé parmi les champions de son poste : un
-# support participe toujours plus qu'un top, on compare donc à son poste. Note = rang dans son poste, de 0 à 100.
-DIRECTS = {"teamfighter": "kp_combat"}
+# Les mesures de base, chacune aussi comparée aux champions de son poste (suffixe _p).
+BASE = ["part_degats", "part_subis", "encaisse_min", "soins_allies_min", "boucliers_allies_min", "cc_min", "immob_min",
+        "batiments_min", "solo", "pick_kill", "immob_kill", "sauve", "en_inferiorite", "dpm", "or_min", "seul_cote", "assassin",
+        "tf_10", "carry_tf_10", "profondeur", "part_carry", "td_par_combat", "kills_par_combat", "kp_combat"]
 # Mesures très étalées (beaucoup de zéros, quelques très grandes valeurs) : comparées en logarithme.
 LOG = {"soins_allies_min", "boucliers_allies_min", "batiments_min", "solo", "assassin", "sauve", "pick_kill", "immob_kill",
        "en_inferiorite", "encaisse_min", "dpm"}
@@ -83,7 +88,13 @@ LIBELLES = {
     "seul_cote_poste": "seul sur une lane de côté, comparé aux champions de son poste",
     "kp_combat": "kills et assists en combat d'équipe (part des kills de son équipe en combat)",
     "tf_10": "kills et assists en combat d'équipe, par 10 minutes",
+    "part_adc": "part de ses parties en ADC", "part_sup": "part de ses parties en support",
+    "n_protection": "nombre de sorts de protection (Data Dragon)", "batiments_min": "dégâts aux bâtiments par minute",
 }
+
+
+def libelle(m):
+    return LIBELLES.get(m[:-2], m) + " (comparé à son poste)" if m.endswith("_p") and m[:-2] in LIBELLES else LIBELLES.get(m, m)
 
 
 # --- Lecture ---------------------------------------------------------------------------------------------------
@@ -232,21 +243,33 @@ def par_champion(f):
 
 # --- Modèle par type ------------------------------------------------------------------------------------------------
 
-def normaliser(a, ref=None):
-    """Mesures centrées-réduites (logarithme pour les mesures très étalées), avec la moyenne et l'écart-type de `ref`."""
-    ref = a if ref is None else ref
-    z = pd.DataFrame(index=a.index)
-    for c in {m for ms in MESURES.values() for m in ms}:
-        v, r = a[c], ref[c]
-        if c in LOG:
-            v, r = np.log1p(v.clip(lower=0)), np.log1p(r.clip(lower=0))
-        z[c] = (v - r.mean()) / (r.std() or 1)
-    return z
+def table_champions(a):
+    """Une ligne par champion : ses mesures (moyenne de ses postes pondérée par les parties), chacune aussi comparée aux
+    champions de son poste (_p), la part de ses parties à chaque poste, et ses sorts."""
+    a = a.copy()
+    for c in BASE:
+        v = np.log1p(a[c].clip(lower=0)) if c in LOG else a[c]
+        a[c] = v
+        a[c + "_p"] = (v - v.groupby(a.poste).transform("mean")) / v.groupby(a.poste).transform("std")
+    cols = BASE + [c + "_p" for c in BASE]
+    x = a.groupby("champion").apply(lambda d: pd.Series(np.average(d[cols], axis=0, weights=d.n), index=cols), include_groups=False)
+    parts = a.pivot_table(index="champion", columns="poste", values="n", aggfunc="sum").fillna(0)
+    parts = parts.div(parts.sum(axis=1), axis=0).reindex(columns=list(POSTES), fill_value=0).add_prefix("part_")
+    x = x.join(parts)
+    if SORTS.exists():
+        with open(SORTS, encoding="utf-8", newline="") as f:
+            sorts = list(csv.DictReader(f, delimiter=";"))
+        for c in x.index:
+            mes = [s_ for s_ in sorts if s_["champion"] == c]
+            x.loc[c, "n_controle"] = sum(s_["categorie"] == "controle" for s_ in mes)
+            x.loc[c, "n_deplacement"] = sum(s_["categorie"] == "deplacement" for s_ in mes)
+            x.loc[c, "n_protection"] = sum(s_["categorie"] == "protection" for s_ in mes)
+    return x.fillna(0)
 
 
-def apprendre(z, y, mesures):
+def apprendre(X, y, C):
     from sklearn.linear_model import LogisticRegression
-    return LogisticRegression(C=0.5, class_weight="balanced", max_iter=2000).fit(z[mesures].values, y)
+    return LogisticRegression(C=C, class_weight="balanced", max_iter=1000).fit(X, y)
 
 
 def lire_references():
@@ -258,59 +281,49 @@ def lire_references():
 
 
 def lire_validations():
-    """{(champion, type): "oui" | "non"} : les choix du propriétaire, prioritaires sur le calcul."""
+    """{champion: {type: True | False}} : les choix du propriétaire, champion par champion (10 types pour un champion revu)."""
     if not VALIDATIONS.exists():
         return {}
+    v = defaultdict(dict)
     with open(VALIDATIONS, encoding="utf-8", newline="") as f:
-        return {(l["champion"], l["type"]): l["choix"] for l in csv.DictReader(f, delimiter=";") if l.get("choix") in ("oui", "non")}
+        for l in csv.DictReader(f, delimiter=";"):
+            if l.get("choix") in ("oui", "non"):
+                v[l["champion"]][l["type"]] = l["choix"] == "oui"
+    return dict(v)
 
 
-def note_champion(a, colonne):
-    """Note d'un champion, tous postes confondus : moyenne des notes de ses postes, pondérée par les parties."""
-    return a.groupby("champion").apply(lambda g: float(np.average(g[colonne], weights=g.n)), include_groups=False)
-
-
-def classer(a_A, a_B, a_tout, refs):
-    """Notes de 0 à 100 par type : modèle appris sur A, vérifié sur B, appliqué à toutes les parties."""
-    z_A, z_B, z_T = normaliser(a_A), normaliser(a_B, a_A), normaliser(a_tout, a_A)
-    bilan, notes = {}, pd.DataFrame({"champion": a_tout.champion, "poste": a_tout.poste, "n": a_tout.n})
+def classer(x_A, x_B, x_tout, validations, refs):
+    """Notes de 0 à 100 par type : appris sur les choix du propriétaire (mesures du tas A), vérifié sur B."""
+    ref = x_A.mean(), x_A.std().replace(0, 1)
+    z = lambda x: (x - ref[0]) / ref[1]
+    z_A, z_B, z_T = z(x_A), z(x_B), z(x_tout)
+    notes, bilan = pd.DataFrame(index=x_tout.index), {}
     for t in TYPES:
-        ms = MESURES[t]
-        if t in DIRECTS:
-            m_ = DIRECTS[t]
-            rang = lambda a: 100 * a.groupby("poste")[m_].rank(pct=True)
-            n_A = pd.Series(rang(a_A).values, index=a_A.champion + "|" + a_A.poste)
-            n_B = pd.Series(rang(a_B).values, index=a_B.champion + "|" + a_B.poste)
-            communs = n_A.index.intersection(n_B.index)
-            notes[t] = rang(a_tout).values
-            sans_voir = {c: round(float(n_A[a_A.champion.values == c].max())) for c in sorted(refs[t]) if (a_A.champion == c).any()}
-            bilan[t] = {"poids": {m_: 1.0}, "references_sans_voir": sans_voir, "direct": "rang dans son poste",
-                        "accord_A_B": round(float(np.corrcoef(n_A[communs], n_B[communs])[0, 1]), 3),
-                        "meme_decision_A_B": round(float(np.mean((n_A[communs] >= SEUIL) == (n_B[communs] >= SEUIL))), 3),
-                        "postes_compares": int(len(communs))}
+        ms, C = MESURES[t]
+        revus = [c for c in z_A.index if c in validations and t in validations[c]]
+        y = np.array([validations[c][t] for c in revus], dtype=int)
+        extra = [c for c in sorted(refs.get(t, ())) if c in z_A.index and c not in validations]
+        X = np.vstack([z_A.loc[revus, ms].values] + ([z_A.loc[extra, ms].values] if extra else []))
+        Y = np.concatenate([y, np.ones(len(extra), int)])
+        if len(set(Y)) < 2:
+            bilan[t] = {"erreur": "il faut des oui et des non"}
             continue
-        y = a_A.champion.isin(refs[t]).astype(int).values
-        if y.sum() < 2:
-            bilan[t] = {"erreur": "moins de 2 références"}
-            continue
-        m = apprendre(z_A, y, ms)
-        # Chaque référence retrouvée sans l'avoir vue (le modèle appris sans elle, sur A).
-        sans_voir = {}
-        for c in sorted(refs[t]):
-            masque = (a_A.champion != c).values
-            if masque.all():
-                continue
-            mm = apprendre(z_A[masque], y[masque], ms)
-            sans_voir[c] = round(100 * float(mm.predict_proba(z_A[~masque][ms].values)[:, 1].max()))
-        # Vérification sur B : mêmes notes et mêmes décisions que sur A ?
-        n_A = pd.Series(100 * m.predict_proba(z_A[ms].values)[:, 1], index=a_A.champion + "|" + a_A.poste)
-        n_B = pd.Series(100 * m.predict_proba(z_B[ms].values)[:, 1], index=a_B.champion + "|" + a_B.poste)
+        # Chaque champion revu reclassé sans l'avoir vu.
+        sans_voir = np.zeros(len(revus))
+        for i in range(len(revus)):
+            garde = np.ones(len(Y), bool); garde[i] = False
+            sans_voir[i] = apprendre(X[garde], Y[garde], C).predict_proba(X[i:i + 1])[0, 1]
+        d = sans_voir >= SEUIL / 100
+        tp, fp, fn = int((d & (y == 1)).sum()), int((d & (y == 0)).sum()), int((~d & (y == 1)).sum())
+        m = apprendre(X, Y, C)
+        n_A = pd.Series(m.predict_proba(z_A[ms].values)[:, 1], index=z_A.index)
+        n_B = pd.Series(m.predict_proba(z_B[ms].values)[:, 1], index=z_B.index)
         communs = n_A.index.intersection(n_B.index)
-        accord = float(np.corrcoef(n_A[communs], n_B[communs])[0, 1]) if len(communs) > 5 else float("nan")
-        meme = float(np.mean((n_A[communs] >= SEUIL) == (n_B[communs] >= SEUIL))) if len(communs) else float("nan")
         notes[t] = 100 * m.predict_proba(z_T[ms].values)[:, 1]
-        bilan[t] = {"poids": {c: round(float(w), 2) for c, w in zip(ms, m.coef_[0])}, "references_sans_voir": sans_voir,
-                    "accord_A_B": round(accord, 3), "meme_decision_A_B": round(meme, 3), "postes_compares": int(len(communs))}
+        bilan[t] = {"poids": {c: round(float(w), 2) for c, w in zip(ms, m.coef_[0])}, "C": C, "revus": len(revus),
+                    "oui_retrouves": tp, "oui": int(y.sum()), "faux_oui": fp, "justesse": round(float((d == y).mean()), 3),
+                    "erreurs": [c for c, dd, yy in zip(revus, d, y) if dd != yy],
+                    "meme_decision_A_B": round(float(np.mean((n_A[communs] >= SEUIL / 100) == (n_B[communs] >= SEUIL / 100))), 3)}
     return notes, bilan
 
 
@@ -321,52 +334,61 @@ def main():
     tas = {m: commun.tas_ab(m, regle) for m in f.match.unique()}
     f["tas"] = f.match.map(tas)
     a_A, a_B, a_T = par_champion(f[f.tas == "A"]), par_champion(f[f.tas == "B"]), par_champion(f)
-    refs = lire_references()
-    notes, bilan = classer(a_A, a_B, a_T, refs)
+    x_A, x_B, x_T = table_champions(a_A), table_champions(a_B), table_champions(a_T)
+    validations, refs = lire_validations(), lire_references()
+    notes, bilan = classer(x_A, x_B, x_T, validations, refs)
 
-    # Note par champion (tous postes), puis décision : choix du propriétaire, sinon le calcul (70 et plus).
-    par_champ = {t: note_champion(notes, t) for t in TYPES if t in notes}
-    postes = notes.groupby("champion").apply(lambda g: ", ".join(f"{p} {int(n)}" for p, n in sorted(zip(g.poste, g.n), key=lambda x: -x[1])),
-                                             include_groups=False)
-    validations = lire_validations()
+    postes = a_T.groupby("champion").apply(lambda g: ", ".join(f"{p} {int(n)}" for p, n in sorted(zip(g.poste, g.n), key=lambda x: -x[1])),
+                                           include_groups=False)
+    parties = a_T.groupby("champion").n.sum()
     RESULTATS.mkdir(parents=True, exist_ok=True)
     with open(RESULTATS / "notes.csv", "w", encoding="utf-8", newline="") as fo:
         w = csv.writer(fo, delimiter=";", lineterminator="\n")
-        w.writerow(["champion", "postes", "parties"] + list(TYPES))
-        for c in sorted(par_champ["carry"].index, key=str.lower):
-            w.writerow([c, postes[c], int(notes[notes.champion == c].n.sum())] + [round(par_champ[t][c]) if t in par_champ else "" for t in TYPES])
+        w.writerow(["champion", "postes", "parties", "revu"] + list(TYPES))
+        for c in sorted(notes.index, key=str.lower):
+            w.writerow([c, postes[c], int(parties[c]), "oui" if c in validations else ""] + [round(notes[t][c]) if t in notes else "" for t in TYPES])
 
     with open(CATALOGUE, encoding="utf-8", newline="") as fi:
         lecteur = csv.DictReader(fi, delimiter=";")
         entete, lignes = lecteur.fieldnames, list(lecteur)
     for l in lignes:
         c = l["champion"]
-        valide = any((c, t) in validations for t in TYPES)
-        for t in TYPES:
-            choix = validations.get((c, t))
-            calcul = t in par_champ and c in par_champ[t].index and par_champ[t][c] >= SEUIL
-            l[t] = "oui" if (choix == "oui" or (choix is None and calcul)) else ""
-        l["source"] = "validé" if valide else ("calcul" if c in par_champ["carry"].index else "pas assez de parties")
+        if c in validations:
+            for t in TYPES:
+                l[t] = "oui" if validations[c].get(t) else ""
+        elif c in notes.index:
+            # Ses types : ceux à 50 ou plus, les MAX_TYPES meilleurs ; au moins un (le mieux noté).
+            n = notes.loc[c].sort_values(ascending=False)
+            imposes = [t for t in TYPES if c in refs.get(t, ())]        # ses types de référence restent
+            garde = imposes + [t for t in n.index if n[t] >= SEUIL and t not in imposes][:max(0, MAX_TYPES - len(imposes))]
+            garde = garde or [n.index[0]]
+            for t in TYPES:
+                l[t] = "oui" if t in garde else ""
+        else:
+            for t in TYPES:
+                l[t] = ""
+        l["source"] = "validé" if c in validations else ("calcul" if c in notes.index else "pas assez de parties")
     with open(CATALOGUE, "w", encoding="utf-8", newline="") as fo:
         w = csv.DictWriter(fo, fieldnames=entete, delimiter=";", lineterminator="\n")
         w.writeheader(); w.writerows(lignes)
 
     (RESULTATS / "types.json").write_text(json.dumps(bilan, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     texte = ["# Types des champions", "",
-             f"- Parties : A {int((f.tas == 'A').sum() / 10)}, B {int((f.tas == 'B').sum() / 10)} environ (parties de 15 min et plus) ; "
-             f"postes avec au moins {MIN_PARTIES} parties. Type proposé à partir de {SEUIL} sur 100.",
-             f"- Choix du propriétaire appliqués : {len(validations)}.", "",
-             "| Type | Champions | Références retrouvées sans les voir | Même décision sur A et B | Mesures (poids) |", "|---|---|---|---|---|"]
+             f"- Appris sur les choix du propriétaire : {len(validations)} champions revus (10 types chacun), plus ses références ; "
+             f"mesures du tas A, vérifiées sur B. Type proposé à partir de {SEUIL} sur 100, {MAX_TYPES} au plus par champion (les mieux notés), au moins un ; un champion revu garde ses choix.",
+             f"- Parties de 15 min et plus : A {int((f.tas == 'A').sum() / 10)}, B {int((f.tas == 'B').sum() / 10)} environ ; postes avec au moins {MIN_PARTIES} parties.", "",
+             "| Type | Champions retenus | Ses oui retrouvés sans les voir | Faux oui | Justesse sans les voir | Même décision A et B | Mesures (poids) |",
+             "|---|---|---|---|---|---|---|"]
     for t in TYPES:
         b = bilan.get(t, {})
         if "poids" not in b:
-            texte.append(f"| {t} | — | {b.get('erreur', '')} | | |")
+            texte.append(f"| {t} | — | {b.get('erreur', '')} | | | | |")
             continue
-        sv = b["references_sans_voir"]
-        rates = [f"{c} {v}" for c, v in sv.items() if v < SEUIL]
-        nb = int((par_champ[t] >= SEUIL).sum())
-        texte.append(f"| {t} | {nb} | {sum(v >= SEUIL for v in sv.values())} sur {len(sv)}{' (ratées : ' + ', '.join(rates) + ')' if rates else ''} | "
-                     f"{100 * b['meme_decision_A_B']:.0f} % | " + ", ".join(f"{LIBELLES[m]} {w:+.2f}" for m, w in b["poids"].items()) + " |")
+        nb = sum(1 for l in lignes if l[t] == "oui")
+        texte.append(f"| {t} | {nb} | {b['oui_retrouves']} sur {b['oui']} | {b['faux_oui']} | {100 * b['justesse']:.0f} % | "
+                     f"{100 * b['meme_decision_A_B']:.0f} % | " + ", ".join(f"{libelle(m)} {w:+.2f}" for m, w in b["poids"].items()) + " |")
+    texte += ["", "Erreurs sans les voir (le calcul seul se tromperait ; tes choix restent appliqués) :", ""]
+    texte += [f"- {t} : {', '.join(bilan[t]['erreurs']) or 'aucune'}" for t in TYPES if "erreurs" in bilan.get(t, {})]
     (RESULTATS / "types.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
     print("\n".join(texte))
     return 0
