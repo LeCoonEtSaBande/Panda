@@ -63,14 +63,15 @@ DEPLACEMENT = [
              r"|\bcharges? (?:forward|toward|in a direction|to )|\brolls? (?:forward|toward|in a direction)|\bflies|\bfly\b"
              r"|\bpulls? (?:himself|herself|themselves|itself)|\bpropels? (?:himself|herself|themselves|itself)"),
     ("invisible", r"\binvisib|\bcamouflag|\bstealth"),
-    ("vitesse", r"(?:gain|grant|bonus|increas)\w* [^.]{0,40}\bmove(?:ment)? speed|\bmove(?:ment)? speed (?:boost|increase)"),
 ]
+# La vitesse de déplacement n'est pas détectée : presque tous les sorts en donnent un peu. Les vraies fuites à la
+# vitesse (Kennen E, Master Yi R…) sont dans sorts_corrections.csv.
 # --- Protections ----------------------------------------------------------------------------------------------
 PROTECTION = [
     ("invulnérable", r"\binvulnerab|\buntargetable|\bstasis|\bcannot die|\bcan't die|\bcannot be killed|\brevive|\bresurrect"),
     ("bloque les projectiles", r"\bblock\w* (?:\w+ ){0,2}(?:projectile|missile|attack)|\bwind ?wall|\bspell shield|\bnegat\w* (?:the next|an incoming)"),
     ("bouclier", r"\bshield"),
-    ("soin", r"\bheal|\brestor\w* (?:\w+ ){0,2}health"),
+    ("soin", r"\bheal(?:s|ing|ed)?\b|\brestor\w* (?:\w+ ){0,2}health"),
     ("contre les contrôles", r"\bunstoppable|\bcleans|\bremov\w* (?:all )?(?:crowd control|disables|debuffs)|\bimmun\w* to (?:crowd control|disables|slows)"),
     ("réduit les dégâts", r"\breduc\w* (?:\w+ ){0,3}damage (?:taken|received)|\bdamage reduction|\btakes? (?:\d+% )?(?:less|reduced) damage"),
 ]
