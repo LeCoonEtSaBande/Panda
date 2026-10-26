@@ -89,9 +89,8 @@ def construire(dossier_lola, export, sortie):
         "meta": {"patch": patch, "export": ex["date"], "parties_lanes": ex["lanes"]["parties"],
                  "parties_ganks": ex["ganks"]["parties"]},
         "noms": noms,
-        # Catalogue unifié : [groupe teamfight, tanky, carry, dégâts, style principal, style secondaire].
-        "cat": {c: [v["groupe"], v["tanky"], v["carry"], v["degats"], v.get("principal", ""), v.get("secondaire", "")]
-                for c, v in ex["catalogue"].items()},
+        # Catalogue : [catégorie de jungler de l'ancien catalogue (ganks, envahir), 5 cases inutilisées, les types].
+        "cat": {c: [v.get("groupe", ""), "", "", "", "", "", v.get("types", [])] for c, v in ex["catalogue"].items()},
         "tier": tier, "moy": moyenne, "lola": lola_noms, "mu": mu, "lanes": lanes,
         "ganks": ex["ganks"], "tf": ex["teamfight"], "invm": ex.get("envahir_minutes", {}),
         "dd": duree_degats(ex.get("duree_degats")),
