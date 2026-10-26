@@ -1,4 +1,7 @@
-name: Générer l'assistant Draft
+name: "5 · Générer l'assistant Draft (la page et le lien client)"
+# À QUOI IL SERT : recalculer nos analyses sur toutes les parties (or à 15 min, ganks, envahir, duels, dégâts,
+# types des champions) et produire la page « Assistant Draft - DL - <date>.html » et le lien client Windows (.exe).
+# QUAND : en dernier, après les boutons 1 à 3 (et 4 s'il a été lancé).
 
 # Bouton « Run workflow ». Assemble le projet dans un dossier de travail :
 #   collecte/, donnees/, archives/ (main), analyse/ (branche analyse), lolalytics/ (branche scraping),
@@ -22,6 +25,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
+      - name: À quoi sert ce bouton
+        run: |
+          echo "### 5 · Génération de l'assistant : analyses recalculées, page et lien client" >> "$GITHUB_STEP_SUMMARY"
+
       - uses: actions/checkout@v4
         with:
           ref: assistant
@@ -41,7 +48,7 @@ jobs:
           echo "PROJET=$projet" >> "$GITHUB_ENV"
           echo "PATCH=$(ls -d "$projet"/lolalytics/[0-9]*/ | sort -V | tail -1)" >> "$GITHUB_ENV"
 
-      - name: Recalculer nos modèles (lanes, ganks, duels, envahir, dégâts et durée, export)
+      - name: Recalculer nos modèles (lanes, ganks, duels, envahir, dégâts et durée, types, export)
         timeout-minutes: 40
         run: |
           cd "$PROJET/analyse"
@@ -50,6 +57,7 @@ jobs:
           python3 lanes/ganks.py > /dev/null
           python3 lanes/duels.py > /dev/null
           python3 lanes/duree_degats.py --lolalytics "$PATCH" > /dev/null || echo "::warning::Mix de dégâts et early/late en échec : page générée sans."
+          python3 types/classer.py > /dev/null || echo "::warning::Classification des types en échec : types du catalogue gardés."
           python3 export/exporter.py
 
       - name: Générer la page

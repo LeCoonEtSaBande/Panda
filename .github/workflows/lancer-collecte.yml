@@ -1,4 +1,7 @@
-name: Lancer une collecte
+name: "1 · Collecte : télécharger des parties classées (API Riot)"
+# À QUOI IL SERT : remplir donnees/ avec des parties classées Émeraude-Diamant EUW (détails et timeline), la matière
+# de toutes nos analyses. QUAND : en premier si on part de zéro, puis pour avoir plus de parties (5 h 15, environ
+# 7 000 parties). AVANT : mettre à jour le secret RIOT_API_KEY (la clé expire au bout de 24 h).
 
 # Bouton « Run workflow », ou modification de collecte/collecte.ini sur main.
 # La clé Riot est le secret RIOT_API_KEY du dépôt (Settings > Secrets and variables > Actions).

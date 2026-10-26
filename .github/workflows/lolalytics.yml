@@ -1,4 +1,6 @@
-name: Récupérer les stats Lolalytics du patch
+name: "2 · Lolalytics : stats du patch (force des champions, contres, matchups)"
+# À QUOI IL SERT : récupérer sur Lolalytics la force de chaque champion à chaque poste, les contres et les matchups du
+# patch en cours (branche « scraping »). QUAND : à chaque nouveau patch (environ 20 min), avant le bouton 5.
 
 # Bouton « Run workflow », une fois par patch (environ 20 minutes). Tier list de chaque poste, puis la page
 # de chaque champion à chaque poste (matchups, dégâts par type, victoires selon la durée), Platine et plus,
@@ -19,6 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
+      - name: À quoi sert ce bouton
+        run: |
+          echo "### 2 · Lolalytics : force des champions, contres et matchups du patch" >> "$GITHUB_STEP_SUMMARY"
+
       - uses: actions/checkout@v4
         with:
           ref: scraping

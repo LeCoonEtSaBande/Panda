@@ -1,4 +1,6 @@
-name: Mettre à jour le catalogue (Data Dragon)
+name: "3 · Data Dragon : champions et sorts du catalogue"
+# À QUOI IL SERT (résumé) : ajouter les nouveaux champions au catalogue et ranger leurs sorts (contrôle, déplacement,
+# protection). QUAND : à chaque nouveau patch, avant le bouton 5.
 
 # Bouton « Run workflow ». Lit la dernière version de Data Dragon (données officielles de Riot) et met à jour,
 # sur la branche « analyse » :
@@ -24,6 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: À quoi sert ce bouton
+        run: |
+          echo "### 3 · Data Dragon : nouveaux champions et sorts par catégorie" >> "$GITHUB_STEP_SUMMARY"
+
       - uses: actions/checkout@v4
         with:
           ref: analyse
