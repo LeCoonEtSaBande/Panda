@@ -28,7 +28,7 @@ Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la
   4. **Sur la carte** : chaque lane est une jauge, bleue depuis ta base, rouge depuis la leur ; le point blanc montre jusqu'où la lane pousse à 15 min (sa chance d'être devant). Ton équipe est toujours en bleu : côté rouge, ta base est simplement en haut à droite. Dessous, la jauge de la jungle et les ganks réussis avant 15 min, pour ton jungler et le leur, sur chaque lane.
   5. **Tes duels** contre chacun des 5 adversaires.
 - **Un poste sans champion dans le profil** = tous les champions de ce poste sont proposés.
-- **Seulement ce qui a passé sa vérification** : force du patch et contres (Lolalytics) ; confirmés sur nos parties jamais vues (tas C) : or à 15 min par lane, ganks, envahir à 15 min pour les junglers Engage (tanks et bruisers, catégories de l'ancien catalogue), early/late, mix de dégâts ; vérifiés sur le tas B : duels et types. Les effets du recuit teamfight, non confirmés, ont été retirés (24/10/2026).
+- **Seulement ce qui a passé sa vérification** : force du patch et contres (Lolalytics, vérifiés aussi sur nos parties) ; pour nos parties (or à 15 min par lane, ganks, envahir, early/late, mix de dégâts, duels, types), appris sur le tas A et affiché seulement si c'est vérifié sur le tas B, recalculé à chaque génération sur toutes les parties. Les effets du recuit n'entrent que confirmés sur C.
 
 ### La logique des deux blocs
 

@@ -237,8 +237,8 @@ table.ganks tr+tr td,table.ganks tbody tr:first-child td{border-top:1px solid va
         <details class="aide"><summary>Comment lire ce score</summary>
           <p>Points de victoire estimés, qui s'additionnent : force du champion au patch, contre ton adversaire direct, et à moitié contre
           le reste de leur équipe (Lolalytics, Platine et plus), plus la pénalité d'une équipe presque toute AD ou toute AP.
-          Adversaire direct inconnu : moyenne sur ses champions probables. Tout ce qui est affiché a été confirmé sur nos parties jamais
-          vues (tas C). Ordres de grandeur, pas des certitudes.</p></details>
+          Adversaire direct inconnu : moyenne sur ses champions probables. Tout ce qui est affiché a été vérifié sur des parties que
+          l'apprentissage n'a jamais vues (tas B). Ordres de grandeur, pas des certitudes.</p></details>
       </section>
 
       <section class="panneau">
@@ -250,9 +250,9 @@ table.ganks tr+tr td,table.ganks tbody tr:first-child td{border-top:1px solid va
         <details class="aide"><summary>Comment lire ces chiffres</summary>
           <p>Or à 15 min : écart attendu d'après les champions de la lane. Gank réussi : chance que le jungler participe à au moins un kill
           sur cette lane avant 15 min. Selon la durée : chance de gagner due au seul tempo des deux compos (early ou late), à draft égale par
-          ailleurs. 1 contre 1 : si deux champions se croisent seuls, chance de gagner à or et niveau égaux (forces confirmées
+          ailleurs. 1 contre 1 : si deux champions se croisent seuls, chance de gagner à or et niveau égaux (forces vérifiées
           seulement, les autres champions comptent comme moyens). Envahir : seulement quand c'est confirmé pour ce type de jungler ; c'est ce que font les junglers qui gagnent, à écart
-          d'or égal, pas une cause prouvée. Nos parties Émeraude-Diamant ; tout est confirmé sur des parties jamais vues (tas C).</p></details>
+          d'or égal, pas une cause prouvée. Nos parties Émeraude-Diamant : appris sur le tas A, et seulement ce qui est vérifié sur le tas B (parties jamais vues par l'apprentissage).</p></details>
       </section>
     </div>
   </div>
@@ -419,7 +419,7 @@ function tempoEquipe(eq) {
   return {s, n};
 }
 
-// --- Ce qui est confirmé sur C (le reste n'est pas affiché) -----------------------------------------
+// --- Ce qui est vérifié (sur B pour nos parties ; le reste n'est pas affiché) ----------------------------
 const CONF = D.conf || {};
 function envahirConfirme(gr) {
   const sortie = [];
