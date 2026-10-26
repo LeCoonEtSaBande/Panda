@@ -1,7 +1,9 @@
 """Exporte, pour l'assistant de draft, ce que les analyses ont appris de nos parties.
 
 Écrit analyse/export/assistant_donnees.json :
-- catalogue : le catalogue unifié (groupe teamfight, tanky, carry, dégâts, styles) ;
+- catalogue : les 10 types de chaque champion (catalogue unifié), son identifiant Riot, et sa catégorie de jungler
+  de l'ancien catalogue (seulement pour les ganks et envahir) ;
+- sorts : les sorts de chaque champion par catégorie exclusive (contrôle, déplacement, protection), d'après Data Dragon ;
 - lanes : le modèle des contres sur toutes les parties avec timeline (force de lane de chaque champion
   à chaque poste, effet propre des paires vues au moins 10 fois, écart-type de l'or à 15 min), pour
   annoncer l'écart d'or attendu à 15 min et la probabilité d'être devant ;
@@ -29,18 +31,41 @@ sys.path.insert(0, str(ANALYSE / "contres"))
 
 import contres  # noqa: E402
 
-CATALOGUE = ANALYSE / "catalogues" / "catalogue_unifie.csv"
+CATALOGUE = ANALYSE / "catalogues" / "catalogue_unifie.csv"          # les 10 types (classification) et l'identifiant Riot
+ANCIEN = ANALYSE / "catalogues" / "ancien_catalogue_2026-10-24.csv"  # catégories de jungler des ganks et d'envahir
+SORTS = ANALYSE / "catalogues" / "sorts.csv"                         # sorts par catégorie (Data Dragon)
 LANES_RES = ANALYSE / "lanes" / "resultats"
 RECUIT_RES = ANALYSE / "recuit" / "resultats"
 CONFIRMATION_RES = ANALYSE / "confirmation" / "resultats"
 SORTIE = ICI / "assistant_donnees.json"
 
 
+TYPES = ("carry", "enchanteur", "assassin", "plongeur", "attrapeur", "tank", "bloqueur", "dueliste", "splitpusher", "teamfighter")
+
+
 def catalogue():
+    """Pour chaque champion : ses types (catalogue unifié) et sa catégorie de jungler de l'ancien catalogue
+    (« groupe », seulement pour les ganks et envahir, confirmés avec ces catégories)."""
+    sortie = {}
     with open(CATALOGUE, encoding="utf-8", newline="") as f:
-        return {l["champion"]: {"groupe": l["groupe_teamfight"], "tanky": l["tanky"], "carry": l["carry"] == "oui",
-                                "degats": l["degats"], "principal": l["style_principal"], "secondaire": l["style_secondaire"]}
-                for l in csv.DictReader(f, delimiter=";")}
+        for l in csv.DictReader(f, delimiter=";"):
+            sortie[l["champion"]] = {"types": [t for t in TYPES if l.get(t) == "oui"], "id": l.get("id_riot", ""), "groupe": ""}
+    if ANCIEN.exists():
+        with open(ANCIEN, encoding="utf-8", newline="") as f:
+            for l in csv.DictReader(f, delimiter=";"):
+                sortie.setdefault(l["champion"], {"types": [], "id": "", "groupe": ""})["groupe"] = l["groupe_teamfight"]
+    return sortie
+
+
+def sorts():
+    """Sorts par catégorie exclusive (contrôle, déplacement, protection), d'après Data Dragon : {champion: [[touche, nom, catégorie, détail]]}."""
+    if not SORTS.exists():
+        return {}
+    sortie = {}
+    with open(SORTS, encoding="utf-8", newline="") as f:
+        for l in csv.DictReader(f, delimiter=";"):
+            sortie.setdefault(l["champion"], []).append([l["touche"], l["sort"], l["categorie"], l["detail"]])
+    return sortie
 
 
 def lanes():
@@ -154,6 +179,7 @@ def main():
     donnees = {
         "date": datetime.now(ZoneInfo("Europe/Paris")).strftime("%d/%m/%Y %H:%M"),
         "catalogue": catalogue(),
+        "sorts": sorts(),
         "lanes": lanes(),
         "ganks": json.loads((LANES_RES / "ganks_modele.json").read_text(encoding="utf-8")),
         "teamfight": tf,

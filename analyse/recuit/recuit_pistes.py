@@ -51,7 +51,8 @@ import commun  # noqa: E402
 import bloc2_compos as bloc2  # noqa: E402
 import bloc3_biais as bloc3  # noqa: E402
 
-CATALOGUE_UNIFIE = commun.ANALYSE / "catalogues" / "catalogue_unifie.csv"
+# Styles et groupes teamfight de l'ancien catalogue, figé le 24/10/2026 (le catalogue unifié a maintenant les 10 types).
+CATALOGUE_UNIFIE = commun.ANALYSE / "catalogues" / "ancien_catalogue_2026-10-24.csv"
 RESULTATS = ICI / "resultats"
 STYLES = ("Engage", "Pick", "Poke", "Counter-engage", "Disengage")
 COURT = {"Engage": "E", "Pick": "Pi", "Poke": "Po", "Counter-engage": "CE", "Disengage": "D"}

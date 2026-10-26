@@ -36,7 +36,8 @@ import bloc2_compos as bloc2  # noqa: E402
 import bloc3_biais as bloc3  # noqa: E402
 
 RESULTATS = ICI / "resultats"
-CATALOGUE = ICI.parent / "catalogues" / "catalogue_unifie.csv"
+# Catégories de jungler (groupes teamfight) de l'ancien catalogue, figé le 24/10/2026 : ganks et envahir ont été confirmés avec elles.
+CATALOGUE = ICI.parent / "catalogues" / "ancien_catalogue_2026-10-24.csv"
 LANES = ("top", "jgl", "mid", "bot")
 NOM = {"top": "top", "jgl": "jungle", "mid": "mid", "bot": "bot"}
 GROUPES = ("Engage (tanks)", "Engage (bruisers)", "Supports tanks", "Pick (assassins)", "Poke (artilleurs)",
