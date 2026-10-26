@@ -125,7 +125,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .carte .chip .petit{color:#5a6a74}
 .carte .chip.devant{border-left-color:#21844b} .carte .chip.derriere{border-left-color:#c0392b}
 .carte .chip.moi{outline:2px solid var(--nous);outline-offset:1px}
-.recap-haut .carte .chip{font-size:.66rem;padding:2px 6px}
+.recap-haut .carte .chip{display:block;font-size:.66rem;padding:2px 6px;white-space:normal;width:max-content;max-width:66%;text-align:center}
 @media (max-width:480px){.carte .chip{font-size:.62rem;padding:2px 5px}}
 .n{color:var(--nous);font-weight:600} .e{color:var(--eux);font-weight:600}
 .carte .chip .n{color:#1f6fbf} .carte .chip .e{color:#c0452c}
@@ -791,7 +791,7 @@ function dessinerCarte(nous, eux, infos, R) {
     if (infos[l].o) { const pt = m.getPointAtLength(tot * proba(l));
       fronts.insertAdjacentHTML("beforeend", `<circle cx="${pt.x.toFixed(2)}" cy="${pt.y.toFixed(2)}" r="3.3" fill="#fff" stroke="${proba(l) >= .5 ? "var(--nous)" : "var(--eux)"}" stroke-width="1.4"/>`); }
   });
-  const places = {top: [40, 21], mid: [58, 50], bot: [60, 80]}, roles = {top: ["top"], mid: ["mid"], bot: ["adc", "sup"]};
+  const places = {top: [42, 21], mid: [56, 50], bot: [56, 79]}, roles = {top: ["top"], mid: ["mid"], bot: ["adc", "sup"]};
   for (const l of ["top", "mid", "bot"]) {
     const o = infos[l].o, [x, y] = places[l], etatL = !o ? "egal" : (o.proba >= .55 ? "devant" : (o.proba <= .45 ? "derriere" : "egal"));
     el.insertAdjacentHTML("beforeend", `<div class="chip ${etatL}${l === maLane ? " moi" : ""}" style="left:${x}%;top:${y}%">
