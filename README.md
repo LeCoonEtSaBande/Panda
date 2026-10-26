@@ -6,7 +6,7 @@ Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la
 
 **Télécharger** : sur GitHub, branche `assistant`, cliquer sur le fichier, puis sur le bouton « Download raw file » (flèche vers le bas, en haut à droite du fichier). Le fichier fait environ 2 Mo : GitHub ne l'affiche pas, et un « Enregistrer sous » de la page GitHub donne une page vide.
 
-**Régénérer** : bouton « Générer l'assistant Draft » (sur `main`). À lancer après un passage Lolalytics (nouveau patch) ou quand des collectes ont ajouté des parties.
+**Régénérer** : bouton « 5 · Générer l'assistant Draft » (sur `main`). À lancer après un passage Lolalytics (nouveau patch) ou quand des collectes ont ajouté des parties.
 
 ## Ce qu'elle fait
 
