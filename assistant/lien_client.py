@@ -3,7 +3,7 @@
 Le client League expose, sur ton propre PC seulement, une interface locale (« LCU ») qui donne l'état de la
 sélection des champions. Ce programme la lit toutes les secondes et la met à disposition de la page, sur
 http://127.0.0.1:47123/draft. Il ne fait QUE lire ce que tu vois déjà dans ton client : champions choisis et
-bannis, les pré-picks de ton équipe, ton poste et ceux de ton équipe. Il ne lit jamais le nom ni les stats des autres joueurs, et ne clique
+bannis, les pré-picks de ton équipe, ton poste et ceux de ton équipe, ton côté (bleu ou rouge) et la version du jeu. Il ne lit jamais le nom ni les stats des autres joueurs, et ne clique
 jamais à ta place (règles de Riot pour les applications tierces).
 
 Utilisation : lancer ce programme (ou « Assistant Draft - Lien client.exe » sous Windows) avant ou pendant une
@@ -103,9 +103,24 @@ class Client:
             raise
 
 
+def patch_du_jeu(version):
+    """« 16.21.715.1234 » -> « 16.21 » (la version du jeu, comme celle de Lolalytics) ; "" si illisible."""
+    m = re.match(r"\s*(\d+)\.(\d+)", version if isinstance(version, str) else "")
+    return f"{int(m.group(1))}.{int(m.group(2))}" if m else ""
+
+
+def cote_de(session):
+    """« bleu » ou « rouge » d'après l'équipe de ton propre joueur (1 = bleu, 2 = rouge) ; "" si inconnu."""
+    moi = session.get("localPlayerCellId")
+    for j in session.get("myTeam", []):
+        if j.get("cellId") == moi:
+            return {1: "bleu", 2: "rouge", 100: "bleu", 200: "rouge"}.get(j.get("team"), "")
+    return ""
+
+
 def resumer(session):
     """Ce que la page a besoin de savoir : rien sur les joueurs, seulement champions (verrouillés, et pré-picks
-    de ton équipe), postes, bans et phase."""
+    de ton équipe), postes, bans, phase et ton côté."""
     if not session:
         return {"etat": "hors_selection"}
     moi = session.get("localPlayerCellId")
@@ -131,7 +146,7 @@ def resumer(session):
         eux.append({"champion": verrouille(j) or 0})
     phase = (session.get("timer") or {}).get("phase", "")
     return {"etat": "selection", "partie": session.get("gameId") or 0, "phase": phase, "nous": nous, "eux": eux,
-            "bans": sorted(set(b for b in bans if b and b > 0))}
+            "bans": sorted(set(b for b in bans if b and b > 0)), "cote": cote_de(session)}
 
 
 # --- Le petit serveur local pour la page --------------------------------------------------------------
@@ -187,18 +202,33 @@ def ouvrir_page():
         print("Ouvre la page de l'assistant dans ton navigateur : elle se reliera toute seule.")
 
 
+def lire_version(client):
+    """Version du jeu installée (« 16.21 »), lue une fois par connexion au client ; "" si indisponible."""
+    try:
+        return patch_du_jeu(client.get("/lol-patch/v1/game-version"))
+    except (urllib.error.URLError, OSError, ValueError):
+        return ""
+
+
 def boucle(etat, lockfile=None, une_fois=False):
-    client, annonce = None, None
+    client, annonce, version, tours = None, None, "", 0
     while True:
         try:
             if client is None:
                 trouve = trouver_client(lockfile)
                 if trouve:
-                    client = Client(*trouve)
+                    client, version, tours = Client(*trouve), "", 0
             if client is None:
                 valeur = {"etat": "client_ferme"}
             else:
+                # La version peut manquer juste après l'ouverture du client : on la redemande toutes les 30 s tant qu'elle manque,
+                # puis toutes les 10 min (le client se met à jour au redémarrage).
+                if (not version and tours % 30 == 0) or tours % 600 == 0:
+                    version = lire_version(client) or version
+                tours += 1
                 valeur = resumer(client.get("/lol-champ-select/v1/session"))
+                if version:
+                    valeur["version_jeu"] = version
         except (urllib.error.URLError, OSError, ValueError):
             client, valeur = None, {"etat": "client_ferme"}
         etat.poser(valeur)

@@ -145,6 +145,20 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .lien{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;color:var(--doux)}
 .lien::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ligne)}
 .lien.relie::before{background:var(--bon)} .lien.attente::before{background:var(--physique)}
+.droite{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:flex-end;margin-left:auto}
+.version{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;padding:3px 10px;border-radius:999px;border:1px solid var(--ligne);color:var(--doux)}
+.version::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ligne)}
+.version.ok{color:var(--texte)} .version.ok::before{background:var(--bon)}
+.version.vieux{color:var(--texte);border-color:var(--physique);background:color-mix(in srgb,var(--physique) 14%,transparent)}
+.version.vieux::before{background:var(--physique)}
+.duels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:900px){.duels{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:480px){.duels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.duel{background:var(--carte2);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:3px;min-width:0;border-top:3px solid var(--ligne)}
+.duel.pos{border-top-color:var(--bon)} .duel.neg{border-top-color:var(--mauvais)} .duel.nul{border-top-color:var(--doux)}
+.duel .d-tete{font-family:var(--titre);font-size:.88rem;overflow-wrap:anywhere;color:var(--texte)}
+.duel .d-grand{font-family:var(--chiffres);font-size:1.35rem;line-height:1.1}
+.duel .tag{align-self:flex-start;padding:0 6px;border-radius:999px;border:1px dashed var(--doux);font-size:.7rem;color:var(--doux)}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -156,8 +170,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <button type="button" role="tab" id="onglet-draft" data-onglet="draft">Draft</button>
       <button type="button" role="tab" id="onglet-profils" data-onglet="profils">Profils</button>
     </div>
-    <span class="lien" id="lien" title="Lance « Assistant Draft - Lien client » sur ton PC pour que la page voie les picks de ton client League.">Lien client non lancé</span>
-    <span class="meta" id="meta"></span>
+    <div class="droite">
+      <span class="lien" id="lien" title="Lance « Assistant Draft - Lien client » sur ton PC pour que la page voie les picks de ton client League.">Lien client non lancé</span>
+      <span class="version" id="version"></span>
+    </div>
+    <span class="meta" id="meta" style="flex-basis:100%"></span>
   </header>
 
   <div id="vue-draft">
@@ -199,7 +216,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <div class="reco" id="reco"></div>
         <details class="aide"><summary>Comment lire ce score</summary>
           <p>Points de victoire estimés, qui s'additionnent : force du champion au patch, contre ton adversaire direct, et à moitié contre
-          le reste de leur équipe (Lolalytics, Platine et plus), plus la pénalité d'une équipe presque toute physique ou toute magique.
+          le reste de leur équipe (Lolalytics, Platine et plus), plus la pénalité d'une équipe presque toute AD ou toute AP.
           Adversaire direct inconnu : moyenne sur ses champions probables. Tout ce qui est affiché a été confirmé sur nos parties jamais
           vues (tas C). Ordres de grandeur, pas des certitudes.</p></details>
       </section>
@@ -208,6 +225,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <h2 id="titre-plan">Comment jouer</h2>
         <div id="tempo" style="display:flex;flex-direction:column;gap:6px"></div>
         <div class="lanes" id="lanes"></div>
+        <div id="duels" style="display:flex;flex-direction:column;gap:6px"></div>
         <ul class="conseils" id="conseils"></ul>
         <details class="aide"><summary>Comment lire ces chiffres</summary>
           <p>Or à 15 min : écart attendu d'après les champions de la lane. Gank réussi : chance que le jungler participe à au moins un kill
@@ -227,10 +245,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
           <button type="button" id="nouvelle" class="principal">Nouvelle draft</button></div>
       </div>
       <section class="panneau"><h2>Le plan</h2><dl class="cles" id="recap-plan"></dl></section>
+      <section class="panneau" id="recap-duels-panneau"><div id="recap-duels" style="display:flex;flex-direction:column;gap:6px"></div></section>
       <div class="recap-corps">
         <section class="panneau">
           <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline">
-            <h2>Sur la carte</h2><label class="petit"><input type="checkbox" id="cote-rouge"> on est côté rouge</label>
+            <h2>Sur la carte</h2><label class="petit"><input type="checkbox" id="cote-rouge"> on est côté rouge <span id="cote-auto"></span></label>
           </div>
           <div class="carte" id="carte"></div>
           <p class="note">Bordure verte : lane annoncée devant à 15 min, rouge : derrière. Pourcentage : chance d'être devant à 15 min.</p>
@@ -343,7 +362,21 @@ function effetsEquipe(nous, eux) {
 // --- Mix de dégâts et tempo (early / late) ---------------------------------------------------------------
 const DD = D.dd;
 const points = b => 100 * (sig(b) - 0.5);
-const TITRE_MIX = a => a < 0.1 ? "Presque tout physique" : (a < 0.5 ? "Peu de dégâts magiques" : "Presque tout magique");
+const TITRE_MIX = a => a < 0.1 ? "Presque tout AD" : (a < 0.5 ? "Peu d'AP" : "Presque tout AP");
+// Dégâts en trois parts : AD (physiques), AP (magiques), Bruts (ni l'armure ni la résistance magique ne les réduisent).
+function texteMix(parts, suite) {
+  const [ad, ap, br] = parts.map(x => Math.round(100 * x));
+  return `<div class="petit">Dégâts : <b class="tx-phys">${ad} % AD</b> · <b class="tx-mag">${ap} % AP</b> · <b>${br} % Bruts</b>${suite || ""}</div>
+    <div class="barre-mix" role="img" aria-label="${ad} % AD, ${ap} % AP, ${br} % Bruts"><span class="phys" style="width:${ad}%"></span><span class="mag" style="width:${ap}%"></span><span class="vrai" style="width:${br}%"></span></div>`;
+}
+function conseilResist(m, qui) {       // qui : « Leur équipe fait » ou « Ils font »
+  const [ad, ap, br] = m.parts.map(x => Math.round(100 * x));
+  let t = m.parts[0] >= 0.65 ? `${qui} <b>${ad} % de dégâts AD</b> (${ap} % AP, ${br} % Bruts) : l'armure rapporte plus que la résistance magique.`
+    : (m.parts[1] >= 0.6 ? `${qui} <b>${ap} % de dégâts AP</b> (${ad} % AD, ${br} % Bruts) : la résistance magique rapporte plus que l'armure.`
+       : `${qui} des dégâts mixtes : ${ad} % AD, ${ap} % AP, ${br} % Bruts.`);
+  if (m.parts[2] >= 0.15) t += ` <b>${br} % de dégâts bruts</b> : ni l'armure ni la résistance magique ne les réduisent.`;
+  return t;
+}
 function mixEquipe(eq) {
   if (!DD) return null;
   const s = [0, 0, 0]; let connus = 0;
@@ -379,14 +412,30 @@ function duel(a, b, minute) {     // chance que a gagne s'ils se croisent seuls,
   const fa = M.champions[a] || [0, 0], fb = M.champions[b] || [0, 0], t = (minute - M.minute_ref) / 10;
   return sig(fa[0] - fb[0] + (fa[1] - fb[1]) * t);
 }
-function texteDuel(a, b) {
-  const p8 = duel(a, b, 8), p15 = duel(a, b, 15), p25 = duel(a, b, 25);
-  if (p8 === null) return "";
-  const pc = x => (100 * x).toFixed(0) + " %";
-  const inconnus = [a, b].filter(x => !(D.duel.confirmes || []).includes(x));
-  return `En 1 contre 1, à or et niveau égaux, ${esc(a)} gagne le duel contre ${esc(b)} : <b>${pc(p8)}</b> à 8 min, `
-    + `<b>${pc(p15)}</b> à 15 min, <b>${pc(p25)}</b> à 25 min. 1 000 or d'avance : ${pts(points(D.duel.or_1000))} points ; un niveau : ${pts(points(D.duel.niveau))}.`
-    + (inconnus.length ? ` <span class="petit">(${inconnus.map(esc).join(" et ")} : force en duel non confirmée, compté comme un champion moyen.)</span>` : "");
+
+// Les 5 duels de mon champion contre chaque champion adverse.
+function blocDuels(moi, eux) {
+  if (!D.duel) return "";
+  if (!moi) return `<h3 style="margin:0;font-family:var(--titre);font-size:.95rem">Tes duels</h3><p class="petit" style="margin:0">Choisis ton champion pour voir tes 1 contre 1.</p>`;
+  const conf = new Set(D.duel.confirmes || []), pc = x => (100 * x).toFixed(0) + " %";
+  const cartes = POSTES.filter(p => eux[p]).map(p => {
+    const e = eux[p], p8 = duel(moi, e, 8), p15 = duel(moi, e, 15), p25 = duel(moi, e, 25);
+    const approx = !conf.has(moi) || !conf.has(e), k = p15 >= 0.55 ? "pos" : (p15 <= 0.45 ? "neg" : "nul");
+    const sens = p25 - p8 >= 0.04 ? "↗ de mieux en mieux" : (p25 - p8 <= -0.04 ? "↘ de moins en moins" : "→ stable");
+    return {p, e, p15, html: `<div class="duel ${k}" title="Chance de gagner le duel si vous vous croisez seuls, à or et niveau égaux">
+      <span class="petit">${NOM_POSTE[p]}</span><span class="d-tete">${esc(e)}</span>
+      <span class="d-grand ${k}">${pc(p15)}</span><span class="petit">à 15 min</span>
+      <span class="petit">8 min ${pc(p8)} · 25 min ${pc(p25)}</span><span class="petit">${sens}</span>
+      ${approx ? `<span class="tag" title="${esc([moi, e].filter(x => !conf.has(x)).join(" et "))} : force en duel non confirmée, compté comme un champion moyen">approximatif</span>` : ""}</div>`};
+  });
+  if (!cartes.length) return `<h3 style="margin:0;font-family:var(--titre);font-size:.95rem">Tes duels avec ${esc(moi)}</h3><p class="petit" style="margin:0">Entre des champions adverses pour voir tes 1 contre 1.</p>`;
+  const gagnes = cartes.filter(c => c.p15 >= 0.55).map(c => c.e), perdus = cartes.filter(c => c.p15 <= 0.45).map(c => c.e);
+  const resume = [gagnes.length ? `tu gagnes contre <b>${gagnes.map(esc).join(", ")}</b>` : "", perdus.length ? `évite de croiser seul <b>${perdus.map(esc).join(", ")}</b>` : ""].filter(Boolean).join(" ; ");
+  return `<h3 style="margin:0;font-family:var(--titre);font-size:.95rem">Tes duels avec ${esc(moi)} <span class="petit">— 1 contre 1 à or et niveau égaux</span></h3>
+    ${conf.has(moi) ? "" : `<p class="note" style="margin:0">La force en duel de ${esc(moi)} n'est pas confirmée sur nos parties jamais vues : il compte comme un champion moyen, tous ces duels sont approximatifs.</p>`}
+    <div class="duels">${cartes.map(c => c.html).join("")}</div>
+    <p class="note">${resume ? resume.charAt(0).toUpperCase() + resume.slice(1) + "." : "Aucun duel nettement gagné ou perdu."} 1 000 or d'avance : ${pts(points(D.duel.or_1000))} points ; un niveau : ${pts(points(D.duel.niveau))}.
+      Vert : 55 % ou plus, rouge : 45 % ou moins. « Approximatif » : la force en duel d'un des deux n'est pas confirmée, il compte comme un champion moyen.</p>`;
 }
 
 // --- Recommandations, pour n'importe quel poste -------------------------------------------------------
@@ -475,9 +524,8 @@ function dessinerMix() {
   for (const cote of ["nous", "eux"]) {
     const el = document.getElementById("mix-" + cote), eq = equipe(cote), m = mixEquipe(eq);
     if (!m) { el.innerHTML = ""; continue; }
-    const [ph, ma, vr] = m.parts.map(x => Math.round(100 * x)), mx = mixEffet(m), tp = tempoEquipe(eq);
-    let html = `<div class="petit">Dégâts : <b class="tx-phys">${ph} % physiques</b> · <b class="tx-mag">${ma} % magiques</b> · ${vr} % bruts${m.connus < 5 ? ` <span>(${m.connus} champion${m.connus > 1 ? "s" : ""} connu${m.connus > 1 ? "s" : ""})</span>` : ""}</div>
-      <div class="barre-mix" role="img" aria-label="${ph} % physiques, ${ma} % magiques, ${vr} % bruts"><span class="phys" style="width:${ph}%"></span><span class="mag" style="width:${ma}%"></span><span class="vrai" style="width:${vr}%"></span></div>`;
+    const mx = mixEffet(m), tp = tempoEquipe(eq);
+    let html = texteMix(m.parts, m.connus < 5 ? ` <span>(${m.connus} champion${m.connus > 1 ? "s" : ""} connu${m.connus > 1 ? "s" : ""})</span>` : "");
     const puces = [];
     if (mx) puces.push(`<span class="puce ${cote === "nous" ? "neg" : "pos"}">${mx.titre} : ${pts(points(mx.coef))} points${cote === "eux" ? " pour eux" : ""}</span>`);
     if (tp.n) { const v = 100 * tp.s; puces.push(`<span class="puce">Tempo : ${Math.abs(v) < 3 ? "équilibré" : (v > 0 ? "plutôt late" : "plutôt early")} (${pts(v)} pts / 10 min)</span>`); }
@@ -544,6 +592,7 @@ function dessinerPlan(R, nous, eux) {
     cartes.push(html + "</div>");
   }
   document.getElementById("lanes").innerHTML = cartes.join("");
+  document.getElementById("duels").innerHTML = blocDuels(c, eux);
   dessinerTempo(avec, eux);
   const conseils = [], pc = x => (100 * x).toFixed(0) + " %";
   const lanes3 = ["top", "mid", "bot"].filter(l => infos[l].o);
@@ -559,14 +608,12 @@ function dessinerPlan(R, nous, eux) {
       const inv = envahirConfirme(groupe(c));
       if (inv.length) conseils.push(`Envahis la jungle adverse vers <b>${inv.map(x => x.minute + " min").join(" et ")}</b> : pour un jungler ${groupe(c)}, `
         + `ça va avec ${inv.map(x => pts(x.points)).join(" / ")} points de victoire, à écart d'or égal.`);
-      if (eux.jgl && texteDuel(c, eux.jgl)) conseils.push(texteDuel(c, eux.jgl));
       if (infos.jgl.o) conseils.push(`Or à 15 min face à leur jungler : ${infos.jgl.o.proba >= 0.5 ? "devant" : "derrière"} dans ${pc(Math.max(infos.jgl.o.proba, 1 - infos.jgl.o.proba))} des cas (farm, kills et objectifs ; ce n'est pas l'issue d'un combat entre vous deux).`);
     }
   } else {
     const i = infos[maLane];
     if (i.o) conseils.push(`Ta lane est annoncée ${i.o.or >= 0 ? "devant" : "derrière"} à 15 min : <b>${pc(i.o.proba)}</b> de chances d'être devant (${pts(i.o.or / 1000).replace(".", ",")} k or attendus).`);
     else conseils.push("Entre ton adversaire direct pour voir ta lane.");
-    if (eux[R] && texteDuel(c || nous[R], eux[R])) conseils.push(texteDuel(c || nous[R], eux[R]));
     if (i.pe !== null) conseils.push(`Risque que le jungler adverse (${eux.jgl}) réussisse un gank sur ta lane avant 15 min : <b>${pc(i.pe)}</b>${i.pe >= 0.7 ? " — joue prudemment, garde des balises." : "."}`);
     else conseils.push("Jungler adverse pas encore connu : le risque de gank s'affichera dès qu'il sera choisi.");
     if (i.pg !== null) conseils.push(`Chance que ton jungler (${avec.jgl}) réussisse un gank sur ta lane : <b>${pc(i.pg)}</b>.`);
@@ -575,8 +622,7 @@ function dessinerPlan(R, nous, eux) {
   }
   const me = mixEquipe(eux);
   if (me && me.connus >= 3) {
-    if (me.parts[0] >= 0.65) conseils.push(`Leur équipe fait <b>${Math.round(100 * me.parts[0])} % de dégâts physiques</b> : l'armure rapporte plus que la résistance magique.`);
-    else if (me.parts[1] >= 0.6) conseils.push(`Leur équipe fait <b>${Math.round(100 * me.parts[1])} % de dégâts magiques</b> : la résistance magique rapporte plus que l'armure.`);
+    conseils.push(conseilResist(me, "Leur équipe fait"));
   }
   document.getElementById("conseils").innerHTML = conseils.map(x => `<li>${x}</li>`).join("") || `<li class="petit">Entre des champions pour voir les lanes.</li>`;
 }
@@ -609,14 +655,13 @@ function lignesCC(c, max) {
 function degatsChamp(c, p) {
   const d = DD && ((DD.deg[p] || {})[c] || Object.values(DD.deg).map(x => x[c]).find(Boolean));
   if (!d) return "";
-  const [ph, ma, vr] = d.slice(0, 3).map(x => Math.round(100 * x));
-  return `<div class="petit">Dégâts : <b class="tx-phys">${ph} % physiques</b> · <b class="tx-mag">${ma} % magiques</b> · ${vr} % bruts</div>
-    <div class="barre-mix" role="img" aria-label="${ph} % physiques, ${ma} % magiques, ${vr} % bruts"><span class="phys" style="width:${ph}%"></span><span class="mag" style="width:${ma}%"></span><span class="vrai" style="width:${vr}%"></span></div>`;
+  return texteMix(d.slice(0, 3));
 }
 function dessinerRecap() {
   const nous = equipe("nous"), eux = equipe("eux"), R = etat.poste, moi = nous[R], maLane = laneDuPoste(R), pc = x => (100 * x).toFixed(0) + " %";
   document.getElementById("recap-titre").textContent = `${moi} en ${NOM_POSTE[R]}`;
   document.getElementById("cote-rouge").checked = !!etat.rouge;
+  document.getElementById("cote-auto").textContent = etat.coteClient ? "(lu dans le client)" : "";
   const infos = {};
   for (const [lane, roles] of LANES) {
     infos[lane] = {o: orLane(roles, nous, eux)};
@@ -653,13 +698,11 @@ function dessinerRecap() {
     if (i.pg !== null && i.pg !== undefined) t += ` Ton jungler (${esc(nous.jgl)}) : ${pc(i.pg)}.`;
     plan.push(["Ta lane", t.trim()]);
   }
-  const td = texteDuel(moi, eux[R]);
-  if (td) plan.push(["1 contre 1", td]);
+  document.getElementById("recap-duels").innerHTML = blocDuels(moi, eux);
+  document.getElementById("recap-duels-panneau").hidden = !D.duel;
   const me = mixEquipe(eux), mn = mixEquipe(nous);
   if (me) {
-    let t = me.parts[0] >= 0.65 ? `Ils font <b>${Math.round(100 * me.parts[0])} % de dégâts physiques</b> : l'armure rapporte plus.`
-      : (me.parts[1] >= 0.6 ? `Ils font <b>${Math.round(100 * me.parts[1])} % de dégâts magiques</b> : la résistance magique rapporte plus.`
-         : `Ils sont mixtes (${Math.round(100 * me.parts[0])} % physiques, ${Math.round(100 * me.parts[1])} % magiques).`);
+    let t = conseilResist(me, "Ils font");
     const fx = [[mixEffet(mn), "vous"], [mixEffet(me), "eux"]].filter(([x]) => x).map(([x, qui]) => `${x.titre.toLowerCase()} pour ${qui} (${pts(points(x.coef))} points)`);
     if (fx.length) t += ` ${fx.join(" ; ")}.`;
     plan.push(["Dégâts", t]);
@@ -791,7 +834,7 @@ document.addEventListener("change", e => {
     if (cote === "nous") { const autre = etat.nous.findIndex((l, k) => k !== i && l.poste === p); if (autre >= 0) etat.nous[autre].poste = etat.nous[i].poste; }
     else if (p) etat.eux.forEach((l, k) => { if (k !== i && l.poste === p) l.poste = ""; });
     etat[cote][i].poste = p; toutDraft();
-  } else if (s.id === "cote-rouge") { etat.rouge = s.checked; dessinerRecap(); garder();
+  } else if (s.id === "cote-rouge") { etat.rouge = s.checked; etat.coteClient = false; dessinerRecap(); garder();
   } else if (s.id === "tous") { etat.tous = s.checked; dessinerReco(); garder(); }
   else if (s.id === "profil-actif") { etat.actif = s.value; etat.manuel = false; toutDraft(); }
   else if (s.id === "poste-joue") { etat.poste = s.value; etat.manuel = false; toutDraft(); }
@@ -858,6 +901,7 @@ function appliquerSelection(r) {
     return {poste: champ && champ === avant.champ ? avant.poste : "", champ};
   });
   while (etat.eux.length < 5) etat.eux.push({poste: "", champ: ""});
+  if (r.cote === "rouge" || r.cote === "bleu") { etat.rouge = r.cote === "rouge"; etat.coteClient = true; }
   const moi = r.nous.find(j => j.moi);
   if (moi && moi.poste) { etat.posteClient = moi.poste; etat.poste = moi.poste; }
   // Ton survol ou ton pré-pick : « Comment jouer » le montre (sans le mettre dans ta ligne, pour garder les propositions).
@@ -868,16 +912,30 @@ function appliquerSelection(r) {
   if (["FINALIZATION", "GAME_STARTING"].includes(r.phase) && compoComplete() === 10 && !etat.recapAuto) { etat.recapAuto = true; etat.valide = true; }
   if (etat.onglet !== "profils") montrer(); else garder();
 }
+// Version du jeu (lue par le lien client) comparée au patch de l'assistant (Lolalytics).
+const versionNum = v => { const m = /^(\d+)\.(\d+)/.exec(v || ""); return m ? [+m[1], +m[2]] : null; };
+function majVersion(jeu) {
+  const el = document.getElementById("version"), a = versionNum(D.meta.patch), j = versionNum(jeu);
+  if (!a || !j) { el.className = "version"; el.textContent = `Patch ${D.meta.patch}`;
+    el.title = "La version du jeu s'affiche quand le lien client est lancé et le client League ouvert."; return; }
+  const ecart = (j[0] - a[0]) * 100 + (j[1] - a[1]);
+  if (ecart === 0) { el.className = "version ok"; el.textContent = `Patch ${D.meta.patch} à jour`; el.title = "L'assistant est sur le même patch que ton jeu."; }
+  else if (ecart > 0) { el.className = "version vieux"; el.textContent = `Jeu en ${j.join(".")}, assistant en ${D.meta.patch} : à mettre à jour`;
+    el.title = "Sur GitHub, onglet Actions : « Récupérer les stats Lolalytics du patch », puis « Générer l'assistant Draft », et retélécharge la page."; }
+  else { el.className = "version"; el.textContent = `Jeu en ${j.join(".")}, assistant en ${D.meta.patch}`; el.title = "Ton jeu est plus ancien que l'assistant."; }
+}
 async function interrogerClient() {
   let r = null;
   try { const rep = await fetch(LIEN, {cache: "no-store"}); r = await rep.json(); } catch (e) { r = null; }
   majLien(r);
+  majVersion(r && r.version_jeu);
   if (r && r.etat === "selection") { try { appliquerSelection(r); } catch (e) { console.warn(e); } }
   setTimeout(interrogerClient, r ? 1000 : 5000);
 }
 
 document.getElementById("tous").checked = !!etat.tous;
 document.getElementById("meta").textContent = `Patch ${D.meta.patch} (Lolalytics, Platine et plus) · nos analyses du ${D.meta.export} (${D.meta.parties_lanes} parties)`;
+majVersion("");
 montrer();
 interrogerClient();
 </script>

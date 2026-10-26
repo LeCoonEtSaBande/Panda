@@ -42,6 +42,37 @@ class ResumerTest(unittest.TestCase):
         self.assertNotIn("secret", texte)
         self.assertNotIn("123", texte)
 
+    def test_cote(self):
+        s = self.session()
+        self.assertEqual(L.resumer(s)["cote"], "")                      # équipe absente : inconnu
+        for j in s["myTeam"]:
+            j["team"] = 2
+        self.assertEqual(L.resumer(s)["cote"], "rouge")
+        for j in s["myTeam"]:
+            j["team"] = 1
+        self.assertEqual(L.resumer(s)["cote"], "bleu")
+
+    def test_patch_du_jeu(self):
+        self.assertEqual(L.patch_du_jeu("16.21.715.1234"), "16.21")
+        self.assertEqual(L.patch_du_jeu("16.3.1"), "16.3")
+        self.assertEqual(L.patch_du_jeu(""), "")
+        self.assertEqual(L.patch_du_jeu(None), "")
+        self.assertEqual(L.patch_du_jeu({"message": "erreur"}), "")
+
+    def test_version_lue_dans_la_boucle(self):
+        class Faux:
+            def get(self, chemin):
+                return "16.22.123.456" if chemin == "/lol-patch/v1/game-version" else None
+        ancien = L.trouver_client
+        L.trouver_client = lambda lockfile=None: (1, "x")
+        ancien_client = L.Client
+        L.Client = lambda port, jeton: Faux()
+        try:
+            valeur = L.boucle(L.Etat(), une_fois=True)
+        finally:
+            L.trouver_client, L.Client = ancien, ancien_client
+        self.assertEqual(valeur, {"etat": "hors_selection", "version_jeu": "16.22"})
+
     def test_hors_selection(self):
         self.assertEqual(L.resumer(None), {"etat": "hors_selection"})
 
