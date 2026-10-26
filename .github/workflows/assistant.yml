@@ -23,7 +23,7 @@ concurrency:
 jobs:
   assistant:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 80
     steps:
       - name: À quoi sert ce bouton
         run: |
@@ -48,8 +48,8 @@ jobs:
           echo "PROJET=$projet" >> "$GITHUB_ENV"
           echo "PATCH=$(ls -d "$projet"/lolalytics/[0-9]*/ | sort -V | tail -1)" >> "$GITHUB_ENV"
 
-      - name: Recalculer nos modèles (lanes, ganks, duels, envahir, dégâts et durée, types, export)
-        timeout-minutes: 40
+      - name: Recalculer nos modèles sur toutes les parties (A pour apprendre, B pour vérifier), puis l'export
+        timeout-minutes: 55
         run: |
           cd "$PROJET/analyse"
           python3 lanes/dynamique.py > /dev/null
@@ -58,6 +58,9 @@ jobs:
           python3 lanes/duels.py > /dev/null
           python3 lanes/duree_degats.py --lolalytics "$PATCH" > /dev/null || echo "::warning::Mix de dégâts et early/late en échec : page générée sans."
           python3 types/classer.py > /dev/null || echo "::warning::Classification des types en échec : types du catalogue gardés."
+          # Vérification sur B (toutes les parties : appris sur A, mesuré sur B) : ce qui ne tient pas n'est pas affiché.
+          python3 confirmation/confirmation_C.py --lolalytics "$PATCH" --sur B > /dev/null || echo "::warning::Vérification sur B en échec : dernière vérification enregistrée gardée."
+          python3 confirmation/confirmer_duree_degats.py --sur B > /dev/null || echo "::warning::Vérification de l'early/late et du mix en échec."
           python3 export/exporter.py
 
       - name: Générer la page

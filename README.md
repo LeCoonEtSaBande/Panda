@@ -16,9 +16,9 @@ Chaque résultat appartient à un de ces trois types, qui fixe la façon de le v
 |---|---|---|---|---|
 | **Recuits** | Des règles de compo et des scénarios (« telle compo gagne plus contre telle autre ») : on essaie beaucoup de règles, le risque de trouver un effet par hasard est grand. | **A, B, C** | Réglages choisis sur A, jugés sur B, puis **confirmés sur C** (parties collectées après le gel, jamais lues). Un C lu est consommé : nouveau gel. | bouton « 4 · Recuit » (recuit sur A et B, puis confirmation sur C toute seule) |
 | **Lolalytics** | Les « plus » et « moins » de victoire du patch : force des champions, contres, matchups. | — | Chiffres de Lolalytics (Platine et plus, tous serveurs), sur des centaines de milliers de parties. | bouton « 2 · Lolalytics » |
-| **Nos parties** | Avantage d'or à 15 min par lane, ganks, envahir, duels, et la classification des champions en types. | **A, B** | Appris sur A (3/4 des parties), **vérifié sur B** (1/4, partage stable par empreinte du numéro de partie), avec correction pour le nombre de tests quand il y en a beaucoup. | recalculés par « 5 · Générer l'assistant Draft » |
+| **Nos parties** | Avantage d'or à 15 min par lane, ganks, envahir, early/late, mix de dégâts, duels, et la classification des champions en types. | **A, B** | **Toutes les parties** (archive comprise), appris sur A (3/4), **vérifié sur B** (1/4, partage stable par empreinte du numéro de partie), avec correction pour le nombre de tests ; refait à chaque génération, donc chaque collecte en profite tout de suite. | recalculés et vérifiés par « 5 · Générer l'assistant Draft » |
 
-Les analyses « nos parties » déjà confirmées sur C avant le 26/10/2026 (or à 15 min, ganks, envahir, early/late, mix de dégâts) le restent ; les duels et les types passent par A et B seulement.
+Le gel et le tas C ne servent plus qu'au recuit. Une partie a le même tas A ou B dans les deux découpages (même graine).
 
 ## Les quatre branches
 
@@ -98,7 +98,8 @@ Le seul but de ces règles : ne pas casser ni interrompre les collectes, et ne p
 
 - Premières analyses (styles du catalogue d'origine, hypothèses, classification en 7 groupes), puis recherche itérative de biais de draft par recuit simulé : supprimées de `main` le 24/10/2026, retrouvables dans l'historique git.
 - Recuit teamfight : prometteur sur B, **non confirmé sur C** (24/10/2026) ; ses effets ne sont pas dans l'assistant.
-- Utilisés par l'assistant : force du patch et contres (Lolalytics) ; confirmés sur C : or à 15 min par lane, ganks, envahir à 15 min (junglers Engage), early/late, mix de dégâts ; vérifiés sur B : duels (1 contre 1) et types des champions. Détails sur la branche `analyse`.
+- Utilisés par l'assistant : force du patch et contres (Lolalytics) ; vérifiés sur B à chaque génération : or à 15 min par lane, ganks, envahir, early/late, mix de dégâts, duels (1 contre 1), types des champions. Détails sur la branche `analyse`.
+- 26/10/2026 (après-midi) : les analyses de nos parties prennent toutes les parties en A et B (plus de C pour elles) et sont vérifiées sur B à chaque génération. Premier passage : envahir vérifié à 20 min pour les junglers Engage (tanks) (à 15 min, il ne tient plus), mix de dégâts « à surveiller » donc plus affiché ; le reste tient.
 - 25/10/2026 : lien avec le client League (lecture de la sélection, pré-picks de son équipe compris).
 - 26/10/2026 : assistant v1.5 (version du jeu et côté lus dans le client, tes 5 duels, dégâts AD / AP / Bruts, carte en jauges, tableau « Qui est qui », blocs « Atteindre leurs cibles » et « Protéger vos cibles »). Catalogue unifié refait : les 10 types (Carry, Enchanteur, Assassin, Plongeur, Attrapeur, Tank, Bloqueur, Dueliste, Splitpusher, Teamfighter) classés sur nos parties à partir des références du propriétaire, et mis à jour par Data Dragon ; l'ancienne classification (styles, groupes teamfight) est gardée à part pour les ganks, envahir et le recuit. Duels corrigés : or et niveau par rapport à la normale du poste. Les trois types d'analyse sont posés (ci-dessus) ; les boutons sont numérotés de 1 à 5 dans l'ordre où les lancer, le recuit et sa confirmation sur C ne font plus qu'un (bouton 4).
 
