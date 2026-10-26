@@ -93,6 +93,8 @@ def construire(dossier_lola, export, sortie):
         "conf": ex.get("confirmation_C") or {},
         # Sorts par catégorie exclusive (contrôle, déplacement, protection), d'après Data Dragon (branche analyse).
         "sorts": ex.get("sorts") or {},
+        # Ultimes à surveiller relus à la main (combinaisons avec un passif, grosses zones) : {champion: raison}.
+        "ultis": ex.get("ultimes") or {},
         # Identifiant Riot -> nom (lien client) : Kayn n'a qu'un identifiant pour ses deux formes.
         "ids": {v["id"]: ("Kayn" if c.startswith("Kayn ") else c) for c, v in ex["catalogue"].items() if v.get("id")},
         # Duels : chacun avec l'or habituel de son poste ; forces vérifiées sur B seulement (None si le modèle ne tient pas).
