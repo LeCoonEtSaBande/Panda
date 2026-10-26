@@ -6,7 +6,7 @@ Sources :
 - nos analyses (branche analyse, analyse/export/assistant_donnees.json) : catalogue unifié, écart d'or attendu à
   15 min sur chaque lane, ganks réussis avant 15 min, envahir, early/late, mix de dégâts, et la liste de ce qui
   est confirmé sur C (seul affiché) ;
-- les contrôles des sorts (assistant/sorts.json, Data Dragon).
+- les sorts par catégorie et les identifiants Riot viennent aussi de l'export (catalogue mis à jour par Data Dragon).
 
     python3 assistant/construire.py --lolalytics <dossier du patch> --export <assistant_donnees.json>
 """
@@ -31,12 +31,6 @@ def nombre(x):
         return float(x)
     except (TypeError, ValueError):
         return None
-
-
-def lire_sorts(cle="champions"):
-    """Contrôles de chaque champion (« champions ») ou identifiants Riot -> noms (« ids ») de assistant/sorts.json."""
-    chemin = ICI / "sorts.json"
-    return json.loads(chemin.read_text(encoding="utf-8")).get(cle, {}) if chemin.exists() else {}
 
 
 def duree_degats(dd):
@@ -89,16 +83,18 @@ def construire(dossier_lola, export, sortie):
         "meta": {"patch": patch, "export": ex["date"], "parties_lanes": ex["lanes"]["parties"],
                  "parties_ganks": ex["ganks"]["parties"]},
         "noms": noms,
-        # Catalogue : [catégorie de jungler de l'ancien catalogue (ganks, envahir), 5 cases inutilisées, les types].
-        "cat": {c: [v.get("groupe", ""), "", "", "", "", "", v.get("types", [])] for c, v in ex["catalogue"].items()},
+        # Catalogue : [catégorie de jungler de l'ancien catalogue (seulement pour les ganks et envahir), les types].
+        "cat": {c: [v.get("groupe", ""), v.get("types", [])] for c, v in ex["catalogue"].items()},
         "tier": tier, "moy": moyenne, "lola": lola_noms, "mu": mu, "lanes": lanes,
         "ganks": ex["ganks"], "tf": ex["teamfight"], "invm": ex.get("envahir_minutes", {}),
         "dd": duree_degats(ex.get("duree_degats")),
         # Ce qui est confirmé sur C (l'export a déjà retiré le reste) et contrôles des sorts (Data Dragon).
         "conf": ex.get("confirmation_C") or {},
-        "cc": lire_sorts(),
-        "ids": lire_sorts("ids"),
-        # Duels de junglers à or égal (seulement les forces confirmées sur C ; None si non confirmé).
+        # Sorts par catégorie exclusive (contrôle, déplacement, protection), d'après Data Dragon (branche analyse).
+        "sorts": ex.get("sorts") or {},
+        # Identifiant Riot -> nom (lien client) : Kayn n'a qu'un identifiant pour ses deux formes.
+        "ids": {v["id"]: ("Kayn" if c.startswith("Kayn ") else c) for c, v in ex["catalogue"].items() if v.get("id")},
+        # Duels : chacun avec l'or habituel de son poste ; forces vérifiées sur B seulement (None si le modèle ne tient pas).
         "duel": ex.get("duels"),
     }
     modele = (ICI / "modele.html").read_text(encoding="utf-8")

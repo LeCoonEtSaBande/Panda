@@ -113,34 +113,54 @@ button:disabled{opacity:.45;cursor:not-allowed}
 @media (max-width:520px){.cles{grid-template-columns:1fr;gap:2px}.cles dd{margin-bottom:8px}}
 .recap-corps{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:900px){.recap-corps{grid-template-columns:1fr}}
-.carte{position:relative;width:100%;max-width:560px;aspect-ratio:1/1;margin:0 auto}
+.carte{position:relative;width:100%;max-width:560px;aspect-ratio:1/1;margin:0 auto;border-radius:14px;overflow:hidden}
 .carte svg{position:absolute;inset:0;width:100%;height:100%}
-.carte .sol{fill:var(--carte2)}
-.carte .riviere{stroke:var(--riviere);stroke-width:9;fill:none}
-.carte .voie{stroke:var(--ligne);stroke-width:4.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.carte .base-nous{fill:var(--nous)} .carte .base-eux{fill:var(--eux)}
-.carte .fosse{fill:var(--carte);stroke:var(--ligne);stroke-width:.6}
-.carte .etiquette{fill:var(--doux);font-size:3.2px;font-family:var(--corps)}
-.carte .gank{stroke:var(--nous);stroke-width:1.1;stroke-dasharray:2.2 1.6;fill:none;marker-end:url(#fleche)}
-.badge{position:absolute;transform:translate(-50%,-50%);width:36%;background:var(--carte);border:1px solid var(--ligne);border-left-width:4px;
-  border-radius:8px;padding:5px 7px;font-size:.74rem;line-height:1.3;box-shadow:0 2px 8px rgba(0,0,0,.18)}
-.badge.devant{border-left-color:var(--bon)} .badge.derriere{border-left-color:var(--mauvais)} .badge.egal{border-left-color:var(--doux)}
-.badge.moi{outline:2px solid var(--nous);outline-offset:1px}
-.badge .b-tete{display:flex;justify-content:space-between;gap:4px;font-family:var(--titre)}
-.badge .b-champs{color:var(--doux);overflow-wrap:anywhere}
-.badge .b-champs .n{color:var(--nous)} .badge .b-champs .e{color:var(--eux)}
-.badge .tag{display:inline-block;margin-top:2px;padding:0 5px;border-radius:999px;background:var(--fond);border:1px solid var(--ligne);font-size:.68rem}
-@media (max-width:480px){.badge{width:40%;font-size:.66rem;padding:3px 5px}}
-.champs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:640px){.champs{grid-template-columns:1fr}}
-.champs h3{margin:0 0 6px;font-family:var(--titre);font-size:.95rem}
-.champ{background:var(--carte2);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;margin-bottom:6px;border-left:3px solid var(--nous)}
-.champ.eux{border-left-color:var(--eux)}
-.champ .c-tete{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.cc{font-size:.8rem;display:flex;flex-direction:column;gap:2px}
-.touche{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:4px;background:var(--fond);border:1px solid var(--ligne);
-  font-family:var(--chiffres);font-size:.72rem;margin-right:4px}
-.puce.style{background:var(--nous-doux)}
+.carte .route{stroke:#d9c9a3;stroke-width:8.5;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.carte .j-eux,.carte .j-nous{stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.carte .j-eux{stroke:var(--eux)} .carte .j-nous{stroke:var(--nous)}
+.carte .chip{position:absolute;transform:translate(-50%,-50%);background:rgba(255,255,255,.95);color:#18222a;border-radius:9px;padding:3px 8px;font-size:.72rem;
+  line-height:1.3;box-shadow:0 2px 8px rgba(0,0,0,.28);white-space:nowrap;border-left:4px solid #8a979f}
+.carte .chip .petit{color:#5a6a74}
+.carte .chip.devant{border-left-color:#21844b} .carte .chip.derriere{border-left-color:#c0392b}
+.carte .chip.moi{outline:2px solid var(--nous);outline-offset:1px}
+@media (max-width:480px){.carte .chip{font-size:.62rem;padding:2px 5px}}
+.n{color:var(--nous);font-weight:600} .e{color:var(--eux);font-weight:600}
+.carte .chip .n{color:#1f6fbf} .carte .chip .e{color:#c0452c}
+.jauge-j{display:grid;grid-template-columns:64px 1fr 44px;gap:8px;align-items:center}
+.barre-j{height:12px;border-radius:6px;background:var(--eux);overflow:hidden;position:relative;display:block}
+.barre-j span{display:block;height:100%;background:var(--nous)}
+.barre-j i{position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(255,255,255,.85)}
+table.ganks{border-collapse:collapse;width:100%;font-size:.85rem}
+table.ganks th,table.ganks td{padding:4px 6px;text-align:left} table.ganks th{font-weight:600;color:var(--doux);font-size:.75rem}
+table.ganks tr+tr td,table.ganks tbody tr:first-child td{border-top:1px solid var(--ligne)}
+.mini{display:inline-flex;align-items:center;gap:6px} .mini .b{width:64px;height:7px;border-radius:4px;background:var(--carte2);overflow:hidden;display:inline-block}
+.mini .b span{display:block;height:100%} .fort{font-weight:700}
+.qui-cadre{overflow-x:auto}
+.qui{display:grid;grid-template-columns:96px repeat(5,minmax(150px,1fr));gap:8px;min-width:880px}
+.qui .cote{display:flex;align-items:center;font-family:var(--titre);border-radius:8px;padding:8px;color:#fff}
+.qui .cote.eux{background:var(--eux)} .qui .cote.nous{background:var(--nous)}
+:root{--fam-cible:#c98a00;--fam-menace:#8a3fa3;--fam-tank:#2e8b57;--fam-protecteur:#2f7fbf;--fam-autre:var(--ligne)}
+.ch{background:var(--carte2);border-radius:9px;padding:8px 9px;display:flex;flex-direction:column;gap:4px;border-top:4px solid var(--fam);min-width:0}
+.ch .eti{display:flex;flex-wrap:wrap;gap:2px 8px;font-size:.76rem;font-weight:700}
+.f-cible{color:var(--fam-cible)} .f-menace{color:var(--fam-menace)} .f-tank{color:var(--fam-tank)} .f-protecteur{color:var(--fam-protecteur)}
+.ch-nom{font-family:var(--titre);font-size:.98rem;overflow-wrap:anywhere}
+.types{display:flex;flex-wrap:wrap;gap:3px}
+.t{font-size:.7rem;padding:1px 6px;border-radius:999px;background:var(--carte);border:1px solid var(--ligne)}
+.rub{font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--doux);margin-top:3px}
+.sorts{display:flex;flex-direction:column;gap:2px;font-size:.76rem}
+.sort{display:inline}
+.touche{display:inline-grid;place-items:center;min-width:17px;height:17px;border-radius:4px;background:var(--carte);border:1px solid var(--ligne);
+  font-family:var(--chiffres);font-size:.68rem;margin-right:3px}
+.blocs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:900px){.blocs{grid-template-columns:1fr}}
+.bloc{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.bloc.eux{border-top:4px solid var(--eux)} .bloc.nous{border-top:4px solid var(--nous)}
+.b-ligne{display:grid;grid-template-columns:140px 1fr;gap:10px;padding:8px 10px;border-radius:8px;background:var(--carte2)}
+@media (max-width:520px){.b-ligne{grid-template-columns:1fr}}
+.qui-c small{display:block;color:var(--doux);font-weight:400}
+.obst{display:flex;flex-direction:column;gap:3px;font-size:.84rem;min-width:0}
+.obst .sort{margin-right:6px}
+.lecture{background:color-mix(in srgb,var(--fam-cible) 12%,var(--carte));border:1px solid color-mix(in srgb,var(--fam-cible) 45%,var(--carte));border-radius:8px;padding:8px 10px;font-size:.9rem}
 .ligne input.prevu{border-style:dashed;font-style:italic;color:var(--doux)}
 .lien{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;color:var(--doux)}
 .lien::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ligne)}
@@ -245,16 +265,20 @@ button:disabled{opacity:.45;cursor:not-allowed}
           <button type="button" id="nouvelle" class="principal">Nouvelle draft</button></div>
       </div>
       <section class="panneau"><h2>Le plan</h2><dl class="cles" id="recap-plan"></dl></section>
-      <section class="panneau" id="recap-duels-panneau"><div id="recap-duels" style="display:flex;flex-direction:column;gap:6px"></div></section>
+      <section class="panneau"><h2>Qui est qui</h2><div id="qui-est-qui"></div>
+        <p class="note">🎯 cible prioritaire (Carry, Enchanteur) · 💀 menace pour vos cibles (Assassin, Plongeur, Attrapeur) · 💚 tank · 🛡️ protecteur (Bloqueur).
+          Types : 🎯 Carry, ✨ Enchanteur, 🗡️ Assassin, 🤿 Plongeur, 🪝 Attrapeur, 💚 Tank, 🛡️ Bloqueur, ⚔️ Dueliste, ♜ Splitpusher, 👥 Teamfighter.
+          Chaque sort est rangé une seule fois : contrôle, protection ou déplacement (« fuite » pour une cible, « mobilité » pour un assassin ou un plongeur).</p></section>
+      <div class="blocs" id="blocs"></div>
       <div class="recap-corps">
         <section class="panneau">
           <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline">
             <h2>Sur la carte</h2><label class="petit"><input type="checkbox" id="cote-rouge"> on est côté rouge <span id="cote-auto"></span></label>
           </div>
           <div class="carte" id="carte"></div>
-          <p class="note">Bordure verte : lane annoncée devant à 15 min, rouge : derrière. Pourcentage : chance d'être devant à 15 min.</p>
+          <div id="carte-bas" style="display:flex;flex-direction:column;gap:8px"></div>
         </section>
-        <section class="panneau"><h2>Les champions</h2><div class="champs" id="recap-champs"></div></section>
+        <section class="panneau" id="recap-duels-panneau"><div id="recap-duels" style="display:flex;flex-direction:column;gap:6px"></div></section>
       </div>
     </div>
   </div>
@@ -406,36 +430,37 @@ function envahirConfirme(gr) {
   return sortie;
 }
 
-// --- Duels à or et niveau égaux, tous les champions (confirmés sur C) ---------------------------------
-function duel(a, b, minute) {     // chance que a gagne s'ils se croisent seuls, à or et niveau égaux
+// --- Duels : chacun avec l'or et le niveau habituels de son poste (forces vérifiées sur B) ---------------
+function duel(a, pa, b, pb, minute) {     // chance que a (au poste pa) gagne contre b (au poste pb) s'ils se croisent seuls
   const M = D.duel; if (!M || !a || !b) return null;
   const fa = M.champions[a] || [0, 0], fb = M.champions[b] || [0, 0], t = (minute - M.minute_ref) / 10;
-  return sig(fa[0] - fb[0] + (fa[1] - fb[1]) * t);
+  const P = M.postes || {}, ra = P[pa] || [0, 0], rb = P[pb] || [0, 0];
+  return sig(fa[0] - fb[0] + ra[0] - rb[0] + (fa[1] - fb[1] + ra[1] - rb[1]) * t);
 }
 
 // Les 5 duels de mon champion contre chaque champion adverse.
-function blocDuels(moi, eux) {
+function blocDuels(moi, R, eux) {
   if (!D.duel) return "";
   if (!moi) return `<h3 style="margin:0;font-family:var(--titre);font-size:.95rem">Tes duels</h3><p class="petit" style="margin:0">Choisis ton champion pour voir tes 1 contre 1.</p>`;
   const conf = new Set(D.duel.confirmes || []), pc = x => (100 * x).toFixed(0) + " %";
   const cartes = POSTES.filter(p => eux[p]).map(p => {
-    const e = eux[p], p8 = duel(moi, e, 8), p15 = duel(moi, e, 15), p25 = duel(moi, e, 25);
+    const e = eux[p], p8 = duel(moi, R, e, p, 8), p15 = duel(moi, R, e, p, 15), p25 = duel(moi, R, e, p, 25);
     const approx = !conf.has(moi) || !conf.has(e), k = p15 >= 0.55 ? "pos" : (p15 <= 0.45 ? "neg" : "nul");
     const sens = p25 - p8 >= 0.04 ? "↗ de mieux en mieux" : (p25 - p8 <= -0.04 ? "↘ de moins en moins" : "→ stable");
-    return {p, e, p15, html: `<div class="duel ${k}" title="Chance de gagner le duel si vous vous croisez seuls, à or et niveau égaux">
+    return {p, e, p15, html: `<div class="duel ${k}" title="Chance de gagner le duel si vous vous croisez seuls, chacun avec l'or et le niveau habituels de son poste">
       <span class="petit">${NOM_POSTE[p]}</span><span class="d-tete">${esc(e)}</span>
       <span class="d-grand ${k}">${pc(p15)}</span><span class="petit">à 15 min</span>
       <span class="petit">8 min ${pc(p8)} · 25 min ${pc(p25)}</span><span class="petit">${sens}</span>
-      ${approx ? `<span class="tag" title="${esc([moi, e].filter(x => !conf.has(x)).join(" et "))} : force en duel non confirmée, compté comme un champion moyen">approximatif</span>` : ""}</div>`};
+      ${approx ? `<span class="tag" title="${esc([moi, e].filter(x => !conf.has(x)).join(" et "))} : force en duel non vérifiée, compté comme un champion moyen de son poste">approximatif</span>` : ""}</div>`};
   });
   if (!cartes.length) return `<h3 style="margin:0;font-family:var(--titre);font-size:.95rem">Tes duels avec ${esc(moi)}</h3><p class="petit" style="margin:0">Entre des champions adverses pour voir tes 1 contre 1.</p>`;
   const gagnes = cartes.filter(c => c.p15 >= 0.55).map(c => c.e), perdus = cartes.filter(c => c.p15 <= 0.45).map(c => c.e);
   const resume = [gagnes.length ? `tu gagnes contre <b>${gagnes.map(esc).join(", ")}</b>` : "", perdus.length ? `évite de croiser seul <b>${perdus.map(esc).join(", ")}</b>` : ""].filter(Boolean).join(" ; ");
-  return `<h3 style="margin:0;font-family:var(--titre);font-size:.95rem">Tes duels avec ${esc(moi)} <span class="petit">— 1 contre 1 à or et niveau égaux</span></h3>
-    ${conf.has(moi) ? "" : `<p class="note" style="margin:0">La force en duel de ${esc(moi)} n'est pas confirmée sur nos parties jamais vues : il compte comme un champion moyen, tous ces duels sont approximatifs.</p>`}
+  return `<h3 style="margin:0;font-family:var(--titre);font-size:.95rem">Tes duels avec ${esc(moi)} <span class="petit">— 1 contre 1, chacun avec l'or habituel de son poste</span></h3>
+    ${conf.has(moi) ? "" : `<p class="note" style="margin:0">La force en duel de ${esc(moi)} n'est pas vérifiée sur nos parties (tas B) : il compte comme un champion moyen de son poste, tous ces duels sont approximatifs.</p>`}
     <div class="duels">${cartes.map(c => c.html).join("")}</div>
-    <p class="note">${resume ? resume.charAt(0).toUpperCase() + resume.slice(1) + "." : "Aucun duel nettement gagné ou perdu."} 1 000 or d'avance : ${pts(points(D.duel.or_1000))} points ; un niveau : ${pts(points(D.duel.niveau))}.
-      Vert : 55 % ou plus, rouge : 45 % ou moins. « Approximatif » : la force en duel d'un des deux n'est pas confirmée, il compte comme un champion moyen.</p>`;
+    <p class="note">${resume ? resume.charAt(0).toUpperCase() + resume.slice(1) + "." : "Aucun duel nettement gagné ou perdu."} Chaque 1 000 or d'avance en plus de la normale de ton poste : ${pts(points(D.duel.or_1000))} points ; chaque niveau : ${pts(points(D.duel.niveau))}.
+      Vert : 55 % ou plus, rouge : 45 % ou moins. « Approximatif » : la force en duel d'un des deux n'est pas vérifiée, il compte comme un champion moyen de son poste.</p>`;
 }
 
 // --- Recommandations, pour n'importe quel poste -------------------------------------------------------
@@ -470,9 +495,9 @@ function evaluer(c, R, nous, eux) {
   for (const e of effets) puces.push({t: `${e.sens > 0 ? "" : "(eux) "}${e.nom} : ${(100 * e.taux).toFixed(1)} %`, v: (e.sens > 0 ? e.taux : 1 - e.taux) - 0.5, detail: true});
   if (mx) puces.push({t: `${mx.titre} ${pts(points(mx.coef))}`, v: points(mx.coef), detail: effets.length > 0});
   if (eux[R] && D.duel) {
-    const p8 = duel(c, eux[R], 8), p15 = duel(c, eux[R], 15);
+    const p8 = duel(c, R, eux[R], R, 8), p15 = duel(c, R, eux[R], R, 15);
     const sur = [c, eux[R]].every(x => (D.duel.confirmes || []).includes(x));
-    puces.push({t: `1 contre 1 à or égal vs ${eux[R]} : ${(100 * p8).toFixed(0)} % (8 min) / ${(100 * p15).toFixed(0)} % (15 min)${sur ? "" : " — approximatif"}`, v: sur ? p15 - 0.5 : 0});
+    puces.push({t: `1 contre 1 vs ${eux[R]} : ${(100 * p8).toFixed(0)} % (8 min) / ${(100 * p15).toFixed(0)} % (15 min)${sur ? "" : " — approximatif"}`, v: sur ? p15 - 0.5 : 0});
   }
   const s = DD && (DD.late[R] || {})[c];
   if (s !== undefined && s !== null && Math.abs(100 * s) >= 2) puces.push({t: `${s > 0 ? "late" : "early"} (${pts(100 * s)} pts / 10 min)`, v: 0});
@@ -562,7 +587,7 @@ function dessinerReco() {
   else if (!etat.manuel || !res.find(r => r.c === etat.choix)) { etat.manuel = false; etat.choix = (res[0] && res[0].c) || ""; }
   document.getElementById("reco").innerHTML = res.length ? res.slice(0, tousLesChamps ? 15 : 12).map(r => `
     <button type="button" class="cand${r.c === etat.choix ? " choisi" : ""}" data-c="${esc(r.c)}">
-      <span class="nom">${esc(r.c)}${r.c === nous[R] ? " <span class='petit'>(ton pick)</span>" : ""}<br><span class="petit">${esc(groupe(r.c) || "?")}</span></span>
+      <span class="nom">${esc(r.c)}${r.c === nous[R] ? " <span class='petit'>(ton pick)</span>" : ""}<br><span class="petit" title="${esc(typesDe(r.c).map(t => TYPE[t][1]).join(", "))}">${iconesTypes(r.c) || "—"}</span></span>
       <span class="score ${cls(r.total)}" title="Points de victoire estimés">≈ ${pts(r.total)}</span>
       <span class="puces">${r.puces.map(p => `<span class="puce ${cls(p.v)}${p.detail ? " detail" : ""}">${esc(p.t)}</span>`).join("")}</span>
     </button>`).join("") : `<p class="petit">Aucun champion à proposer pour ce poste.</p>`;
@@ -592,7 +617,7 @@ function dessinerPlan(R, nous, eux) {
     cartes.push(html + "</div>");
   }
   document.getElementById("lanes").innerHTML = cartes.join("");
-  document.getElementById("duels").innerHTML = blocDuels(c, eux);
+  document.getElementById("duels").innerHTML = blocDuels(c, R, eux);
   dessinerTempo(avec, eux);
   const conseils = [], pc = x => (100 * x).toFixed(0) + " %";
   const lanes3 = ["top", "mid", "bot"].filter(l => infos[l].o);
@@ -628,35 +653,162 @@ function dessinerPlan(R, nous, eux) {
 }
 
 // --- Récapitulatif après « Valider la compo » ------------------------------------------------------
-const FORTS = new Set(["neutralise", "projette en l'air", "étourdit", "charme", "terrifie", "provoque", "endort", "attire", "transforme"]);
 const LANE_NOM = {top: "Top", jgl: "Jungle", mid: "Mid", bot: "Bot"};
+const FORTS = ["neutralise", "projette", "étourdit", "charme", "terrifie", "provoque", "endort", "attire", "transforme", "stase", "enferme", "isole", "rend fou", "immobilise"];
+// Le contrôle à garder contre une menace : un sort de base (Q, W, E) avant l'ultime, puis le plus fort.
+const rangCtrl = s => (s[0] === "R" ? 100 : 0) + Math.min(...FORTS.map((f, i) => s[3].includes(f) ? i : 99));
 function compoComplete() { const n = equipe("nous"), e = equipe("eux"); return POSTES.filter(p => n[p]).length + POSTES.filter(p => e[p]).length; }
 function majValider() {
   const nb = compoComplete(), b = document.getElementById("valider");
   b.disabled = nb < 10;
   document.getElementById("valider-aide").textContent = nb < 10 ? `${10 - nb} champion${10 - nb > 1 ? "s" : ""} à entrer` : "";
 }
-function sortsDe(c) { return (D.cc || {})[lola(c)] || []; }
-function styles(c) {
-  const k = D.cat[c] || [], pr = k[4] || k[5] || "", se = k[4] ? k[5] : "";
-  const out = [];
-  if (pr) out.push(`<span class="puce style">${esc(pr)}</span>`);
-  if (se) out.push(`<span class="puce style">${esc(se)}</span>`);
-  if (k[0]) out.push(`<span class="puce">${esc(k[0])}</span>`);
-  if (k[1] === "HP+") out.push(`<span class="puce">très tanky</span>`); else if (k[1] === "HP") out.push(`<span class="puce">tanky</span>`);
-  if (k[2]) out.push(`<span class="puce">carry</span>`);
-  return out.join("");
+
+// Les types (catalogue unifié) et les étiquettes au-dessus du nom.
+const TYPE = {carry: ["🎯", "Carry"], enchanteur: ["✨", "Enchanteur"], assassin: ["🗡️", "Assassin"], plongeur: ["🤿", "Plongeur"],
+  attrapeur: ["🪝", "Attrapeur"], tank: ["💚", "Tank"], bloqueur: ["🛡️", "Bloqueur"], dueliste: ["⚔️", "Dueliste"],
+  splitpusher: ["♜", "Splitpusher"], teamfighter: ["👥", "Teamfighter"]};
+const FAMILLES = [["cible", "🎯", "Cible prioritaire", ["carry", "enchanteur"]], ["menace", "💀", "Menace", ["assassin", "plongeur", "attrapeur"]],
+  ["tank", "💚", "Tank", ["tank"]], ["protecteur", "🛡️", "Protecteur", ["bloqueur"]]];
+const typesDe = c => ((D.cat[c] || [])[1]) || [];
+const aType = (c, t) => typesDe(c).includes(t);
+const familles = c => FAMILLES.filter(f => f[3].some(t => aType(c, t)));
+const estCible = c => aType(c, "carry") || aType(c, "enchanteur");
+const estMenace = c => aType(c, "assassin") || aType(c, "plongeur") || aType(c, "attrapeur");
+const estProtecteur = c => aType(c, "bloqueur") || aType(c, "enchanteur");
+const iconesTypes = c => typesDe(c).map(t => TYPE[t][0]).join(" ");
+// Sorts par catégorie exclusive (Data Dragon) : [touche, nom, catégorie, détail].
+function sortsDe(c, cat) { const S = D.sorts || {}; return (S[c] || S[lola(c)] || []).filter(s => !cat || s[2] === cat); }
+const unSort = ([k, nom, , det], qui) => `<span class="sort"><span class="touche">${k}</span>${esc(nom)}${qui ? ` <span class="petit">(${esc(qui)})</span>` : ""}${det ? ` <span class="petit">— ${esc(det)}</span>` : ""}</span>`;
+const listeSorts = (L, vide) => L.length ? L.map(s => unSort(s)).join("") : `<span class="petit">${vide}</span>`;
+function poidsSorts(c) { return sortsDe(c, "deplacement").length + sortsDe(c, "protection").length; }
+
+// Une colonne du tableau « Qui est qui » : tout le monde a ses contrôles ; une cible, ses protections et ses fuites ;
+// un assassin ou un plongeur, sa mobilité. Chaque sort n'apparaît qu'une fois.
+function colonneChampion(c, p, cote) {
+  const f = familles(c), rubs = [["Contrôles", sortsDe(c, "controle"), "aucun"]];
+  if (estCible(c)) rubs.push(["Protection", sortsDe(c, "protection"), "aucune"], ["Fuite", sortsDe(c, "deplacement"), "aucune"]);
+  else if (aType(c, "assassin") || aType(c, "plongeur")) rubs.push(["Mobilité", sortsDe(c, "deplacement"), "aucune"]);
+  return `<div class="ch ${cote}" style="--fam:var(--fam-${(f[0] || ["autre"])[0]})">
+    <div class="eti">${f.length ? f.slice(0, 2).map(x => `<span class="f-${x[0]}">${x[1]} ${x[2]}</span>`).join("") : `<span class="petit">—</span>`}</div>
+    <div class="ch-nom">${esc(c)} <span class="petit">${NOM_POSTE[p]}</span></div>
+    <div class="types">${typesDe(c).map(t => `<span class="t">${TYPE[t][0]} ${TYPE[t][1]}</span>`).join("") || '<span class="petit">aucun type net</span>'}</div>
+    ${rubs.map(([titre, L, vide]) => `<div class="rub">${titre}</div><div class="sorts">${listeSorts(L, vide)}</div>`).join("")}
+  </div>`;
 }
-function lignesCC(c, max) {
-  const s = sortsDe(c).slice(0, max);
-  if (!s.length) return `<span class="petit">Pas de gros contrôle.</span>`;
-  return s.map(([k, nom, types]) => `<span><span class="touche">${k}</span>${esc(nom)} <span class="petit">— ${types.join(", ")}</span></span>`).join("");
+function quiEstQui(nous, eux) {
+  return `<div class="qui-cadre"><div class="qui">
+    <div class="cote eux">Leur équipe</div>${POSTES.map(p => colonneChampion(eux[p], p, "eux")).join("")}
+    <div class="cote nous">Ton équipe</div>${POSTES.map(p => colonneChampion(nous[p], p, "nous")).join("")}
+  </div></div>`;
 }
-function degatsChamp(c, p) {
-  const d = DD && ((DD.deg[p] || {})[c] || Object.values(DD.deg).map(x => x[c]).find(Boolean));
-  if (!d) return "";
-  return texteMix(d.slice(0, 3));
+
+// Atteindre leurs cibles : pour chaque cible, ses fuites, ses protections, ses contrôles pour se défendre et qui la protège.
+function blocAtteindre(nous, eux, moi) {
+  const cibles = POSTES.filter(p => estCible(eux[p]));
+  const protecteurs = POSTES.filter(p => estProtecteur(eux[p]));
+  if (!cibles.length) return `<p class="petit">Pas de cible prioritaire nette en face : aucun carry ni enchanteur dans leur équipe.</p>`;
+  const lignes = cibles.map(p => {
+    const c = eux[p], fuite = sortsDe(c, "deplacement"), prot = sortsDe(c, "protection"), ctrl = sortsDe(c, "controle");
+    const gardes = protecteurs.filter(q => q !== p).map(q => ({q, c: eux[q], proche: (p === "adc" && q === "sup") || (p === "sup" && q === "adc")}));
+    const sortsGardes = g => [...sortsDe(g.c, "controle"), ...sortsDe(g.c, "protection")];
+    const obstacle = fuite.length + prot.length + 0.5 * ctrl.length + gardes.reduce((s, g) => s + (g.proche ? 2 : 0.5), 0);
+    return {c, p, obstacle, fuite, prot, html: `<div class="b-ligne"><div class="qui-c">🎯 <span class="e">${esc(c)}</span><small>${NOM_POSTE[p]} · ${typesDe(c).filter(t => t === "carry" || t === "enchanteur").map(t => TYPE[t][1]).join(", ")}</small></div><div class="obst">
+      <span><b>Sa fuite</b> : ${listeSorts(fuite, "aucune")}</span>
+      <span><b>Sa protection</b> : ${listeSorts(prot, "aucune")}</span>
+      ${ctrl.length ? `<span><b>Ses contrôles pour se défendre</b> : ${listeSorts(ctrl, "")}</span>` : ""}
+      <span><b>Qui la protège</b> : ${gardes.length ? gardes.map(g => `🛡️ <span class="e">${esc(g.c)}</span>${g.proche ? " (à côté d'elle en bot)" : ""} ${sortsGardes(g).map(s => unSort(s)).join("")}`).join(" · ") : "personne"}</span>
+    </div></div>`};
+  }).sort((a, b) => a.obstacle - b.obstacle);
+  const m = lignes[0], n = (L, mot) => L.length ? `${L.length} ${mot}${L.length > 1 ? "s" : ""}` : `pas de ${mot}`;
+  let lecture = `🎯 <b>Cible la plus accessible : <span class="e">${esc(m.c)}</span></b> (${n(m.fuite, "fuite")}, ${n(m.prot, "protection")}).`;
+  if (lignes.length > 1) { const d = lignes[lignes.length - 1];
+    lecture += ` La plus protégée : <span class="e">${esc(d.c)}</span> (${n(d.fuite, "fuite")}, ${n(d.prot, "protection")}${protecteurs.some(q => q !== d.p) ? ", et des protecteurs" : ""}) : fais tomber ces sorts avant d'y aller.`; }
+  return lignes.map(l => l.html).join("") + `<div class="lecture">${lecture}</div>`;
 }
+
+// Protéger nos cibles : leurs menaces (comment elles arrivent), nos cibles (la plus fragile), et nos sorts pour les protéger.
+function blocProteger(nous, eux, moi) {
+  const nosCibles = POSTES.filter(p => estCible(nous[p])).map(p => ({p, c: nous[p], poids: poidsSorts(nous[p])})).sort((a, b) => a.poids - b.poids || (b.p === "adc") - (a.p === "adc"));
+  const ordre = c => aType(c, "assassin") ? 0 : (aType(c, "plongeur") ? 1 : 2);
+  const menaces = POSTES.filter(p => estMenace(eux[p])).map(p => ({p, c: eux[p]})).sort((a, b) => ordre(a.c) - ordre(b.c) || sortsDe(b.c, "deplacement").length - sortsDe(a.c, "deplacement").length);
+  if (!menaces.length && !nosCibles.length) return `<p class="petit">Ni menace nette en face, ni cible prioritaire chez vous.</p>`;
+  const fragile = nosCibles[0];
+  const lignes = menaces.map(({p, c}) => {
+    const genre = ["assassin", "plongeur", "attrapeur"].filter(t => aType(c, t)).map(t => TYPE[t][1]).join(", ");
+    const arrive = sortsDe(c, "deplacement"), attrape = aType(c, "attrapeur") ? sortsDe(c, "controle") : [];
+    return `<div class="b-ligne"><div class="qui-c">💀 <span class="e">${esc(c)}</span><small>${NOM_POSTE[p]} · ${genre}</small></div><div class="obst">
+      ${aType(c, "assassin") || aType(c, "plongeur") ? `<span><b>Comment il arrive</b> : ${listeSorts(arrive, "sans sort de mobilité")}</span>` : ""}
+      ${attrape.length ? `<span><b>Comment il attrape</b> : ${listeSorts(attrape, "")}</span>` : ""}
+      ${fragile ? `<span><b>Sur qui</b> : la cible isolée ; la plus fragile chez vous : <span class="n">${esc(fragile.c)}</span></span>` : ""}
+    </div></div>`;
+  });
+  const nosProt = [];
+  for (const p of POSTES) { const c = nous[p]; if (!c) continue;
+    for (const s of sortsDe(c, "protection")) if (/allié/.test(s[3]) || estProtecteur(c)) nosProt.push([s, c]);
+    if (estProtecteur(c)) for (const s of sortsDe(c, "controle")) nosProt.push([s, c]); }
+  lignes.push(`<div class="b-ligne"><div class="qui-c">🛡️ <span class="n">Vos protections</span></div><div class="obst"><span>${nosProt.length ? nosProt.map(([s, c]) => unSort(s, c)).join(" ") : '<span class="petit">aucun sort pour protéger vos cibles</span>'}</span></div></div>`);
+  let lecture = fragile ? `🎯 <b>Reste près de <span class="n">${esc(fragile.c)}</span></b> (${poidsSorts(fragile.c) ? `${poidsSorts(fragile.c)} sort${poidsSorts(fragile.c) > 1 ? "s" : ""} pour se sauver` : "aucune fuite ni protection"}).` : "";
+  if (menaces.length) {
+    const m = menaces[0], mienCtrl = moi ? sortsDe(moi, "controle").slice().sort((a, b) => rangCtrl(a) - rangCtrl(b)) : [];
+    const arrive = sortsDe(m.c, "deplacement")[0];
+    const garde = mienCtrl.length ? `<b>${mienCtrl[0][0]} ${esc(mienCtrl[0][1])}</b>` : (nosProt.length ? `<b>${esc(nosProt[0][0][1])}</b> (${esc(nosProt[0][1])})` : "");
+    if (garde) lecture += ` Garde ${garde} pour <span class="e">${esc(m.c)}</span>${arrive ? ` : il arrive avec ${arrive[0]} ${esc(arrive[1])}${arrive[3] ? " (" + esc(arrive[3]) + ")" : ""}` : ""}.`;
+  }
+  return lignes.join("") + (lecture ? `<div class="lecture">${lecture}</div>` : "");
+}
+
+// La carte : chaque lane est une jauge (bleu = ton équipe, toujours) qui part de ta base ; la carte ne tourne jamais,
+// côté rouge ta base est simplement en haut à droite. La jungle a sa jauge sous la carte, avec les ganks.
+const TRACE = {top: "M10 82 L10 22 Q10 10 22 10 L82 10", mid: "M17 83 C38 66 62 40 83 17", bot: "M18 90 L78 90 Q90 90 90 78 L90 18"};
+const TRACE_ROUGE = {top: "M82 10 L22 10 Q10 10 10 22 L10 82", mid: "M83 17 C62 40 38 66 17 83", bot: "M90 18 L90 78 Q90 90 78 90 L18 90"};
+function hexa(cx, cy, r) { return [0, 1, 2, 3, 4, 5].map(i => { const a = Math.PI / 3 * i + Math.PI / 6; return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`; }).join(" "); }
+function dessinerCarte(nous, eux, infos, R) {
+  const el = document.getElementById("carte"), rouge = !!etat.rouge, T = rouge ? TRACE_ROUGE : TRACE, maLane = laneDuPoste(R);
+  const proba = l => infos[l].o ? infos[l].o.proba : 0.5;
+  const lanes = ["top", "mid", "bot"].map(l => `
+    <path d="${T[l]}" class="route"/>
+    <path d="${T[l]}" pathLength="100" class="j-eux"/>
+    <path d="${T[l]}" pathLength="100" class="j-nous" stroke-dasharray="${(100 * proba(l)).toFixed(1)} 200"/>
+    <path d="${T[l]}" class="mesure" data-l="${l}" fill="none" stroke="none"/>`).join("");
+  el.innerHTML = `<svg viewBox="0 0 100 100" role="img" aria-label="Carte : avantage de chaque lane à 15 minutes">
+    <defs><linearGradient id="sol" x1="${rouge ? 1 : 0}" y1="${rouge ? 0 : 1}" x2="${rouge ? 0 : 1}" y2="${rouge ? 1 : 0}">
+      <stop offset="0" stop-color="#3f7f6c"/><stop offset=".48" stop-color="#4f8c5c"/><stop offset=".52" stop-color="#6d8a4c"/><stop offset="1" stop-color="#80794a"/></linearGradient></defs>
+    <rect width="100" height="100" fill="url(#sol)"/>
+    <path d="M0 3 C20 18 30 26 50 50 C70 74 80 82 100 97 L100 100 L97 100 C80 84 72 76 50 52 C28 28 18 20 3 0 L0 0 Z" fill="#4a9ad0" opacity=".85"/>
+    <path d="M-2 4 C18 20 30 28 50 50 C70 72 82 80 102 96" stroke="#4a9ad0" stroke-width="7" fill="none" opacity=".85"/>
+    ${lanes}<g class="tours"></g>
+    <circle cx="33.9" cy="29" r="5.2" fill="#3b2a5c" stroke="#b49be8" stroke-width=".8"/><text x="33.9" y="30.9" font-size="5.4" text-anchor="middle">🪱</text>
+    <circle cx="66.7" cy="70.2" r="5.2" fill="#5c3418" stroke="#f0a64b" stroke-width=".8"/><text x="66.7" y="72.1" font-size="5.4" text-anchor="middle">🐉</text>
+    <polygon points="${hexa(...(rouge ? [92, 8] : [8, 92]), 7)}" fill="var(--nous)" stroke="#fff" stroke-width="1.1"/>
+    <polygon points="${hexa(...(rouge ? [8, 92] : [92, 8]), 7)}" fill="var(--eux)" stroke="#fff" stroke-width="1.1"/>
+    <g class="fronts"></g></svg>`;
+  const tours = el.querySelector(".tours"), fronts = el.querySelector(".fronts");
+  el.querySelectorAll(".mesure").forEach(m => {
+    const l = m.dataset.l, tot = m.getTotalLength();
+    for (const f of [.16, .3, .42, .58, .7, .84]) { const pt = m.getPointAtLength(tot * f);
+      tours.insertAdjacentHTML("beforeend", `<rect x="${(pt.x - 1.3).toFixed(2)}" y="${(pt.y - 1.3).toFixed(2)}" width="2.6" height="2.6" rx=".5" fill="${f < .5 ? "var(--nous)" : "var(--eux)"}" stroke="#fff" stroke-width=".5"/>`); }
+    if (infos[l].o) { const pt = m.getPointAtLength(tot * proba(l));
+      fronts.insertAdjacentHTML("beforeend", `<circle cx="${pt.x.toFixed(2)}" cy="${pt.y.toFixed(2)}" r="3.3" fill="#fff" stroke="${proba(l) >= .5 ? "var(--nous)" : "var(--eux)"}" stroke-width="1.4"/>`); }
+  });
+  const places = {top: [28, 21], mid: [64, 50], bot: [72, 80]}, roles = {top: ["top"], mid: ["mid"], bot: ["adc", "sup"]};
+  for (const l of ["top", "mid", "bot"]) {
+    const o = infos[l].o, [x, y] = places[l], etatL = !o ? "egal" : (o.proba >= .55 ? "devant" : (o.proba <= .45 ? "derriere" : "egal"));
+    el.insertAdjacentHTML("beforeend", `<div class="chip ${etatL}${l === maLane ? " moi" : ""}" style="left:${x}%;top:${y}%">
+      <b>${LANE_NOM[l]} ${o ? (100 * o.proba).toFixed(0) + " %" : "—"}</b>${o ? ` <span class="petit">${o.or >= 0 ? "+" : "−"}${Math.abs(Math.round(o.or / 10) * 10)} or</span>` : ""}<br>
+      <span class="n">${roles[l].map(p => esc(nous[p])).join(" + ")}</span> vs <span class="e">${roles[l].map(p => esc(eux[p])).join(" + ")}</span></div>`);
+  }
+  const pc = x => (100 * x).toFixed(0) + " %", j = infos.jgl.o;
+  const g = ["top", "mid", "bot"].filter(l => infos[l].pg !== null && infos[l].pg !== undefined);
+  const meilleur = g.slice().sort((a, b) => infos[b].pg - infos[a].pg)[0], expose = g.slice().sort((a, b) => infos[b].pe - infos[a].pe)[0];
+  const mini = (v, coul, fort) => v === null || v === undefined ? "—" : `<span class="mini"><span class="b"><span style="width:${(100 * v).toFixed(0)}%;background:var(${coul})"></span></span><span class="${fort ? "fort" : ""}">${pc(v)}</span></span>`;
+  document.getElementById("carte-bas").innerHTML = `
+    <div class="jauge-j"><b>Jungle</b><span class="barre-j"><span style="width:${j ? (100 * j.proba).toFixed(0) : 50}%"></span><i></i></span><b>${j ? pc(j.proba) : "—"}</b></div>
+    <p class="petit" style="margin:0">${j ? `<span class="n">${esc(nous.jgl)}</span> vs <span class="e">${esc(eux.jgl)}</span> : devant en or à 15 min dans ${pc(j.proba)} des cas (${j.or >= 0 ? "+" : "−"}${Math.abs(Math.round(j.or / 10) * 10)} or attendus).` : ""}</p>
+    <table class="ganks"><thead><tr><th scope="col">Gank réussi avant 15 min</th><th scope="col"><span class="n">Ton jungler</span></th><th scope="col"><span class="e">Leur jungler</span></th></tr></thead>
+    <tbody>${["top", "mid", "bot"].map(l => `<tr><td>${LANE_NOM[l]}</td><td>${mini(infos[l].pg, "--nous", l === meilleur)}</td><td>${mini(infos[l].pe, "--eux", l === expose)}</td></tr>`).join("")}</tbody></table>`;
+}
+
 function dessinerRecap() {
   const nous = equipe("nous"), eux = equipe("eux"), R = etat.poste, moi = nous[R], maLane = laneDuPoste(R), pc = x => (100 * x).toFixed(0) + " %";
   document.getElementById("recap-titre").textContent = `${moi} en ${NOM_POSTE[R]}`;
@@ -698,8 +850,6 @@ function dessinerRecap() {
     if (i.pg !== null && i.pg !== undefined) t += ` Ton jungler (${esc(nous.jgl)}) : ${pc(i.pg)}.`;
     plan.push(["Ta lane", t.trim()]);
   }
-  document.getElementById("recap-duels").innerHTML = blocDuels(moi, eux);
-  document.getElementById("recap-duels-panneau").hidden = !D.duel;
   const me = mixEquipe(eux), mn = mixEquipe(nous);
   if (me) {
     let t = conseilResist(me, "Ils font");
@@ -708,48 +858,20 @@ function dessinerRecap() {
     plan.push(["Dégâts", t]);
   }
   const gros = [];
-  for (const p of POSTES) for (const [k, nom, types] of sortsDe(eux[p])) if (k === "R" && types.some(x => FORTS.has(x))) gros.push(`${esc(eux[p])} R (${types[0]})`);
+  for (const p of POSTES) for (const s of sortsDe(eux[p], "controle")) if (s[0] === "R" && FORTS.some(f => s[3].includes(f))) gros.push(`${esc(eux[p])} R (${esc(s[3])})`);
   if (gros.length) plan.push(["À surveiller", `Leurs ultimes qui contrôlent : <b>${gros.join(", ")}</b>.`]);
   document.getElementById("recap-plan").innerHTML = plan.map(([dt, dd]) => `<dt>${dt}</dt><dd>${dd}</dd>`).join("");
 
-  // La carte : notre base en bas à gauche (en haut à droite si on est côté rouge).
-  const rouge = !!etat.rouge, pos = (x, y) => rouge ? [100 - x, 100 - y] : [x, y];
-  const centres = {top: [26, 14], mid: [50, 50], bot: [74, 86], jgl: rouge ? [72, 33] : [28, 67]};
-  const [bnx, bny] = pos(7, 93), [bex, bey] = pos(93, 7);
-  let fleche = "";
-  if (R === "jgl" && meilleurGank) { const [x1, y1] = centres.jgl, [x2, y2] = centres[meilleurGank];
-    fleche = `<path class="gank" d="M${x1} ${y1} L${x1 + (x2 - x1) * 0.62} ${y1 + (y2 - y1) * 0.62}"/>`; }
-  const svg = `<svg viewBox="0 0 100 100" aria-hidden="true">
-    <defs><marker id="fleche" viewBox="0 0 6 6" refX="3" refY="3" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--nous)"/></marker></defs>
-    <rect class="sol" x="0" y="0" width="100" height="100" rx="4"/>
-    <path class="riviere" d="M0 0 L100 100"/>
-    <path class="voie" d="M7 93 L7 7 L93 7"/><path class="voie" d="M7 93 L93 93 L93 7"/><path class="voie" d="M7 93 L93 7"/>
-    <circle class="fosse" cx="31" cy="31" r="3.4"/><text class="etiquette" x="31" y="38.5" text-anchor="middle">Nashor</text>
-    <circle class="fosse" cx="69" cy="69" r="3.4"/><text class="etiquette" x="69" y="65" text-anchor="middle">Dragon</text>
-    <circle class="base-nous" cx="${bnx}" cy="${bny}" r="5.5"/><circle class="base-eux" cx="${bex}" cy="${bey}" r="5.5"/>
-    ${fleche}</svg>`;
-  const badges = LANES.map(([lane, roles]) => {
-    const o = infos[lane].o, [x, y] = centres[lane];
-    const etatLane = !o ? "egal" : (o.proba >= 0.55 ? "devant" : (o.proba <= 0.45 ? "derriere" : "egal"));
-    const n = roles.map(p => nous[p]).filter(Boolean).join(" + "), e = roles.map(p => eux[p]).filter(Boolean).join(" + ");
-    const tags = [];
-    if (lane === maLane) tags.push("toi");
-    if (R === "jgl" && lane === meilleurGank) tags.push("à ganker");
-    if (lane === exposee && lane !== "jgl") tags.push("exposée");
-    const pd = lane === "bot" ? "adc" : lane, d15 = duel(nous[pd], eux[pd], 15);
-    if (d15 !== null) tags.push(`1v1 15 min${lane === "bot" ? " (ADC)" : ""} : ${(100 * d15).toFixed(0)} %`);
-    return `<div class="badge ${etatLane}${lane === maLane ? " moi" : ""}" style="left:${x}%;top:${y}%">
-      <div class="b-tete"><span>${LANE_NOM[lane]}</span><span>${o ? pc(o.proba) : "—"}</span></div>
-      <div class="b-champs"><span class="n">${esc(n)}</span> vs <span class="e">${esc(e)}</span></div>
-      ${tags.length ? tags.map(x => `<span class="tag">${x}</span>`).join(" ") : ""}</div>`;
-  }).join("");
-  document.getElementById("carte").innerHTML = svg + badges;
-
-  // Les champions : styles du catalogue et contrôles.
-  const colonne = (cote, eq, titre, max) => `<div><h3>${titre}</h3>${POSTES.map(p => `
-    <div class="champ ${cote}"><div class="c-tete"><b>${esc(eq[p])}</b><span class="petit">${NOM_POSTE[p]}</span></div>
-      <div class="puces">${styles(eq[p])}</div>${degatsChamp(eq[p], p)}<div class="cc">${lignesCC(eq[p], max)}</div></div>`).join("")}</div>`;
-  document.getElementById("recap-champs").innerHTML = colonne("eux", eux, "En face : leurs contrôles à surveiller", 3) + colonne("nous", nous, "Ton équipe : vos contrôles", 2);
+  document.getElementById("recap-duels").innerHTML = blocDuels(moi, R, eux);
+  document.getElementById("recap-duels-panneau").hidden = !D.duel;
+  dessinerCarte(nous, eux, infos, R);
+  document.getElementById("qui-est-qui").innerHTML = quiEstQui(nous, eux);
+  // Les deux blocs ; celui qui correspond à ton rôle d'abord (un protecteur protège, les autres vont chercher les cibles).
+  const proteger = estProtecteur(moi) && !aType(moi, "assassin");
+  const blocs = [[`Atteindre leurs cibles <span class="petit">— vu de ${esc(moi)}</span>`, blocAtteindre(nous, eux, moi), "eux"],
+                 [`Protéger vos cibles <span class="petit">— vu de ${esc(moi)}</span>`, blocProteger(nous, eux, moi), "nous"]];
+  if (proteger) blocs.reverse();
+  document.getElementById("blocs").innerHTML = blocs.map(([t, h, c]) => `<section class="bloc ${c}"><h2>${t}</h2>${h}</section>`).join("");
 }
 
 // --- Affichage : profils ------------------------------------------------------------------------------
@@ -801,7 +923,7 @@ document.addEventListener("input", e => {
   const input = e.target; if (!input.dataset || !input.dataset.ac) { return; }
   fermer(); const s = suggestions(input.value); if (!s.length) return;
   const liste = document.createElement("div"); liste.className = "liste"; liste.setAttribute("role", "listbox");
-  liste.innerHTML = s.map((n, k) => `<div role="option" data-n="${esc(n)}" class="${k === 0 ? "actif" : ""}"><span>${esc(n)}</span><small>${esc(groupe(n))}</small></div>`).join("");
+  liste.innerHTML = s.map((n, k) => `<div role="option" data-n="${esc(n)}" class="${k === 0 ? "actif" : ""}"><span>${esc(n)}</span><small>${iconesTypes(n)}</small></div>`).join("");
   liste.addEventListener("mousedown", ev => { const d = ev.target.closest("[data-n]"); if (d) { ev.preventDefault(); valider(input, d.dataset.n); } });
   input.parentElement.appendChild(liste); ouvert = liste;
 });
