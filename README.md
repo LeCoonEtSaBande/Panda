@@ -16,7 +16,7 @@ python3 analyse/export/exporter.py  # écrit analyse/export/assistant_donnees.js
 python3 -m unittest discover -s analyse/tests
 ```
 
-Le bouton « Générer l'assistant Draft » (sur `main`) fait tout cela lui-même sur les données à jour, puis génère la page.
+Le bouton « Générer l'assistant Draft » (sur `main`) recalcule lui-même les lanes, les ganks, envahir, les duels, les dégâts et l'export sur les données à jour, puis génère la page. Le catalogue (Data Dragon) a son propre bouton ; la classification en types se relance à la main, après validation du propriétaire.
 
 ## Les dossiers
 
