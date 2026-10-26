@@ -6,7 +6,19 @@ Riot, on récupère les stats du patch sur Lolalytics, on cherche ce qui fait ga
 ce qui est **confirmé sur des parties jamais vues**.
 
 Tout se fait en français : code, commentaires, messages de commit, réponses.
-Résultats en pourcentages de victoire simples (« X gagne 45 % dans tel cas, contre 50 % sinon »), avec un verdict clair : confirmé, à surveiller ou rien. L'assistant n'affiche que ce qui est confirmé sur un tas C de parties jamais vues.
+Résultats en pourcentages de victoire simples (« X gagne 45 % dans tel cas, contre 50 % sinon »), avec un verdict clair : confirmé, à surveiller ou rien. L'assistant n'affiche que ce qui a passé la vérification prévue pour son type d'analyse (voir « Les trois types d'analyse »).
+
+## Les trois types d'analyse
+
+Chaque résultat appartient à un de ces trois types, qui fixe la façon de le vérifier avant de l'afficher dans l'assistant.
+
+| Type | Ce qu'on cherche | Tas | Vérification | Où |
+|---|---|---|---|---|
+| **Recuits** | Des règles de compo et des scénarios (« telle compo gagne plus contre telle autre ») : on essaie beaucoup de règles, le risque de trouver un effet par hasard est grand. | **A, B, C** | Réglages choisis sur A, jugés sur B, puis **confirmés sur C** (parties collectées après le gel, jamais lues). Un C lu est consommé : nouveau gel. | boutons « Lancer un recuit simulé » et « Confirmer un recuit sur C » |
+| **Lolalytics** | Les « plus » et « moins » de victoire du patch : force des champions, contres, matchups. | — | Chiffres de Lolalytics (Platine et plus, tous serveurs), sur des centaines de milliers de parties. | bouton « Récupérer les stats Lolalytics du patch » |
+| **Nos parties** | Avantage d'or à 15 min par lane, ganks, envahir, duels, et la classification des champions en types. | **A, B** | Appris sur A (3/4 des parties), **vérifié sur B** (1/4, partage stable par empreinte du numéro de partie), avec correction pour le nombre de tests quand il y en a beaucoup. | recalculés par « Générer l'assistant Draft » |
+
+Les analyses « nos parties » déjà confirmées sur C avant le 26/10/2026 (or à 15 min, ganks, envahir, early/late, mix de dégâts) le restent ; les duels et les types passent par A et B seulement.
 
 ## Les quatre branches
 
@@ -16,14 +28,14 @@ Chaque branche ne contient que ce qui la concerne. Les boutons des workflows son
 |---|---|---|
 | `main` | **Collecte** : `collecte/` (code, réglages, bilan), `donnees/` (les parties), `archives/`, les workflows. | **Lancer une collecte** |
 | `scraping` | **Lolalytics** : `lolalytics/` (le scraper et un dossier par patch). | **Récupérer les stats Lolalytics du patch** |
-| `analyse` | **Analyses** : `analyse/` (catalogue unifié, contres, lanes, confirmations sur C, export pour l'assistant). Lit les données de `main`, n'y écrit jamais. | — (lancées par la génération de l'assistant) |
+| `analyse` | **Analyses** : `analyse/` (catalogue unifié et sorts, types des champions, contres, lanes, duels, recuits, confirmations, export pour l'assistant). Lit les données de `main`, n'y écrit jamais. | **Mettre à jour le catalogue (Data Dragon)**, **Lancer un recuit simulé**, **Confirmer un recuit sur C** (les autres analyses sont lancées par la génération de l'assistant) |
 | `assistant` | **Assistant** : `assistant/` (générateur de la page, lien client), `Assistant Draft - DL - <date>.html` et `Assistant Draft - Lien client.exe`. | **Générer l'assistant Draft** |
 
 Chaque branche a son propre README qui détaille son contenu. Les anciennes branches `analyse-iterative` et `champions-patch` ne servent plus : le propriétaire les supprime depuis l'onglet « Branches » (Claude n'en a pas le droit).
 
 ## La routine
 
-1. **À chaque nouveau patch** : « Récupérer les stats Lolalytics du patch » (environ 20 minutes), puis « Générer l'assistant Draft ».
+1. **À chaque nouveau patch** : « Récupérer les stats Lolalytics du patch » (environ 20 minutes) et « Mettre à jour le catalogue (Data Dragon) » (moins d'une minute : nouveaux champions, sorts de chacun par catégorie), puis « Générer l'assistant Draft ». La page avertit en haut à droite quand le jeu a changé de patch.
 2. **Pour avoir plus de parties** : « Lancer une collecte » (5 h 15, environ 7 000 parties), après avoir mis à jour la clé Riot. Relancer ensuite « Générer l'assistant Draft » pour que les modèles profitent des nouvelles parties.
 3. **Récupérer la page** : sur GitHub, branche `assistant`, cliquer sur `Assistant Draft - DL - <date>.html`, puis sur « Download raw file ». Un « Enregistrer sous » de la page GitHub donne une page vide (le fichier fait 2 Mo, GitHub ne l'affiche pas). Même chose pour `Assistant Draft - Lien client.exe`, à mettre dans le même dossier et à lancer avant de jouer : la page voit alors la sélection des champions du client.
 
@@ -38,7 +50,7 @@ Chaque branche a son propre README qui détaille son contenu. Les anciennes bran
 | `collecte/tests/` | Tests de la collecte et de la lecture. |
 | `donnees/` | Les données collectées (voir « Format des données »). |
 | `archives/` | Copies figées d'anciennes données. |
-| `.github/workflows/` | `lancer-collecte.yml`, `lolalytics.yml`, `assistant.yml`. |
+| `.github/workflows/` | `lancer-collecte.yml`, `lolalytics.yml`, `datadragon.yml`, `recuit.yml`, `confirmer-recuit.yml`, `assistant.yml`. |
 
 Pendant une collecte, des commits de données arrivent sur `main` toutes les 10 minutes : toujours faire `git pull --rebase` avant de pousser sur `main`.
 
@@ -78,8 +90,9 @@ Le seul but de ces règles : ne pas casser ni interrompre les collectes, et ne p
 
 - Premières analyses (styles du catalogue d'origine, hypothèses, classification en 7 groupes), puis recherche itérative de biais de draft par recuit simulé : supprimées de `main` le 24/10/2026, retrouvables dans l'historique git.
 - Recuit teamfight : prometteur sur B, **non confirmé sur C** (24/10/2026) ; ses effets ne sont pas dans l'assistant.
-- Confirmés sur C et utilisés par l'assistant : force du patch et contres (Lolalytics), or à 15 min par lane, ganks, envahir à 15 min (junglers Engage), early/late, mix de dégâts, duels (1 contre 1) à or égal. Détails sur la branche `analyse`.
+- Utilisés par l'assistant : force du patch et contres (Lolalytics) ; confirmés sur C : or à 15 min par lane, ganks, envahir à 15 min (junglers Engage), early/late, mix de dégâts ; vérifiés sur B : duels (1 contre 1) et types des champions. Détails sur la branche `analyse`.
 - 25/10/2026 : lien avec le client League (lecture de la sélection, pré-picks de son équipe compris).
+- 26/10/2026 : assistant v1.5 (version du jeu et côté lus dans le client, tes 5 duels, dégâts AD / AP / Bruts, carte en jauges, tableau « Qui est qui », blocs « Atteindre leurs cibles » et « Protéger vos cibles »). Catalogue unifié refait : les 10 types (Carry, Enchanteur, Assassin, Plongeur, Attrapeur, Tank, Bloqueur, Dueliste, Splitpusher, Teamfighter) classés sur nos parties à partir des références du propriétaire, et mis à jour par Data Dragon ; l'ancienne classification (styles, groupes teamfight) est gardée à part pour les ganks, envahir et le recuit. Duels corrigés : or et niveau par rapport à la normale du poste. Les trois types d'analyse sont posés (ci-dessus) ; les boutons du recuit sont revenus.
 
 ## Format des données
 

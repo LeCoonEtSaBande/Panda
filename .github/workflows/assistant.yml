@@ -2,7 +2,8 @@ name: Générer l'assistant Draft
 
 # Bouton « Run workflow ». Assemble le projet dans un dossier de travail :
 #   collecte/, donnees/, archives/ (main), analyse/ (branche analyse), lolalytics/ (branche scraping),
-# recalcule nos modèles sur toutes les données à jour, rafraîchit les contrôles des sorts (Data Dragon),
+# recalcule nos modèles sur toutes les données à jour (types et sorts : catalogue de la branche analyse, mis à jour
+# par « Mettre à jour le catalogue (Data Dragon) »),
 # puis génère « Assistant Draft - DL - <date>.html », committé à la racine de la branche « assistant »
 # (l’ancienne version est retirée). Pour le télécharger : ouvrir le fichier sur GitHub, « Download raw file ».
 # Un second job, sous Windows, reconstruit « Assistant Draft - Lien client.exe » quand assistant/lien_client.py change.
@@ -53,7 +54,6 @@ jobs:
 
       - name: Générer la page
         run: |
-          python3 assistant/sorts.py || echo "::warning::Data Dragon injoignable : contrôles du dernier passage gardés."
           python3 assistant/construire.py --lolalytics "$PATCH" --export "$PROJET/analyse/export/assistant_donnees.json"
 
       - name: Enregistrer
@@ -64,7 +64,7 @@ jobs:
           for ancien in "Assistant Draft - DL - "*.html; do
             if [ "$ancien" != "$nouveau" ]; then git rm -q --ignore-unmatch "$ancien"; rm -f "$ancien"; fi
           done
-          git add "$nouveau" assistant/sorts.json
+          git add "$nouveau"
           if git diff --cached --quiet; then echo "Page inchangée."; exit 0; fi
           git commit -q -m "Assistant Draft régénéré : $nouveau"
           for essai in 1 2 3; do

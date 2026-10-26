@@ -1,0 +1,73 @@
+name: Lancer un recuit simulé
+
+# Bouton « Run workflow ». Analyse de type « recuit » : chercher des règles de compo (scénarios ou effets
+# teamfight) et les confirmer. Le recuit ne lit que les tas A (choix des réglages) et B (jugement), jamais C.
+# Code : branche « analyse » (analyse/recuit/recuit_pistes.py, styles et groupes de l'ancien catalogue) ;
+# données : main, à jour, jamais committées sur analyse. Résultats committés dans analyse/recuit/resultats/.
+# Ensuite : « Confirmer un recuit sur C » avec le fichier produit.
+on:
+  workflow_dispatch:
+    inputs:
+      piste:
+        description: "Piste : scenarios (tes styles et tes scénarios) ou teamfight (groupes teamfight + tanky)"
+        type: choice
+        options: [scenarios, teamfight]
+        default: teamfight
+      minutes:
+        description: "Durée du recuit, en minutes (300 au plus)"
+        default: "60"
+        required: true
+      graine:
+        description: "Graine du hasard (une autre graine = une autre exploration)"
+        default: "1"
+        required: true
+      hasard:
+        description: "Seuil de hasard : victoires tirées au sort selon la seule force des champions"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recuit-${{ inputs.piste }}-${{ inputs.hasard }}
+  cancel-in-progress: false
+
+jobs:
+  recuit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: analyse
+          fetch-depth: 0
+
+      - name: Installer numpy, pandas, scipy, scikit-learn
+        run: python3 -m pip install -q --break-system-packages numpy pandas scipy scikit-learn
+
+      - name: Données à jour de main (non committées)
+        run: |
+          git fetch -q origin main
+          git archive origin/main collecte donnees archives | tar -x
+
+      - name: Recuit simulé
+        timeout-minutes: 310
+        run: >
+          python3 analyse/recuit/recuit_pistes.py --piste "${{ inputs.piste }}"
+          --minutes "${{ inputs.minutes }}" --graine "${{ inputs.graine }}"
+          ${{ inputs.hasard && '--melanger' || '' }}
+
+      - name: Enregistrer les résultats sur la branche analyse
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analyse/recuit/resultats
+          if git diff --cached --quiet; then echo "Aucun résultat."; exit 0; fi
+          git commit -q -m "Recuit ${{ inputs.piste }}, ${{ inputs.minutes }} min, graine ${{ inputs.graine }}${{ inputs.hasard && ', seuil de hasard' || '' }}"
+          for essai in 1 2 3; do
+            if git pull -q --rebase origin analyse && git push -q origin HEAD:analyse; then exit 0; fi
+            git rebase --abort 2>/dev/null; sleep 10
+          done
+          exit 1
