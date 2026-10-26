@@ -1,0 +1,63 @@
+name: Mettre à jour le catalogue (Data Dragon)
+
+# Bouton « Run workflow ». Lit la dernière version de Data Dragon (données officielles de Riot) et met à jour,
+# sur la branche « analyse » :
+#   - analyse/catalogues/catalogue_unifie.csv : un champion qui sort est ajouté (ses types restent vides jusqu'à la
+#     prochaine classification), l'identifiant Riot de chacun est mis à jour ; rien n'est retiré ;
+#   - analyse/catalogues/sorts.csv : les sorts de chaque champion, chacun dans une seule catégorie (contrôle,
+#     déplacement, protection), corrections à la main comprises (analyse/catalogues/sorts_corrections.csv) ;
+#   - analyse/catalogues/datadragon.md : le bilan (version, nouveaux champions).
+# À lancer à chaque nouveau patch, avant « Générer l'assistant Draft ». Les fichiers bruts de Data Dragon sont
+# gardés 7 jours dans l'onglet Actions (« data-dragon »), pour vérifier un classement.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: datadragon
+  cancel-in-progress: false
+
+jobs:
+  datadragon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: analyse
+          fetch-depth: 0
+
+      - name: Télécharger Data Dragon (dernière version, anglais et français)
+        run: |
+          dd="$RUNNER_TEMP/dd"; mkdir -p "$dd"
+          version="$(curl -fsS https://ddragon.leagueoflegends.com/api/versions.json | python3 -c 'import json,sys; print(json.load(sys.stdin)[0])')"
+          echo "Version : $version"
+          for langue in en_US fr_FR; do
+            curl -fsS -o "$dd/championFull_$langue.json" "https://ddragon.leagueoflegends.com/cdn/$version/data/$langue/championFull.json"
+          done
+          echo "DD=$dd" >> "$GITHUB_ENV"
+
+      - name: Mettre à jour le catalogue et les sorts
+        run: python3 analyse/catalogues/datadragon.py --dossier "$DD"
+
+      - name: Garder les fichiers bruts (7 jours)
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-dragon
+          path: ${{ env.DD }}
+          retention-days: 7
+
+      - name: Enregistrer sur la branche analyse
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analyse/catalogues/catalogue_unifie.csv analyse/catalogues/sorts.csv analyse/catalogues/datadragon.md
+          if git diff --cached --quiet; then echo "Catalogue déjà à jour."; exit 0; fi
+          git commit -q -m "Catalogue mis à jour avec Data Dragon ($(head -1 analyse/catalogues/datadragon.md | sed 's/# //'))"
+          for essai in 1 2 3; do
+            if git pull -q --rebase origin analyse && git push -q origin HEAD:analyse; then exit 0; fi
+            git rebase --abort 2>/dev/null; sleep 10
+          done
+          exit 1
