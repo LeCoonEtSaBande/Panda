@@ -164,6 +164,10 @@ def confirmation_c():
         "force": lola.get("Force du patch", False),
         "contre_direct": lola.get("Contre de l'adversaire direct", False),
         "contres_autres": lola.get("Contres des autres adversaires", False),
+        "synergie": lola.get("Synergie avec les alliés", False),
+        # Poids de la synergie dans le score : son coefficient mesuré sur nos parties / 4 (4 = les points de Lolalytics justes).
+        "synergie_poids": next((round(min(1.0, max(0.0, t["coefficient"] / 4)), 3) for t in gen.get("lolalytics", {}).get("tests", [])
+                                if t["nom"] == "Synergie avec les alliés"), 0.0),
         "lanes": bool(gen.get("lanes")) and all(ok(d) for d in gen["lanes"].values()),
         "ganks": bool(gen.get("ganks")) and all(ok(t) for t in gen["ganks"]["tests"]),
         "envahir": [[t["minute"], t["groupe"]] for t in gen.get("envahir", {}).get("tests", []) if ok(t)],

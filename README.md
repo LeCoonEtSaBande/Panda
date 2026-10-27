@@ -54,6 +54,7 @@ Vérifié sur B le 26/10/2026 (13 900 parties de B, appris sur A ; détails dans
 | Résultat | Verdict | Dans l'assistant |
 |---|---|---|
 | Force des champions du patch, contre direct, autres contres (Lolalytics) : coefficients 3,6 / 4,8 / 3,0 pour 4 attendus | confirmé | oui |
+| Synergie avec les alliés (Lolalytics, 27/10/2026) : coefficient 2,1 ± 0,3 pour 4 attendus, donc comptée à 52 % dans l'assistant | confirmé | oui |
 | Or à 15 min par lane : une lane annoncée devant à 60 % ou plus l'est 63 à 66 % du temps | confirmé | oui |
 | Ganks réussis avant 15 min : bien calibrés (annoncé 65 %, réel 65 %…) | confirmé | oui |
 | Envahir vers 20 min pour un jungler Engage (tanks) : +13 points sur B | confirmé | oui |

@@ -97,6 +97,19 @@ def bloc_lolalytics(table, dossier):
             if n >= 30:
                 mu[(l["poste"], l["champion"], l["poste_adversaire"], l["adversaire"])] = float(l["delta_2"]) * n / (n + 300)
 
+    # Synergie avec chaque allié (Lolalytics, depuis le 27/10/2026), même lissage que les contres.
+    syn, fichier_syn = {}, Path(dossier) / "synergies.csv"
+    if fichier_syn.exists():
+        with open(fichier_syn, encoding="utf-8", newline="") as f:
+            for l in csv.DictReader(f, delimiter=";"):
+                n = int(l["parties"])
+                if n >= 30:
+                    syn[(l["poste"], l["champion"], l["poste_allie"], l["allie"])] = float(l["delta_2"]) * n / (n + 300)
+
+    def ensemble(p, a, q, b):   # points de la paire a (au poste p) + b (au poste q), moyenne des deux pages
+        v = [x for x in (syn.get((p, nom_lola(a), q, nom_lola(b))), syn.get((q, nom_lola(b), p, nom_lola(a)))) if x is not None]
+        return sum(v) / len(v) if v else 0.0
+
     def force(c, p):
         t = tier[p].get(nom_lola(c))
         return (t[0] - moy[p]) * t[1] / (t[1] + 1000) if t else 0.0
@@ -111,11 +124,13 @@ def bloc_lolalytics(table, dossier):
         F = sum(force(b[p], p) - force(r[p], p) for p in POSTES)
         direct = sum(contre(p, b[p], p, r[p]) for p in POSTES)
         autres = sum(contre(p, b[p], q, r[q]) for p in POSTES for q in POSTES if p != q)
-        X.append((F, direct, autres))
+        paires = [(p, q) for i, p in enumerate(POSTES) for q in POSTES[i + 1:]]
+        allies = sum(ensemble(p, b[p], q, b[q]) - ensemble(p, r[p], q, r[q]) for p, q in paires)
+        X.append((F, direct, autres, allies) if syn else (F, direct, autres))
     X = np.array(X) / 100
     y = table["bleu_gagne"].to_numpy()[c_rows].astype(float)
     beta, se = logit_se(X, y)
-    noms = ["Force du patch", "Contre de l'adversaire direct", "Contres des autres adversaires"]
+    noms = ["Force du patch", "Contre de l'adversaire direct", "Contres des autres adversaires", "Synergie avec les alliés"][:X.shape[1]]
     tests = [{"nom": n, "coefficient": float(b), "erreur": float(s), "attendu": 4.0, "p": p_unilaterale(b / s)}
              for n, b, s in zip(noms, beta, se)]
     # Lecture simple : victoires du camp annoncé devant de 3 points ou plus par la force + le contre direct.
