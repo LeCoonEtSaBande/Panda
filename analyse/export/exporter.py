@@ -190,7 +190,8 @@ def duels():
     verifies = {ch for ch, v in m["champions"].items() if v.get("verdict_B") == "vérifié"}
     return {"or_1000": m["coef_or_1000"], "niveau": m["coef_niveau"], "minute_ref": m["minute_reference"],
             "postes": {p: [round(v["effet"], 4), round(v["pente_10min"], 4) if minute else 0.0] for p, v in m["postes"].items()},
-            "champions": {ch: [round(v["force"], 4), round(v["pente_10min"], 4) if minute else 0.0] if ch in verifies else [0.0, 0.0]
+            # [force, évolution par 10 min, nombre de duels mesurés]
+            "champions": {ch: ([round(v["force"], 4), round(v["pente_10min"], 4) if minute else 0.0] if ch in verifies else [0.0, 0.0]) + [v["duels"]]
                           for ch, v in m["champions"].items() if v["duels"] >= 150},
             "confirmes": sorted(verifies), "duels": m["duels"]}
 
