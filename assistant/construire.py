@@ -102,7 +102,7 @@ def construire(dossier_lola, export, sortie):
         "cat": {c: [v.get("groupe", ""), v.get("types", []), 1 if v.get("fragile") else 0, v.get("tous") or v.get("types", [])]
                 for c, v in ex["catalogue"].items()},
         "tier": tier, "moy": moyenne, "lola": lola_noms, "mu": mu, "syn": syn, "lanes": lanes,
-        "ganks": ex["ganks"], "tf": ex["teamfight"], "invm": ex.get("envahir_minutes", {}),
+        "ganks": ex["ganks"], "tf": ex["teamfight"],
         "dd": duree_degats(ex.get("duree_degats")),
         # Ce qui est confirmé sur C (l'export a déjà retiré le reste) et contrôles des sorts (Data Dragon).
         "conf": ex.get("confirmation_C") or {},

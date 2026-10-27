@@ -238,12 +238,12 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
       <section class="panneau">
         <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline">
-          <h2 id="titre-reco">Quel champion prendre</h2>
+          <h2 id="titre-reco">Quel champion prendre</h2><span class="petit" id="proba-draft"></span>
           <label><input type="checkbox" id="tous"> tous les champions du poste</label>
         </div>
         <div class="reco" id="reco"></div>
         <details class="aide"><summary>Comment lire ce score</summary>
-          <p>Points de victoire estimés, qui s'additionnent : force du champion au patch, contre ton adversaire direct, et à moitié contre
+          <p>Le grand chiffre : ta chance de gagner la partie avec ce champion, d'après toute la draft connue (force du patch, contres et synergie de Lolalytics, avec les poids mesurés sur nos parties ; vérifiée sur des parties jamais vues : annoncé 57 %, gagné 56-57 %). Dessous, ce que le champion ajoute par rapport à la draft sans ton pick. Les étiquettes détaillent les points de victoire estimés, qui s'additionnent : force du champion au patch, contre ton adversaire direct, et à moitié contre
           le reste de leur équipe, et avec chacun de tes alliés déjà choisis (Lolalytics, Platine et plus ; la synergie seulement si elle est vérifiée sur nos parties), plus −3 points pour une équipe presque toute AD (moins de 20 % d'AP) ou toute AP (plus de 70 %) : ton choix, l'effet n'est qu'« à surveiller » sur nos parties (−4 à −5 points mesurés).
           Adversaire direct inconnu : moyenne sur ses champions probables. Tout ce qui est affiché a été vérifié sur des parties que
           l'apprentissage n'a jamais vues (tas B). Ordres de grandeur, pas des certitudes.</p></details>
@@ -422,14 +422,6 @@ function tempoEquipe(eq) {
 
 // --- Ce qui est vérifié (sur B pour nos parties ; le reste n'est pas affiché) ----------------------------
 const CONF = D.conf || {};
-function envahirConfirme(gr) {
-  const sortie = [];
-  for (const [mn, s] of Object.entries(D.invm || {})) {
-    if (!(s.confirme_C || []).includes(gr)) continue;
-    const d = s.groupes[gr]; sortie.push({minute: +mn, points: (d.A + d.B) / 2});
-  }
-  return sortie;
-}
 
 // --- Duels : chacun avec l'or et le niveau habituels de son poste (forces vérifiées sur B) ---------------
 function duel(a, pa, b, pb, minute) {     // chance que a (au poste pa) gagne contre b (au poste pb) s'ils se croisent seuls
@@ -469,6 +461,24 @@ function synergie(c, R, P, a) {
   if (!v.length) return null;
   return {pts: v.reduce((s, m) => s + m[0] * m[2] / (m[2] + 300), 0) / v.length, wr: v[0][1], n: Math.max(...v.map(m => m[2]))};
 }
+// Chance de victoire à la draft : force du patch, contres et synergie (Lolalytics), avec les poids appris sur nos
+// parties (tas A) et vérifiés sur B (une équipe annoncée à 57 % y gagne 56-57 % du temps). Les places vides comptent
+// comme un champion moyen. null si ce n'est pas vérifié.
+function probaDraft(nous, eux) {
+  const V = CONF.proba; if (!V) return null;
+  const fo = (c, p) => { const t = c && D.tier[p][lola(c)]; return t ? (t[0] - D.moy[p]) * t[1] / (t[1] + 1000) : 0; };
+  const mu = (p, a, q, b) => { const m = MU.get(`${p}|${lola(a)}|${q}|${lola(b)}`); return m ? m[0] * m[2] / (m[2] + 300) : 0; };
+  const cc = (p, a, q, b) => a && b ? 0.5 * (mu(p, a, q, b) - mu(q, b, p, a)) : 0;
+  const en = (eq, p, q) => { const a = eq[p], b = eq[q]; if (!a || !b) return 0;
+    const v = [SYN.get(`${p}|${lola(a)}|${q}|${lola(b)}`), SYN.get(`${q}|${lola(b)}|${p}|${lola(a)}`)].filter(Boolean).map(m => m[0] * m[2] / (m[2] + 300));
+    return v.length ? v.reduce((s, x) => s + x, 0) / v.length : 0; };
+  let F = 0, dir = 0, aut = 0, sy = 0;
+  for (const p of POSTES) { F += fo(nous[p], p) - fo(eux[p], p); dir += cc(p, nous[p], p, eux[p]);
+    for (const q of POSTES) if (q !== p) aut += cc(p, nous[p], q, eux[q]); }
+  POSTES.forEach((p, i) => POSTES.slice(i + 1).forEach(q => { sy += en(nous, p, q) - en(eux, p, q); }));
+  const X = [F, dir, aut, sy].map(x => x / 100);
+  return sig(V.constante + X.reduce((s, x, k) => s + x * V.coef[k], 0));
+}
 function probables(P, exclus) {
   return Object.entries(D.tier[P]).filter(([c, t]) => t[3] >= 0.8 && !exclus.has(c)).sort((a, b) => b[1][3] - a[1][3]).slice(0, 25);
 }
@@ -507,7 +517,7 @@ function evaluer(c, R, nous, eux) {
   }
   const s = DD && (DD.late[R] || {})[c];
   if (s !== undefined && s !== null && Math.abs(100 * s) >= 2) puces.push({t: `${s > 0 ? "late" : "early"} (${pts(100 * s)} pts / 10 min)`, v: 0});
-  return {c, total: (f || 0) + direct + autres + ensemble + eq, puces};
+  return {c, total: (f || 0) + direct + autres + ensemble + eq, puces, proba: probaDraft(avecC, eux)};
 }
 
 // --- Lanes : or à 15 min et ganks --------------------------------------------------------------------
@@ -567,19 +577,26 @@ function dessinerMix() {
 function dessinerReco() {
   const R = etat.poste, nous = equipe("nous"), eux = equipe("eux"), pr = profil();
   document.getElementById("titre-reco").textContent = `Quel champion prendre en ${NOM_POSTE[R]}`;
+  const pb = (() => { const s0 = Object.assign({}, nous); delete s0[R]; return probaDraft(s0, eux); })();
+  document.getElementById("proba-draft").innerHTML = pb === null ? "" : `Chance de gagner à la draft sans ton pick : <b>${(100 * pb).toFixed(0)} %</b>`;
   const pris = new Set([...Object.entries(nous).filter(([p]) => p !== R).map(([, c]) => c), ...Object.values(eux), ...(etat.bans || [])]);
   // Aucun champion choisi à ce poste dans le profil = il les joue tous.
   const tousLesChamps = etat.tous || !(pr.pool[R] || []).length;
   let cands = tousLesChamps ? Object.keys(D.tier[R]).filter(c => D.tier[R][c][1] >= 1500).flatMap(c => c === "Kayn" ? ["Kayn rouge", "Kayn bleu"] : [c])
                         : (pr.pool[R] || []).slice();
   if (nous[R] && !cands.includes(nous[R])) cands.push(nous[R]);
-  const res = cands.filter(c => !pris.has(c)).map(c => evaluer(c, R, nous, eux)).sort((a, b) => b.total - a.total);
+  const sans = Object.assign({}, nous); delete sans[R];
+  const base = probaDraft(sans, eux);
+  const res = cands.filter(c => !pris.has(c)).map(c => evaluer(c, R, nous, eux))
+    .sort((a, b) => base !== null && a.proba !== null ? b.proba - a.proba || b.total - a.total : b.total - a.total);
   if (nous[R]) etat.choix = nous[R];
   else if (!etat.manuel || !res.find(r => r.c === etat.choix)) { etat.manuel = false; etat.choix = (res[0] && res[0].c) || ""; }
   document.getElementById("reco").innerHTML = res.length ? res.slice(0, tousLesChamps ? 15 : 12).map(r => `
     <button type="button" class="cand${r.c === etat.choix ? " choisi" : ""}" data-c="${esc(r.c)}">
       <span class="nom">${esc(r.c)}${r.c === nous[R] ? " <span class='petit'>(ton pick)</span>" : ""}<br><span class="petit" title="${esc(typesDe(r.c).map(t => TYPE[t][1]).join(", "))}">${iconesTypes(r.c) || "—"}</span></span>
-      <span class="score ${cls(r.total)}" title="Points de victoire estimés">≈ ${pts(r.total)}</span>
+      ${r.proba !== null && base !== null
+        ? `<span class="score ${cls(100 * (r.proba - base))}" title="Chance de gagner la partie avec ce pick, d'après toute la draft connue (${(100 * base).toFixed(0)} % sans lui)">${(100 * r.proba).toFixed(0)} %<br><span class="petit">${pts(100 * (r.proba - base))} pts</span></span>`
+        : `<span class="score ${cls(r.total)}" title="Points de victoire estimés">≈ ${pts(r.total)}</span>`}
       <span class="puces">${r.puces.map(p => `<span class="puce ${cls(p.v)}${p.detail ? " detail" : ""}">${esc(p.t)}</span>`).join("")}</span>
     </button>`).join("") : `<p class="petit">Aucun champion à proposer pour ce poste.</p>`;
   dessinerMix();
@@ -809,8 +826,10 @@ function dessinerRecap() {
     if (lane !== "jgl") { infos[lane].pg = gank(nous.jgl, lane, nous, eux); infos[lane].pe = gank(eux.jgl, lane, eux, nous); }
   }
 
-  // Le plan : le tempo, les dégâts et ce qu'il faut surveiller.
+  // Le plan : la chance de victoire, le tempo, les dégâts et ce qu'il faut surveiller.
   const plan = [];
+  const pv = probaDraft(nous, eux);
+  if (pv !== null) plan.push(["Victoire", `<b>${(100 * pv).toFixed(0)} %</b> de chances de gagner d'après la draft <span class="petit">(force du patch, contres et synergie ; vérifié sur nos parties : la draft ne décide pas tout, la plupart des parties sont entre 40 et 60 %)</span>`]);
   const a = tempoEquipe(nous), b = tempoEquipe(eux);
   if (DD && DD.k && a.n && b.n) {
     const S = a.s - b.s, avant = 50 + points(DD.k * S * -1.25), apres = 50 + points(DD.k * S * 1.0), ecart = points(DD.k * S);
