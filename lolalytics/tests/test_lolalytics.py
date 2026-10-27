@@ -41,6 +41,13 @@ class LolalyticsTest(unittest.TestCase):
         _, _, _, allies = r.lire_build(page(objs))
         self.assertEqual(allies["support"][0], [234, 48.8, -0.3, -3.5, 4.5, 254])
 
+    def test_equipe(self):
+        # Réponse de l'API build-team : alliés par poste, [id, wr, d1, d2, pr, n].
+        txt = '{"team_h":["id","wr","d1","d2","pr","n"],"team":{"jungle":[[64,48.87,-1.64,-0.91,6.19,14837]]}}'
+        self.assertEqual(r.lire_equipe(txt)["jungle"][0], [64, 48.87, -1.64, -0.91, 6.19, 14837])
+        self.assertIsNone(r.lire_equipe(None))
+        self.assertIsNone(r.lire_equipe("{}"))
+
     def test_profil(self):
         # Dégâts du champion et parties / victoires par tranche de durée.
         objs = [221.99, 20943.86, 1539.12, {"physical": "0", "magic": "1", "true": "2"}, 5668, 51.0,

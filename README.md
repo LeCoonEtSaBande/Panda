@@ -6,7 +6,7 @@ Cette branche ne contient que le scraper Lolalytics et ce qu'il a récupéré, u
 
 | Fichier | Rôle |
 |---|---|
-| `lolalytics/recuperer.py` | Le scraper. Une page toutes les 3 secondes, Platine et plus, tous serveurs, environ 400 pages par patch. |
+| `lolalytics/recuperer.py` | Le scraper. Une page toutes les 3 secondes, Platine et plus, tous serveurs, environ 800 pages par patch (la synergie en plus). |
 | `lolalytics/<patch>/champions.csv` | Tier list de chaque poste : victoires, parties, pick, ban, part du poste. |
 | `lolalytics/<patch>/matchups.csv` | Chaque champion contre chaque adversaire, à chaque poste : victoires, parties, `delta_2` (l'effet propre du matchup). |
 | `lolalytics/<patch>/synergies.csv` | Chaque champion avec chaque allié, à chaque poste (si Lolalytics la publie) : victoires, parties, `delta_2` (ce que la paire gagne de plus que prévu). Depuis le 27/10/2026. |
@@ -14,6 +14,6 @@ Cette branche ne contient que le scraper Lolalytics et ce qu'il a récupéré, u
 | `lolalytics/<patch>/resume.md` | Junglers du patch et contres nets du pool, lisibles. |
 | `lolalytics/tests/` | Tests du lecteur sur des pages miniatures. |
 
-- **Lancer** : bouton « Récupérer les stats Lolalytics du patch » (sur `main`), une fois par patch, environ 20 minutes.
+- **Lancer** : bouton « Récupérer les stats Lolalytics du patch » (sur `main`), une fois par patch, environ 40 minutes.
 - **Politesse** : une page toutes les 3 secondes, arrêt immédiat sur un refus (403 ou 429), une seule fois par patch.
 - **Tests** : `python3 -m unittest discover -s lolalytics/tests`.

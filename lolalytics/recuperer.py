@@ -1,6 +1,6 @@
 """Récupère, une fois par patch, la tier list et les contres de Lolalytics (Platine et plus, tous serveurs).
 
-Pages lues (une toutes les 3 secondes, environ 250 par patch) :
+Pages lues (une toutes les 3 secondes, environ 800 par patch : chaque page champion, puis sa synergie) :
 - la tier list de chaque poste : taux de victoire, parties, pick, ban de chaque champion ;
 - la page « build » de chaque champion à chaque poste où il est assez joué : elle contient son taux de
   victoire contre chaque adversaire, à chaque poste adverse (lane contre lane, mais aussi jungler contre
@@ -10,8 +10,10 @@ Pages lues (une toutes les 3 secondes, environ 250 par patch) :
     matchup, le « contre » (positif = le champion gagne ce matchup plus que prévu).
 Les données sont lues dans l'état sérialisé de la page (bloc « qwik/json »), pas dans le texte affiché.
 
-- la même page donne aussi, si Lolalytics la publie, la synergie avec chaque allié à chaque poste (même format :
-  delta_2 = ce que la paire gagne de plus que prévu d'après les taux moyens des deux champions).
+- la synergie avec chaque allié à chaque poste, que la page charge au clic sur « Synergy » depuis l'API de
+  Lolalytics (a1.lolalytics.com/mega/?ep=build-team, trouvée le 27/10/2026), même format que les contres :
+  delta_1 = victoires ensemble - (taux moyen du champion + taux moyen de l'allié) / 2 ;
+  delta_2 = la même chose par rapport aux taux « normalisés » : ce que la paire gagne de plus que prévu.
 
 Écrit dans lolalytics/<patch>/ : champions.csv, matchups.csv, synergies.csv, profils.csv (dégâts par type, victoires selon la
 durée) et resume.md. Ne garde pas les pages.
@@ -32,6 +34,7 @@ from pathlib import Path
 
 ICI = Path(__file__).resolve().parent
 BASE = "https://lolalytics.com/lol"
+API_EQUIPE = "https://a1.lolalytics.com/mega/?ep=build-team&p=d&v=1&patch={patch}&c={slug}&lane={lane}&tier={tier}&queue=420&region=all"
 TIER = "platinum_plus"
 POSTES = {"top": "top", "jungle": "jgl", "middle": "mid", "bottom": "adc", "support": "sup"}
 ENTETES = {"User-Agent": "Mozilla/5.0 (compatible; panda-draft/1.0; projet personnel, une fois par patch)",
@@ -93,6 +96,16 @@ def lire_tierlist(html):
 
 CLES_SYNERGIE = ("team", "ally", "allies", "synergy", "with")
 CLES_VUES = set()     # clés de l'objet des matchups, notées dans resume.md pour voir ce que la page contient
+
+
+def lire_equipe(texte):
+    """Réponse JSON de l'API « build-team » : {poste allié: [ [id, wr, d1, d2, pr, n], ...]}, ou None."""
+    try:
+        d = json.loads(texte)
+    except (TypeError, ValueError):
+        return None
+    equipe = d.get("team") if isinstance(d, dict) else None
+    return equipe if isinstance(equipe, dict) else None
 
 
 def lire_build(html):
@@ -212,6 +225,7 @@ def main():
     dossier.mkdir(parents=True, exist_ok=True)
     a_lire = sorted([c for c in champions if c["parties"] >= MIN_PARTIES_PAGE], key=lambda c: -c["parties"])[: args.max_pages]
     matchups, synergies, profils, echecs = [], [], [], 0
+    periode_api = None          # période acceptée par l'API de synergie (le patch, ou « 30 » jours)
     for i, c in enumerate(a_lire, 1):
         poste_l = next(k for k, v in POSTES.items() if v == c["poste"])
         html = client.get(f"{BASE}/{slugs.get(c['id'], c['champion'].lower())}/build/?lane={poste_l}&tier={TIER}")
@@ -224,6 +238,14 @@ def main():
             print(f"::warning::{c['champion']} {c['poste']} : {err}")
             continue
         profils.append({"champion": c["champion"], "poste": c["poste"], **lire_profil(html)})
+        if not allies:
+            # Le patch en cours ; si l'API ne le prend pas, ses 30 derniers jours (« 30 »), retenu pour toute la suite.
+            for p_api in ([periode_api] if periode_api else [patch, "30"]):
+                reponse = client.get(API_EQUIPE.format(patch=p_api, slug=slugs.get(c["id"], c["champion"].lower()), lane=poste_l, tier=TIER))
+                allies = lire_equipe(reponse)
+                if allies:
+                    periode_api = p_api
+                    break
         for poste_adverse, liste in ennemis.items():
             if poste_adverse not in POSTES or not isinstance(liste, list):
                 continue
@@ -268,16 +290,17 @@ def main():
             w = csv.DictWriter(f, fieldnames=list(profils[0]), delimiter=";", lineterminator="\n")
             w.writeheader()
             w.writerows(profils)
-    ecrire_resume(dossier, patch, champions, matchups, client.pages, echecs, synergies)
+    ecrire_resume(dossier, patch, champions, matchups, client.pages, echecs, synergies, periode_api)
     print(f"Patch {patch} : {len(champions)} lignes de tier list, {len(matchups)} matchups, {len(synergies)} synergies, "
           f"{client.pages} pages, {echecs} échecs.")
     return 0
 
 
-def ecrire_resume(dossier, patch, champions, matchups, pages, echecs, synergies=()):
+def ecrire_resume(dossier, patch, champions, matchups, pages, echecs, synergies=(), periode_api=None):
     jungle = sorted([c for c in champions if c["poste"] == "jgl" and c["parties"] >= 1000], key=lambda c: -(c["victoires"] or 0))
     lignes = [f"# Lolalytics, patch {patch} (Platine et plus, tous serveurs)", "",
-              f"- {pages} pages lues, {echecs} échecs. {len(matchups)} matchups, {len(synergies)} synergies (alliés)."
+              f"- {pages} pages lues, {echecs} échecs. {len(matchups)} matchups, {len(synergies)} synergies (alliés"
+              + (f", période {'du patch ' + periode_api if periode_api != '30' else 'des 30 derniers jours'}" if periode_api else "") + ")."
               + ("" if synergies else f" Pas de synergie trouvée ; clés de l'objet des matchups : {', '.join(sorted(CLES_VUES))}."),
               "- Attention : la moyenne de Lolalytics en Platine et plus est d'environ 51 % (pas 50 %) : un jungler à 52 % "
               "est à peine au-dessus de la moyenne.",
