@@ -29,9 +29,17 @@ class LolalyticsTest(unittest.TestCase):
         # Un matchup [id, wr, d1, d2, pr, n] contre le jungler 234.
         objs = [234, 48.8, -0.3, -3.5, 4.5, 254, ["0", "1", "2", "3", "4", "5"], ["6"], {"jungle": "7"}, 5668, 51.0,
                 {"enemy": "8", "n": "9", "avgWr": "a"}]
-        n, moyenne, ennemis = r.lire_build(page(objs))
+        n, moyenne, ennemis, allies = r.lire_build(page(objs))
         self.assertEqual((n, moyenne), (5668, 51.0))
         self.assertEqual(ennemis["jungle"][0], [234, 48.8, -0.3, -3.5, 4.5, 254])
+        self.assertIsNone(allies)
+
+    def test_synergie(self):
+        # Même page, avec la synergie : un allié support [id, wr, d1, d2, pr, n].
+        objs = [234, 48.8, -0.3, -3.5, 4.5, 254, ["0", "1", "2", "3", "4", "5"], ["6"], {"jungle": "7"}, 5668, 51.0,
+                {"support": "7"}, {"enemy": "8", "team": "b", "n": "9", "avgWr": "a"}]
+        _, _, _, allies = r.lire_build(page(objs))
+        self.assertEqual(allies["support"][0], [234, 48.8, -0.3, -3.5, 4.5, 254])
 
     def test_profil(self):
         # Dégâts du champion et parties / victoires par tranche de durée.

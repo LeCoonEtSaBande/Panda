@@ -10,7 +10,10 @@ Pages lues (une toutes les 3 secondes, environ 250 par patch) :
     matchup, le « contre » (positif = le champion gagne ce matchup plus que prévu).
 Les données sont lues dans l'état sérialisé de la page (bloc « qwik/json »), pas dans le texte affiché.
 
-Écrit dans lolalytics/<patch>/ : champions.csv, matchups.csv, profils.csv (dégâts par type, victoires selon la
+- la même page donne aussi, si Lolalytics la publie, la synergie avec chaque allié à chaque poste (même format :
+  delta_2 = ce que la paire gagne de plus que prévu d'après les taux moyens des deux champions).
+
+Écrit dans lolalytics/<patch>/ : champions.csv, matchups.csv, synergies.csv, profils.csv (dégâts par type, victoires selon la
 durée) et resume.md. Ne garde pas les pages.
 Kayn : Lolalytics ne sépare pas ses deux formes (une seule ligne « Kayn »).
 
@@ -88,14 +91,27 @@ def lire_tierlist(html):
     raise ValueError("tier list introuvable dans la page")
 
 
+CLES_SYNERGIE = ("team", "ally", "allies", "synergy", "with")
+CLES_VUES = set()     # clés de l'objet des matchups, notées dans resume.md pour voir ce que la page contient
+
+
 def lire_build(html):
-    """(parties du champion à ce poste, taux moyen du palier, {poste adverse: [ [id, wr, d1, d2, pr, n], ...]})."""
+    """(parties du champion à ce poste, taux moyen du palier, {poste adverse: [ [id, wr, d1, d2, pr, n], ...]},
+    {poste allié: [ [id, wr, d1, d2, pr, n], ...]} ou None si la page ne donne pas la synergie)."""
     e = Etat(html)
     for o in e.dicts():
         if "enemy" in o and "n" in o:
             ennemis = e.plein(o["enemy"], 3)
             if isinstance(ennemis, dict):
-                return e.val(o["n"]), e.val(o.get("avgWr")), ennemis
+                CLES_VUES.update(o.keys())
+                allies = None
+                for cle in CLES_SYNERGIE:
+                    if cle in o:
+                        a = e.plein(o[cle], 3)
+                        if isinstance(a, dict):
+                            allies = a
+                            break
+                return e.val(o["n"]), e.val(o.get("avgWr")), ennemis, allies
     raise ValueError("matchups introuvables dans la page")
 
 
@@ -195,14 +211,14 @@ def main():
     dossier = ICI / (patch or "patch_inconnu")
     dossier.mkdir(parents=True, exist_ok=True)
     a_lire = sorted([c for c in champions if c["parties"] >= MIN_PARTIES_PAGE], key=lambda c: -c["parties"])[: args.max_pages]
-    matchups, profils, echecs = [], [], 0
+    matchups, synergies, profils, echecs = [], [], [], 0
     for i, c in enumerate(a_lire, 1):
         poste_l = next(k for k, v in POSTES.items() if v == c["poste"])
         html = client.get(f"{BASE}/{slugs.get(c['id'], c['champion'].lower())}/build/?lane={poste_l}&tier={TIER}")
         try:
             if html is None:
                 raise ValueError("page absente")
-            _, _, ennemis = lire_build(html)
+            _, _, ennemis, allies = lire_build(html)
         except ValueError as err:
             echecs += 1
             print(f"::warning::{c['champion']} {c['poste']} : {err}")
@@ -217,6 +233,16 @@ def main():
                 matchups.append({"champion": c["champion"], "poste": c["poste"], "adversaire": noms.get(int(e[0]), f"?{e[0]}"),
                                  "poste_adversaire": POSTES[poste_adverse], "parties": int(e[5]), "victoires": e[1],
                                  "delta_1": e[2], "delta_2": e[3], "pick_adversaire": e[4]})
+        # Synergie : même format que les contres, mais avec les alliés (delta_2 = ce que la paire gagne de plus que prévu).
+        for poste_allie, liste in (allies or {}).items():
+            if poste_allie not in POSTES or not isinstance(liste, list):
+                continue
+            for a in liste:
+                if not isinstance(a, list) or len(a) < 6:
+                    continue
+                synergies.append({"champion": c["champion"], "poste": c["poste"], "allie": noms.get(int(a[0]), f"?{a[0]}"),
+                                  "poste_allie": POSTES[poste_allie], "parties": int(a[5]), "victoires": a[1],
+                                  "delta_1": a[2], "delta_2": a[3], "pick_allie": a[4]})
         if i % 25 == 0:
             print(f"{i} / {len(a_lire)} pages de champion lues ({echecs} échecs).", flush=True)
 
@@ -229,21 +255,30 @@ def main():
             w = csv.DictWriter(f, fieldnames=list(matchups[0]), delimiter=";", lineterminator="\n")
             w.writeheader()
             w.writerows(matchups)
+    if synergies:
+        with open(dossier / "synergies.csv", "w", encoding="utf-8", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=list(synergies[0]), delimiter=";", lineterminator="\n")
+            w.writeheader()
+            w.writerows(synergies)
+    else:
+        print("::warning::Pas de synergie dans les pages (clés vues : " + ", ".join(sorted(CLES_VUES)) + ").")
     if profils:
         # Dégâts moyens par partie et parties / victoires par tranche de durée (voir lire_profil).
         with open(dossier / "profils.csv", "w", encoding="utf-8", newline="") as f:
             w = csv.DictWriter(f, fieldnames=list(profils[0]), delimiter=";", lineterminator="\n")
             w.writeheader()
             w.writerows(profils)
-    ecrire_resume(dossier, patch, champions, matchups, client.pages, echecs)
-    print(f"Patch {patch} : {len(champions)} lignes de tier list, {len(matchups)} matchups, {client.pages} pages, {echecs} échecs.")
+    ecrire_resume(dossier, patch, champions, matchups, client.pages, echecs, synergies)
+    print(f"Patch {patch} : {len(champions)} lignes de tier list, {len(matchups)} matchups, {len(synergies)} synergies, "
+          f"{client.pages} pages, {echecs} échecs.")
     return 0
 
 
-def ecrire_resume(dossier, patch, champions, matchups, pages, echecs):
+def ecrire_resume(dossier, patch, champions, matchups, pages, echecs, synergies=()):
     jungle = sorted([c for c in champions if c["poste"] == "jgl" and c["parties"] >= 1000], key=lambda c: -(c["victoires"] or 0))
     lignes = [f"# Lolalytics, patch {patch} (Platine et plus, tous serveurs)", "",
-              f"- {pages} pages lues, {echecs} échecs. {len(matchups)} matchups.",
+              f"- {pages} pages lues, {echecs} échecs. {len(matchups)} matchups, {len(synergies)} synergies (alliés)."
+              + ("" if synergies else f" Pas de synergie trouvée ; clés de l'objet des matchups : {', '.join(sorted(CLES_VUES))}."),
               "- Attention : la moyenne de Lolalytics en Platine et plus est d'environ 51 % (pas 50 %) : un jungler à 52 % "
               "est à peine au-dessus de la moyenne.",
               "- Contre net : au moins 2 points d'écart, et à plus de deux marges d'erreur (un matchup vu 150 fois a une marge d'environ ±8 points).",

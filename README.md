@@ -9,6 +9,7 @@ Cette branche ne contient que le scraper Lolalytics et ce qu'il a récupéré, u
 | `lolalytics/recuperer.py` | Le scraper. Une page toutes les 3 secondes, Platine et plus, tous serveurs, environ 400 pages par patch. |
 | `lolalytics/<patch>/champions.csv` | Tier list de chaque poste : victoires, parties, pick, ban, part du poste. |
 | `lolalytics/<patch>/matchups.csv` | Chaque champion contre chaque adversaire, à chaque poste : victoires, parties, `delta_2` (l'effet propre du matchup). |
+| `lolalytics/<patch>/synergies.csv` | Chaque champion avec chaque allié, à chaque poste (si Lolalytics la publie) : victoires, parties, `delta_2` (ce que la paire gagne de plus que prévu). Depuis le 27/10/2026. |
 | `lolalytics/<patch>/profils.csv` | Dégâts moyens par type (physiques, magiques, bruts) et parties / victoires par tranche de durée. |
 | `lolalytics/<patch>/resume.md` | Junglers du patch et contres nets du pool, lisibles. |
 | `lolalytics/tests/` | Tests du lecteur sur des pages miniatures. |
