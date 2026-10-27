@@ -179,6 +179,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .duel{background:var(--carte2);border-radius:8px;padding:6px 9px;display:flex;flex-direction:column;gap:1px;min-width:0;border-top:3px solid var(--ligne);font-size:.84rem;line-height:1.35}
 .duel.pos{border-top-color:var(--bon)} .duel.neg{border-top-color:var(--mauvais)} .duel.nul{border-top-color:var(--doux)}
 .duel.pos,.duel.neg,.duel.nul{color:var(--texte)}
+.duel .d-bas{display:flex;flex-direction:column}
+.duel .d-bas .petit{font-size:.72rem;text-align:right}
 .duel .d-tete{font-family:var(--titre);font-size:.9rem;overflow-wrap:anywhere;color:var(--texte)}
 .duel .d-tete .petit{font-family:var(--corps)}
 .duel b.pos{color:var(--bon)} .duel b.neg{color:var(--mauvais)} .duel b.nul{color:var(--doux)}
@@ -194,11 +196,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <button type="button" role="tab" id="onglet-draft" data-onglet="draft">Draft</button>
       <button type="button" role="tab" id="onglet-profils" data-onglet="profils">Profils</button>
     </div>
+    <span class="meta" id="meta"></span>
     <div class="droite">
       <span class="lien" id="lien" title="Lance « Assistant Draft - Lien client » sur ton PC pour que la page voie les picks de ton client League.">Lien client non lancé</span>
       <span class="version" id="version"></span>
     </div>
-    <span class="meta" id="meta" style="flex-basis:100%"></span>
   </header>
 
   <div id="vue-draft">
@@ -261,10 +263,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
           <section class="panneau" id="comment-jouer">
             <div id="duels" style="display:flex;flex-direction:column;gap:6px"></div>
             <ul class="conseils" id="conseils"></ul>
-            <details class="aide"><summary>Comment lire ces chiffres</summary>
-              <p>1 contre 1 : si deux champions se croisent seuls, chance de gagner, chacun avec l'or et le niveau habituels de son poste (un support a moins d'or qu'un top : c'est compté).
-              Vert : 55 % ou plus, rouge : 45 % ou moins. « Approximatif » : la force en duel d'un des deux n'est pas vérifiée sur nos parties, il compte comme un champion moyen de son poste.
-              Gank réussi : chance que le jungler participe à au moins un kill sur cette lane avant 15 min. Nos parties Émeraude-Diamant : appris sur le tas A, et seulement ce qui est vérifié sur le tas B.</p></details>
           </section>
         </div>
         <section class="panneau">
@@ -438,8 +436,9 @@ function duel(a, pa, b, pb, minute) {     // chance que a (au poste pa) gagne co
 // Les 5 duels de mon champion contre chaque champion adverse : à 8 et à 25 min, et le sens de l'évolution.
 function blocDuels(moi, R, eux) {
   if (!D.duel) return "";
-  const titre = t => `<h2 style="margin:0">${t} <span class="petit" style="font-family:var(--corps)">— 1 contre 1, chacun avec l'or habituel de son poste</span></h2>`;
+  const titre = t => `<h2 style="margin:0">${t} <span class="petit" style="font-family:var(--corps)">— 1 contre 1, chacun avec l'or et le niveau habituels de son poste</span></h2>`;
   if (!moi) return titre("Tes duels") + `<p class="petit" style="margin:0">Choisis ton champion pour voir tes 1 contre 1.</p>`;
+  const nb = c => ((D.duel.champions[c] || [])[2] || 0).toLocaleString("fr-FR");
   const conf = new Set(D.duel.confirmes || []), pc = x => `${(100 * x).toFixed(0)} %`, k = x => x >= 0.55 ? "pos" : (x <= 0.45 ? "neg" : "nul");
   const cartes = POSTES.filter(p => eux[p]).map(p => {
     const e = eux[p], p8 = duel(moi, R, e, p, 8), p25 = duel(moi, R, e, p, 25);
@@ -448,10 +447,10 @@ function blocDuels(moi, R, eux) {
     return `<div class="duel ${k((p8 + p25) / 2)}" title="Chance de gagner le duel si vous vous croisez seuls, chacun avec l'or et le niveau habituels de son poste">
       <span class="d-tete"><span class="petit">${NOM_POSTE[p]}</span> ${esc(e)}${approx ? ` <span class="tag" title="${esc([moi, e].filter(x => !conf.has(x)).join(" et "))} : force en duel non vérifiée, compté comme un champion moyen de son poste">approximatif</span>` : ""}</span>
       <span><b>8 min</b> <b class="${k(p8)}">${pc(p8)}</b></span><span><b>25 min</b> <b class="${k(p25)}">${pc(p25)}</b></span>
-      <b class="${ks}">${sens}</b></div>`;
+      <span class="d-bas"><b class="${ks}">${sens}</b><span class="petit" title="Duels de ${esc(e)} mesurés dans nos parties (ceux de ${esc(moi)} : ${nb(moi)})">${nb(e)} duels</span></span></div>`;
   });
   if (!cartes.length) return titre(`Tes duels avec ${esc(moi)}`) + `<p class="petit" style="margin:0">Entre des champions adverses pour voir tes 1 contre 1.</p>`;
-  return titre(`Tes duels avec ${esc(moi)}`) + `<div class="duels">${cartes.join("")}</div>`;
+  return titre(`Tes duels avec ${esc(moi)}`) + `<div class="duels">${cartes.join("")}</div><p class="note" style="margin:0">${esc(moi)} : ${nb(moi)} duels mesurés dans nos parties ; en bas de chaque carte, ceux de l'adversaire.</p>`;
 }
 
 // --- Recommandations, pour n'importe quel poste -------------------------------------------------------
@@ -1014,7 +1013,9 @@ async function interrogerClient() {
 }
 
 document.getElementById("tous").checked = !!etat.tous;
-document.getElementById("meta").textContent = `Patch ${D.meta.patch} (Lolalytics, Platine et plus) · nos analyses du ${D.meta.export} (${D.meta.parties_lanes} parties)`;
+const VERSION = "V 2.0";
+document.getElementById("meta").textContent = `${VERSION} · ${Number(D.meta.parties_lanes).toLocaleString("fr-FR")} parties`;
+document.getElementById("meta").title = `Lolalytics : patch ${D.meta.patch}, Platine et plus. Nos analyses : ${D.meta.parties_lanes} parties Émeraude-Diamant, calculées le ${D.meta.export}.`;
 majVersion("");
 montrer();
 interrogerClient();
