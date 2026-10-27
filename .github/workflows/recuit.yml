@@ -14,10 +14,10 @@ on:
   workflow_dispatch:
     inputs:
       piste:
-        description: "Règles cherchées : teamfight (groupes teamfight + tanky) ou scenarios (styles et scénarios)"
+        description: "Règles cherchées : styles (les 10 scénarios du 27/10 sur les 11 types), styles_libre (tous les croisements de types, sans scénarios), ou les anciennes pistes teamfight / scenarios"
         type: choice
-        options: [teamfight, scenarios]
-        default: teamfight
+        options: [styles, styles_libre, teamfight, scenarios]
+        default: styles
       minutes:
         description: "Durée du recuit, en minutes (240 au plus)"
         default: "60"
@@ -63,10 +63,13 @@ jobs:
 
       - name: 1. Recuit simulé (tas A et B)
         timeout-minutes: 250
-        run: >
-          python3 analyse/recuit/recuit_pistes.py --piste "${{ inputs.piste }}"
-          --minutes "${{ inputs.minutes }}" --graine "${{ inputs.graine }}"
-          ${{ inputs.hasard && '--melanger' || '' }}
+        run: |
+          case "${{ inputs.piste }}" in
+            styles*) SCRIPT=analyse/recuit/recuit_styles.py ;;   # recuit n° 3 : les 11 types, sans reclassement
+            *) SCRIPT=analyse/recuit/recuit_pistes.py ;;          # recuit n° 2 : ancien catalogue
+          esac
+          python3 "$SCRIPT" --piste "${{ inputs.piste }}" --minutes "${{ inputs.minutes }}" --graine "${{ inputs.graine }}" \
+            ${{ inputs.hasard && '--melanger' || '' }}
 
       - name: 2. Préparer la confirmation (assez de parties C ?)
         id: prep
@@ -78,8 +81,9 @@ jobs:
         if: ${{ !inputs.hasard && steps.prep.outputs.confirmer == 'true' }}
         timeout-minutes: 60
         run: |
-          python3 analyse/confirmation/confirmer_pistes.py --fichier "${{ steps.prep.outputs.fichier }}" \
-            --catalogue analyse/catalogues/ancien_catalogue_2026-10-24.csv \
+          CAT=""
+          case "${{ inputs.piste }}" in styles*) ;; *) CAT="--catalogue analyse/catalogues/ancien_catalogue_2026-10-24.csv" ;; esac
+          python3 analyse/confirmation/confirmer_pistes.py --fichier "${{ steps.prep.outputs.fichier }}" $CAT \
             --effets analyse/recuit/resultats/effets_a_confirmer.json --hasard 40
           F="${{ steps.prep.outputs.fichier }}"
           cat analyse/confirmation/resultats/confirmation_C_"${F%.json}"_*.md 2>/dev/null >> "$GITHUB_STEP_SUMMARY" || true
