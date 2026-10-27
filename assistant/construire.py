@@ -51,6 +51,8 @@ def construire(dossier_lola, export, sortie):
     patch = Path(dossier_lola).name
     champions = lire_csv(Path(dossier_lola) / "champions.csv")
     matchups = lire_csv(Path(dossier_lola) / "matchups.csv")
+    f_syn = Path(dossier_lola) / "synergies.csv"
+    synergies = lire_csv(f_syn) if f_syn.exists() else []
     ex = json.loads(Path(export).read_text(encoding="utf-8"))
 
     tier = {p: {} for p in POSTES}
@@ -65,7 +67,8 @@ def construire(dossier_lola, export, sortie):
 
     # Matchups de tous les postes, vus au moins 30 fois, en tableau compact :
     # mu[poste][indice du champion] = [poste adverse, indice de l'adversaire, delta_2 × 10, victoires × 10, parties, ...]
-    lola_noms = sorted({m["champion"] for m in matchups} | {m["adversaire"] for m in matchups})
+    lola_noms = sorted({m["champion"] for m in matchups} | {m["adversaire"] for m in matchups}
+                       | {m["champion"] for m in synergies} | {m["allie"] for m in synergies})
     indice = {n: i for i, n in enumerate(lola_noms)}
     code = {p: i for i, p in enumerate(POSTES)}
     mu = {p: {} for p in POSTES}
@@ -75,6 +78,16 @@ def construire(dossier_lola, export, sortie):
             continue
         mu[m["poste"]].setdefault(indice[m["champion"]], []).extend(
             [code[m["poste_adversaire"]], indice[m["adversaire"]], round(float(m["delta_2"]) * 10), round(float(m["victoires"]) * 10), n])
+
+    # Synergie avec chaque allié, même format : syn[poste][indice du champion] = [poste allié, indice de l'allié, delta_2 × 10,
+    # victoires × 10, parties, ...] ; seulement les paires vues au moins 100 fois (la page reste légère).
+    syn = {p: {} for p in POSTES}
+    for m in synergies:
+        n = int(m["parties"])
+        if n < 100 or m["poste"] not in code or m["poste_allie"] not in code:
+            continue
+        syn[m["poste"]].setdefault(indice[m["champion"]], []).extend(
+            [code[m["poste_allie"]], indice[m["allie"]], round(float(m["delta_2"]) * 10), round(float(m["victoires"]) * 10), n])
 
     noms = sorted(set(ex["catalogue"]) | {c["champion"] for c in champions if c["champion"] != "Kayn"}, key=str.lower)
     lanes = {p: {"f": v["forces"], "p": v["paires"], "s": round(v["ecart_type"]), "k": round(v["pente_victoire"], 4)}
@@ -88,7 +101,7 @@ def construire(dossier_lola, export, sortie):
         # menaces et protecteurs)].
         "cat": {c: [v.get("groupe", ""), v.get("types", []), 1 if v.get("fragile") else 0, v.get("tous") or v.get("types", [])]
                 for c, v in ex["catalogue"].items()},
-        "tier": tier, "moy": moyenne, "lola": lola_noms, "mu": mu, "lanes": lanes,
+        "tier": tier, "moy": moyenne, "lola": lola_noms, "mu": mu, "syn": syn, "lanes": lanes,
         "ganks": ex["ganks"], "tf": ex["teamfight"], "invm": ex.get("envahir_minutes", {}),
         "dd": duree_degats(ex.get("duree_degats")),
         # Ce qui est confirmé sur C (l'export a déjà retiré le reste) et contrôles des sorts (Data Dragon).

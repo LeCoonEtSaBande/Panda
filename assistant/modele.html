@@ -244,7 +244,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <div class="reco" id="reco"></div>
         <details class="aide"><summary>Comment lire ce score</summary>
           <p>Points de victoire estimés, qui s'additionnent : force du champion au patch, contre ton adversaire direct, et à moitié contre
-          le reste de leur équipe (Lolalytics, Platine et plus), plus −3 points pour une équipe presque toute AD (moins de 20 % d'AP) ou toute AP (plus de 70 %) : ton choix, l'effet n'est qu'« à surveiller » sur nos parties (−4 à −5 points mesurés).
+          le reste de leur équipe, et avec chacun de tes alliés déjà choisis (Lolalytics, Platine et plus ; la synergie seulement si elle est vérifiée sur nos parties), plus −3 points pour une équipe presque toute AD (moins de 20 % d'AP) ou toute AP (plus de 70 %) : ton choix, l'effet n'est qu'« à surveiller » sur nos parties (−4 à −5 points mesurés).
           Adversaire direct inconnu : moyenne sur ses champions probables. Tout ce qui est affiché a été vérifié sur des parties que
           l'apprentissage n'a jamais vues (tas B). Ordres de grandeur, pas des certitudes.</p></details>
       </section>
@@ -301,6 +301,10 @@ const CLE = "assistant-draft-v2";
 const MU = new Map();
 for (const [p, parChamp] of Object.entries(D.mu)) for (const [i, v] of Object.entries(parChamp))
   for (let k = 0; k < v.length; k += 5) MU.set(`${p}|${D.lola[i]}|${POSTES[v[k]]}|${D.lola[v[k + 1]]}`, [v[k + 2] / 10, v[k + 3] / 10, v[k + 4]]);
+// Synergie avec chaque allié (Lolalytics), même format.
+const SYN = new Map();
+for (const [p, parChamp] of Object.entries(D.syn || {})) for (const [i, v] of Object.entries(parChamp))
+  for (let k = 0; k < v.length; k += 5) SYN.set(`${p}|${D.lola[i]}|${POSTES[v[k]]}|${D.lola[v[k + 1]]}`, [v[k + 2] / 10, v[k + 3] / 10, v[k + 4]]);
 
 // --- État, gardé dans le navigateur -----------------------------------------------------------------
 const nouveauProfil = (nom, postes, pool) => ({id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), nom, postes, pool});
@@ -458,6 +462,13 @@ function blocDuels(moi, R, eux) {
 // --- Recommandations, pour n'importe quel poste -------------------------------------------------------
 function force(c, R) { if (CONF.force === false) return null; const t = D.tier[R][lola(c)]; if (!t) return null; return (t[0] - D.moy[R]) * t[1] / (t[1] + 1000); }
 function contre(c, R, P, e) { if (P === R ? CONF.contre_direct === false : CONF.contres_autres === false) return null; const m = MU.get(`${R}|${lola(c)}|${P}|${lola(e)}`); return m ? {pts: m[0] * m[2] / (m[2] + 300), wr: m[1], n: m[2]} : null; }
+// Points d'une paire d'alliés (moyenne des deux pages Lolalytics), seulement si la synergie est vérifiée sur nos parties.
+function synergie(c, R, P, a) {
+  if (CONF.synergie !== true) return null;
+  const v = [SYN.get(`${R}|${lola(c)}|${P}|${lola(a)}`), SYN.get(`${P}|${lola(a)}|${R}|${lola(c)}`)].filter(Boolean);
+  if (!v.length) return null;
+  return {pts: v.reduce((s, m) => s + m[0] * m[2] / (m[2] + 300), 0) / v.length, wr: v[0][1], n: Math.max(...v.map(m => m[2]))};
+}
 function probables(P, exclus) {
   return Object.entries(D.tier[P]).filter(([c, t]) => t[3] >= 0.8 && !exclus.has(c)).sort((a, b) => b[1][3] - a[1][3]).slice(0, 25);
 }
@@ -480,6 +491,9 @@ function evaluer(c, R, nous, eux) {
   let autres = 0;
   for (const P of POSTES) { if (P === R || !eux[P]) continue; const m = contre(c, R, P, eux[P]); if (!m) continue;
     const v = 0.5 * m.pts; autres += v; if (Math.abs(v) >= 0.4) puces.push({t: `vs ${eux[P]} (${NOM_POSTE[P]}) ${pts(v)}`, v}); }
+  let ensemble = 0;
+  for (const P of POSTES) { if (P === R || !nous[P]) continue; const m = synergie(c, R, P, nous[P]); if (!m) continue;
+    const v = (CONF.synergie_poids || 0) * m.pts; ensemble += v; if (Math.abs(v) >= 0.4) puces.push({t: `avec ${nous[P]} (${NOM_POSTE[P]}) ${pts(v)}`, v}); }
   const avecC = Object.assign({}, nous, {[R]: c});
   const effets = effetsEquipe(avecC, eux), mx = mixEffet(mixEquipe(avecC));
   const eq = 100 * (sig(effets.reduce((s, e) => s + e.logit, 0) + (mx ? mx.coef : 0)) - 0.5);
@@ -493,7 +507,7 @@ function evaluer(c, R, nous, eux) {
   }
   const s = DD && (DD.late[R] || {})[c];
   if (s !== undefined && s !== null && Math.abs(100 * s) >= 2) puces.push({t: `${s > 0 ? "late" : "early"} (${pts(100 * s)} pts / 10 min)`, v: 0});
-  return {c, total: (f || 0) + direct + autres + eq, puces};
+  return {c, total: (f || 0) + direct + autres + ensemble + eq, puces};
 }
 
 // --- Lanes : or à 15 min et ganks --------------------------------------------------------------------

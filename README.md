@@ -4,7 +4,7 @@ Projet complet, règles et routine : voir le README de la branche `main`. Tout s
 
 Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la branche `assistant`) : elle s'ouvre sans connexion, depuis le bureau.
 
-**Télécharger** : sur GitHub, branche `assistant`, cliquer sur le fichier, puis sur le bouton « Download raw file » (flèche vers le bas, en haut à droite du fichier). Le fichier fait environ 2 Mo : GitHub ne l'affiche pas, et un « Enregistrer sous » de la page GitHub donne une page vide.
+**Télécharger** : sur GitHub, branche `assistant`, cliquer sur le fichier, puis sur le bouton « Download raw file » (flèche vers le bas, en haut à droite du fichier). Le fichier fait environ 3 Mo : GitHub ne l'affiche pas, et un « Enregistrer sous » de la page GitHub donne une page vide.
 
 **Régénérer** : bouton « 5 · Générer l'assistant Draft » (sur `main`). À lancer après un passage Lolalytics (nouveau patch) ou quand des collectes ont ajouté des parties.
 
@@ -17,7 +17,7 @@ Une page HTML autonome (`Assistant Draft - DL - <date>.html`, à la racine de la
 - **Profils** (onglet Profils) : une personne par profil, avec les postes qu'elle joue et ses champions à chaque poste. En haut de la draft : le profil et le poste joué (« Je joue »).
 - **Mémoire** : la page retient, dans le navigateur, les profils, le dernier profil, le dernier poste, la draft en cours et la case « tous les champions ». À la réouverture, tout est comme à la dernière utilisation (même navigateur ; avec Chrome ou Edge, une nouvelle version téléchargée retrouve aussi les profils ; avec Firefox, l'ouvrir depuis le même dossier que l'ancienne).
 - **Pendant la draft**, la page ne montre que les deux équipes et **quel champion prendre** ; tout le reste vient au récapitulatif.
-- **Quel champion prendre** à son poste (son pool, ou tous les champions du poste) : force du patch, contre son adversaire direct, contre le reste de leur équipe (à moitié), mix de dégâts de l'équipe, et le 1 contre 1 à or égal contre son adversaire direct. Adversaire direct inconnu : moyenne sur ses champions probables, « sûr en blind » ou non, et les champions à éviter s'ils peuvent encore être pris.
+- **Quel champion prendre** à son poste (son pool, ou tous les champions du poste) : force du patch, contre son adversaire direct, contre le reste de leur équipe (à moitié), **synergie avec chacun de ses alliés déjà choisis** (Lolalytics, comptée à 52 % : le poids mesuré sur nos parties, vérifié sur B le 27/10/2026), mix de dégâts de l'équipe, et le 1 contre 1 à or égal contre son adversaire direct. Adversaire direct inconnu : moyenne sur ses champions probables, « sûr en blind » ou non, et les champions à éviter s'ils peuvent encore être pris.
 - **Dégâts** sous chaque équipe, en trois parts : **AD** (physiques), **AP** (magiques) et **Bruts** (ni l'armure ni la résistance magique ne les réduisent), d'après les dégâts moyens de chaque champion à son poste, et l'alerte quand une équipe est presque toute AD (moins de 20 % d'AP) ou toute AP (plus de 70 %) : −3 points, compté dans le score des candidats dès que 4 champions sont connus. C'est un choix du propriétaire (26/10/2026) : sur nos parties, l'effet mesuré (−4 à −5 points) n'est qu'« à surveiller » sur B. Le tempo de chaque équipe (plutôt early ou late).
 - **Tes duels** : le 1 contre 1 de ton champion contre **chacun des 5 champions adverses**, chacun avec l'or et le niveau habituels de son poste (un support a moins d'or qu'un top : c'est compté), à 8 et à 25 min, avec le sens de l'évolution (mieux en mieux en vert, stable en gris, moins en moins en rouge). Vert à 55 % ou plus, rouge à 45 % ou moins. « Approximatif » quand la force en duel d'un des deux n'est pas vérifiée sur nos parties (tas B) : il compte alors comme un champion moyen de son poste. Au récapitulatif, sous le plan ; à 8 et 25 min aussi dans « Quel champion prendre ». En bas de chaque carte, le nombre de duels de l'adversaire mesurés dans nos parties ; sous les cartes, les tiens.
 - Sous les duels, quelques lignes : en jungle, lanes avec ou sans prio, meilleure lane à ganker, lane exposée ; en lane, sa chance d'être devant, le risque de gank adverse, l'aide de son jungler.
@@ -59,7 +59,7 @@ Les types viennent des choix du propriétaire, classés par les notes de nos par
 
 | Chiffre | Source |
 |---|---|
-| Force du patch, contres, matchups de lane, poste deviné | Lolalytics, Platine et plus, tous serveurs (branche `scraping`, `lolalytics/<patch>/`) |
+| Force du patch, contres, synergie avec les alliés, matchups de lane, poste deviné | Lolalytics, Platine et plus, tous serveurs (branche `scraping`, `lolalytics/<patch>/`) |
 | Or à 15 min, chance d'être devant | nos parties Émeraude-Diamant avec timeline (`analyse/contres`, `analyse/lanes/dynamique.py`) |
 | Ganks réussis | nos parties (`analyse/lanes/ganks.py`) |
 | Dégâts par type, early / late | Lolalytics (page de chaque champion, `profils.csv`), sinon nos parties ; effets vérifiés sur nos parties (`analyse/lanes/duree_degats.py`) |
