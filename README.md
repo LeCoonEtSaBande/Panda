@@ -55,11 +55,10 @@ Vérifié sur B le 26/10/2026 (13 900 parties de B, appris sur A ; détails dans
 |---|---|---|
 | Force des champions du patch, contre direct, autres contres (Lolalytics) : coefficients 3,6 / 4,8 / 3,0 pour 4 attendus | confirmé | oui |
 | Synergie avec les alliés (Lolalytics, 27/10/2026) : coefficient 2,1 ± 0,3 pour 4 attendus, donc comptée à 52 % dans l'assistant | confirmé | oui |
+| Chance de victoire à la draft (force, contres, synergie ; apprise sur A, 27/10/2026) : sur 18 086 parties de B, chaque tranche annoncée est juste à 1 point près (annoncé 57 %, gagné 56 %) ; bon gagnant 56 % du temps | confirmé | oui |
 | Or à 15 min par lane : une lane annoncée devant à 60 % ou plus l'est 63 à 66 % du temps | confirmé | oui |
 | Ganks réussis avant 15 min : bien calibrés (annoncé 65 %, réel 65 %…) | confirmé | oui |
-| Envahir vers 20 min pour un jungler Engage (tanks) : +13 points sur B | confirmé | oui |
-| Envahir à 15 min (Engage tanks et bruisers, confirmé sur C le 24/10) | ne tient plus sur B (rien) | non |
-| Envahir à 10 min (Engage bruisers), à 20 min (Poke) | à surveiller | non |
+| Envahir | retiré le 27/10/2026 (choix du propriétaire : pas assez fiable) ; `lanes/envahir.py` reste pour la trace, il n'est plus calculé | non |
 | Early/late : la compo la plus late gagne 37 % avant 20 min et 61 % entre 35 et 40 min | confirmé | oui |
 | Mix de dégâts : moins de 20 % ou plus de 70 % de dégâts magiques, −4 à −5 points | à surveiller (confirmé sur C le 24/10, pas assez d'équipes sur B) | non |
 | Duels (1 contre 1), chacun avec l'or et le niveau habituels de son poste (515 000 duels) : modèle d'ensemble et évolution avec la minute | vérifié (gain 14 et 7 millièmes) | oui |

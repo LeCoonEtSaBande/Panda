@@ -117,6 +117,16 @@ def bloc_lolalytics(table, dossier):
     def contre(p, a, q, b):   # points de a (au poste p) contre b (au poste q), moyenne des deux sens
         return 0.5 * (mu.get((p, nom_lola(a), q, nom_lola(b)), 0.0) - mu.get((q, nom_lola(b), p, nom_lola(a)), 0.0))
 
+    def variables(lignes_):
+        X_ = []
+        for i in lignes_:
+            b = {p: table[f"b_{p}"][i] for p in POSTES}; r = {p: table[f"r_{p}"][i] for p in POSTES}
+            paires = [(p, q) for k, p in enumerate(POSTES) for q in POSTES[k + 1:]]
+            X_.append((sum(force(b[p], p) - force(r[p], p) for p in POSTES), sum(contre(p, b[p], p, r[p]) for p in POSTES),
+                       sum(contre(p, b[p], q, r[q]) for p in POSTES for q in POSTES if p != q),
+                       sum(ensemble(p, b[p], q, b[q]) - ensemble(p, r[p], q, r[q]) for p, q in paires)))
+        return np.array(X_) / 100
+
     c_rows = np.where(table["tas"] == "C")[0]
     X = []
     for i in c_rows:
@@ -137,7 +147,29 @@ def bloc_lolalytics(table, dossier):
     total = (X[:, 0] + X[:, 1]) * 100
     fort = np.abs(total) >= 3
     gagne = float(np.mean(np.where(total[fort] > 0, y[fort], 1 - y[fort]))) if fort.any() else math.nan
-    return {"parties": int(len(c_rows)), "tests": verdicts(tests), "annonce_3_points": {"parties": int(fort.sum()), "gagne": gagne}}
+    return {"parties": int(len(c_rows)), "tests": verdicts(tests), "annonce_3_points": {"parties": int(fort.sum()), "gagne": gagne},
+            "proba": proba_victoire(table, variables, y, c_rows) if syn else None}
+
+
+def proba_victoire(table, variables, y_mesure, lignes_mesure):
+    """Chance de victoire à la draft (force du patch, contres, synergie de Lolalytics) : apprise sur A, mesurée sur
+    les parties de mesure (B ou C), jamais vues. Verdict « confirmé » si elle prédit mieux que 50 / 50 (perte log)
+    et si chaque tranche annoncée est à moins de 3 points de la réalité."""
+    a_rows = np.where(table["tas"] == "A")[0]
+    Xa, ya = variables(a_rows), table["bleu_gagne"].to_numpy()[a_rows].astype(float)
+    beta, c = bloc3.logistique(Xa, ya, np.zeros(len(ya)), lam=1e-6, constante=True)
+    Xm = variables(lignes_mesure)
+    p = bloc3.sigmoide(c + Xm @ beta)
+    perte, hasard = float(bloc3.perte_log(y_mesure, p)), float(np.log(2))
+    tranches = []
+    for a, z in ((0, .40), (.40, .45), (.45, .48), (.48, .52), (.52, .55), (.55, .60), (.60, 1.01)):
+        m = (p >= a) & (p < z)
+        if m.sum() >= 200:
+            tranches.append({"de": a, "a": min(z, 1.0), "parties": int(m.sum()), "annonce": float(p[m].mean()), "reel": float(y_mesure[m].mean())})
+    juste = all(abs(t["annonce"] - t["reel"]) < 0.03 for t in tranches)
+    return {"coefficients": [float(b) for b in beta], "constante": float(c), "perte_log": perte, "perte_log_50_50": hasard,
+            "bon_gagnant": float(((p > 0.5) == (y_mesure == 1)).mean()), "tranches": tranches,
+            "verdict": "confirmé" if perte < hasard and juste else "rien"}
 
 
 # --- 2. Or à 15 min par lane -----------------------------------------------------------------------
@@ -306,8 +338,6 @@ def main():
     print("2. Lanes fait.", flush=True)
     sortie["ganks"] = bloc_ganks(donnees, tas)
     print("3. Ganks fait.", flush=True)
-    sortie["envahir"] = bloc_envahir(donnees, table, lignes)
-    print("4. Envahir fait.", flush=True)
     SORTIE.mkdir(exist_ok=True)
     nom = "verification_B" if MESURE == "B" else "confirmation_C"
     sortie["mesure"] = MESURE
@@ -322,7 +352,15 @@ def main():
     texte += [f"| {t['nom']} | {t['coefficient']:.1f} ± {t['erreur']:.1f} | {t['verdict']} |" for t in L["tests"]]
     a = L["annonce_3_points"]
     texte += ["", f"- Quand la force + le contre direct donnent 3 points d'avance ou plus à un camp ({a['parties']} parties), "
-              f"il gagne {pc(a['gagne'])}.", "", "## 2. Or à 15 min par lane", "",
+              f"il gagne {pc(a['gagne'])}.", ""]
+    V = L.get("proba")
+    if V:
+        texte += [f"### Chance de victoire à la draft : **{V['verdict']}**", "",
+                  f"Apprise sur A, mesurée sur C : bon gagnant {pc(V['bon_gagnant'])} des parties ; perte log {V['perte_log']:.4f} "
+                  f"(50 / 50 : {V['perte_log_50_50']:.4f}).", "", "| Annoncé | Parties | Réel |", "|---|---|---|"]
+        texte += [f"| {100 * t['de']:.0f}–{100 * t['a']:.0f} % (moyenne {pc(t['annonce'])}) | {t['parties']} | {pc(t['reel'])} |" for t in V["tranches"]]
+        texte += [""]
+    texte += ["## 2. Or à 15 min par lane", "",
               "| Lane | Parties | Corrélation prédit / réel | Annoncée devant à 60 % ou plus : devant en vrai | Verdict |", "|---|---|---|---|---|"]
     for lane, d in sortie["lanes"].items():
         f = d["annonce_devant_60"]
@@ -333,14 +371,10 @@ def main():
     texte += [f"- Le modèle prédit {t['nom']} : gain {1000 * t['gain']:.1f} millièmes, **{t['verdict']}**." for t in G["tests"]]
     texte += ["", "| Chance annoncée | Lignes | Annoncé | Réel |", "|---|---|---|---|"]
     texte += [f"| {c['annonce']} | {c['lignes']} | {pc(c['annonce_moyenne'])} | {pc(c['reel'])} |" for c in G["calibration"]]
-    texte += ["", "## 4. Envahir (effets affichés par l'assistant)", "",
-              "| Minute | Jungler | A | B | C | Verdict |", "|---|---|---|---|---|---|"]
-    texte += [f"| {t['minute']} | {t['groupe']} | {t['A']:+.1f} | {t['B']:+.1f} | {t['C']:+.1f} | {t['verdict']} |"
-              for t in sortie["envahir"]["tests"]]
     texte.append("")
     if MESURE == "B":
         texte = [t.replace("Confirmation sur C", "Vérification sur B").replace("Appris sur A + B", "Appris sur A").replace("mesuré sur C", "mesuré sur B")
-                  .replace("parties de C", "parties de B").replace("sur C", "sur B").replace("| A | B | C |", "| A | B (envahir.py) | B (mesure) |")
+                  .replace("parties de C", "parties de B").replace("sur C", "sur B")
                  for t in texte]
     (SORTIE / f"{nom}.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
     print("\n".join(texte))

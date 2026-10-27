@@ -10,9 +10,8 @@
 - ganks : le modèle des ganks réussis avant 15 min (ganks.py) ;
 - teamfight : le réglage du recuit teamfight (poids des postes, seuil) et les effets qui tiennent sur A
   et sur B (même sens, au moins 1,5 point sur B, 300 parties sur B) ;
-- envahir_minutes : l'effet d'envahir à 5, 10, 15 et 20 min à écart d'or égal, par catégorie, sur A et sur B (envahir.py).
 
-    python3 analyse/export/exporter.py      (après lanes/dynamique.py, envahir.py, ganks.py et duree_degats.py)
+    python3 analyse/export/exporter.py      (après lanes/dynamique.py, ganks.py et duree_degats.py)
 """
 
 import csv
@@ -170,7 +169,9 @@ def confirmation_c():
                                 if t["nom"] == "Synergie avec les alliés"), 0.0),
         "lanes": bool(gen.get("lanes")) and all(ok(d) for d in gen["lanes"].values()),
         "ganks": bool(gen.get("ganks")) and all(ok(t) for t in gen["ganks"]["tests"]),
-        "envahir": [[t["minute"], t["groupe"]] for t in gen.get("envahir", {}).get("tests", []) if ok(t)],
+        # Chance de victoire à la draft (Lolalytics), seulement si elle est juste sur B.
+        "proba": (lambda v: {"coef": v["coefficients"], "constante": v["constante"], "bon_gagnant": v["bon_gagnant"]}
+                  if v and v.get("verdict") == "confirmé" else None)(gen.get("lolalytics", {}).get("proba")),
         "tempo": ok(dd.get("late")),
         "mix": [titre for titre, m in dd.get("mix", {}).items() if ok(m)],
         "teamfight": {"recuit": rec["recuit"] if rec else None,
@@ -218,9 +219,6 @@ def main():
                 dd["mix"][k].update(tient=True, AB=math.log((0.5 + pts / 100) / (0.5 - pts / 100)), impose=True)
         if not conf["tempo"]:
             dd["coef_late"]["retenu"] = 0.0
-    envm = json.loads((LANES_RES / "envahir.json").read_text(encoding="utf-8"))
-    for m, s in envm.items():
-        s["confirme_C"] = [g for mm, g in conf["envahir"] if str(mm) == str(m)]
     donnees = {
         "date": datetime.now(ZoneInfo("Europe/Paris")).strftime("%d/%m/%Y %H:%M"),
         "catalogue": catalogue(),
@@ -229,7 +227,6 @@ def main():
         "lanes": lanes(),
         "ganks": json.loads((LANES_RES / "ganks_modele.json").read_text(encoding="utf-8")),
         "teamfight": tf,
-        "envahir_minutes": envm,
         # Mix de dégâts et early / late (lanes/duree_degats.py), filtrés par la confirmation sur C.
         "duree_degats": dd,
         "confirmation_C": conf,

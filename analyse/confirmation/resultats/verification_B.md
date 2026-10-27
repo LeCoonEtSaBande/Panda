@@ -2,60 +2,50 @@
 
 Appris sur A (ou Lolalytics), mesuré sur B. Confirmé = moins de 5 % de chances d'être un hasard après correction.
 
-## 1. Lolalytics (14723 parties de B)
+## 1. Lolalytics (18086 parties de B)
 
 | Élément | Coefficient sur B (attendu ≈ 4 si les points sont justes) | Verdict |
 |---|---|---|
-| Force du patch | 3.8 ± 0.4 | confirmé |
-| Contre de l'adversaire direct | 4.8 ± 0.5 | confirmé |
-| Contres des autres adversaires | 3.0 ± 0.3 | confirmé |
-| Synergie avec les alliés | 2.1 ± 0.3 | confirmé |
+| Force du patch | 3.8 ± 0.3 | confirmé |
+| Contre de l'adversaire direct | 4.7 ± 0.4 | confirmé |
+| Contres des autres adversaires | 3.3 ± 0.3 | confirmé |
+| Synergie avec les alliés | 2.3 ± 0.3 | confirmé |
 
-- Quand la force + le contre direct donnent 3 points d'avance ou plus à un camp (8619 parties), il gagne 56 %.
+- Quand la force + le contre direct donnent 3 points d'avance ou plus à un camp (10851 parties), il gagne 57 %.
+
+### Chance de victoire à la draft : **confirmé**
+
+Apprise sur A, mesurée sur B : bon gagnant 56 % des parties ; perte log 0.6805 (50 / 50 : 0.6931).
+
+| Annoncé | Parties | Réel |
+|---|---|---|
+| 0–40 % (moyenne 36 %) | 2047 | 36 % |
+| 40–45 % (moyenne 43 %) | 3170 | 42 % |
+| 45–48 % (moyenne 47 %) | 2605 | 46 % |
+| 48–52 % (moyenne 50 %) | 3647 | 49 % |
+| 52–55 % (moyenne 53 %) | 2384 | 54 % |
+| 55–60 % (moyenne 57 %) | 2716 | 56 % |
+| 60–100 % (moyenne 63 %) | 1517 | 64 % |
 
 ## 2. Or à 15 min par lane
 
 | Lane | Parties | Corrélation prédit / réel | Annoncée devant à 60 % ou plus : devant en vrai | Verdict |
 |---|---|---|---|---|
-| top | 11170 | 0.28 | 66 % (1940) | confirmé |
-| jgl | 11170 | 0.26 | 63 % (2223) | confirmé |
-| mid | 11170 | 0.25 | 65 % (1834) | confirmé |
-| bot | 11170 | 0.26 | 66 % (2122) | confirmé |
+| top | 14612 | 0.28 | 67 % (2484) | confirmé |
+| jgl | 14612 | 0.27 | 64 % (2776) | confirmé |
+| mid | 14612 | 0.25 | 66 % (2289) | confirmé |
+| bot | 14612 | 0.26 | 67 % (2700) | confirmé |
 
-## 3. Ganks réussis avant 15 min (11309 parties de B)
+## 3. Ganks réussis avant 15 min (14787 parties de B)
 
-- Le modèle prédit mieux que la moyenne : gain 32.0 millièmes, **confirmé**.
-- Le modèle prédit mieux que la seule catégorie du jungler : gain 10.9 millièmes, **confirmé**.
+- Le modèle prédit mieux que la moyenne : gain 32.3 millièmes, **confirmé**.
+- Le modèle prédit mieux que la seule catégorie du jungler : gain 11.1 millièmes, **confirmé**.
 
 | Chance annoncée | Lignes | Annoncé | Réel |
 |---|---|---|---|
-| 0-50 % | 1732 | 47 % | 49 % |
-| 50-60 % | 10161 | 56 % | 56 % |
-| 60-70 % | 19893 | 65 % | 65 % |
-| 70-80 % | 16773 | 75 % | 75 % |
-| 80-100 % | 19295 | 86 % | 85 % |
-
-## 4. Envahir (effets affichés par l'assistant)
-
-| Minute | Jungler | A | B (envahir.py) | B (mesure) | Verdict |
-|---|---|---|---|---|---|
-| 5 | Engage (tanks) | +3.2 | +3.6 | +2.7 | rien |
-| 5 | Engage (bruisers) | +5.6 | +2.6 | +4.2 | rien |
-| 5 | Pick (assassins) | +1.8 | +1.8 | +2.9 | rien |
-| 5 | Carrys | +4.9 | +1.3 | +1.8 | rien |
-| 10 | Engage (tanks) | +2.3 | +1.0 | +2.4 | rien |
-| 10 | Engage (bruisers) | +2.3 | +4.9 | +5.9 | à surveiller |
-| 10 | Pick (assassins) | +2.3 | -2.5 | -2.4 | rien |
-| 10 | Poke (artilleurs) | +3.0 | -3.0 | -3.5 | rien |
-| 10 | Carrys | +4.2 | +5.2 | +8.2 | à surveiller |
-| 15 | Engage (tanks) | +6.5 | +3.7 | +5.1 | à surveiller |
-| 15 | Engage (bruisers) | +7.2 | +1.3 | +2.4 | rien |
-| 15 | Pick (assassins) | +1.8 | +0.6 | +2.2 | rien |
-| 15 | Poke (artilleurs) | +8.8 | +6.1 | +9.2 | rien |
-| 15 | Carrys | +4.5 | -3.9 | -4.1 | rien |
-| 20 | Engage (tanks) | +2.9 | +11.4 | +10.8 | confirmé |
-| 20 | Engage (bruisers) | +1.7 | -1.0 | -2.4 | rien |
-| 20 | Supports tanks | +4.2 | +8.5 | +15.7 | rien |
-| 20 | Poke (artilleurs) | +2.2 | +8.3 | +10.0 | à surveiller |
-| 20 | Carrys | +4.3 | +3.3 | +3.6 | rien |
+| 0-50 % | 2137 | 47 % | 48 % |
+| 50-60 % | 13343 | 56 % | 56 % |
+| 60-70 % | 26564 | 65 % | 65 % |
+| 70-80 % | 21726 | 75 % | 75 % |
+| 80-100 % | 24952 | 86 % | 85 % |
 
