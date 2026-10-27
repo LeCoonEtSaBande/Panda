@@ -1,6 +1,6 @@
-name: "2 · Lolalytics : stats du patch (force des champions, contres, matchups)"
+name: "2 · Lolalytics : stats du patch (force des champions, contres, synergies)"
 # À QUOI IL SERT : récupérer sur Lolalytics la force de chaque champion à chaque poste, les contres et les matchups du
-# patch en cours (branche « scraping »). QUAND : à chaque nouveau patch (environ 20 min), avant le bouton 5.
+# patch en cours, et la synergie avec chaque allié (branche « scraping »). QUAND : à chaque nouveau patch (environ 40 min), avant le bouton 5.
 
 # Bouton « Run workflow », une fois par patch (environ 20 minutes). Tier list de chaque poste, puis la page
 # de chaque champion à chaque poste (matchups, dégâts par type, victoires selon la durée), Platine et plus,
@@ -8,11 +8,6 @@ name: "2 · Lolalytics : stats du patch (force des champions, contres, matchups)
 # Ensuite : « Générer l'assistant Draft ».
 on:
   workflow_dispatch:
-    inputs:
-      diagnostic:
-        description: "Diagnostic seulement : chercher où Lolalytics charge la synergie (une dizaine de pages), sans récupérer le patch"
-        type: boolean
-        default: false
 
 permissions:
   contents: write
@@ -36,12 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: Récupérer le patch
-        if: ${{ !inputs.diagnostic }}
         run: python3 lolalytics/recuperer.py
-
-      - name: Diagnostic de la synergie
-        if: ${{ inputs.diagnostic }}
-        run: python3 lolalytics/diagnostic_synergie.py | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Enregistrer
         if: always()

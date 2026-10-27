@@ -40,7 +40,7 @@ Onglet Actions de GitHub. Le numéro est l'ordre à suivre pour générer un ass
 | Bouton | À quoi il sert | Quand |
 |---|---|---|
 | **1 · Collecte** | Télécharger des parties classées Émeraude-Diamant EUW (détails et timeline) dans `donnees/` : la matière de toutes nos analyses. 5 h 15, environ 7 000 parties. Mettre à jour le secret `RIOT_API_KEY` avant (la clé expire au bout de 24 h). | En premier ; puis dès qu'on veut plus de parties. |
-| **2 · Lolalytics** | Force de chaque champion à chaque poste, contres et matchups du patch (branche `scraping`). Environ 20 min. | À chaque nouveau patch. |
+| **2 · Lolalytics** | Force de chaque champion à chaque poste, contres, matchups et synergie avec chaque allié du patch (branche `scraping`). Environ 40 min. | À chaque nouveau patch. |
 | **3 · Data Dragon** | Nouveaux champions au catalogue, sorts de chacun rangés en contrôle, déplacement ou protection (branche `analyse`). Moins d'une minute. | À chaque nouveau patch. |
 | **4 · Recuit** (facultatif) | Chercher des règles de compo (piste `styles` : les 10 scénarios sur les 11 types ; `styles_libre` : sans scénarios) sur A et B, puis, s'il y a au moins 5 000 parties C, les confirmer sur C tout seul ; C est alors consommé et un nouveau gel est posé. Seules les règles confirmées entrent dans l'assistant. | Après une ou deux collectes (pour remplir C). |
 | **5 · Générer l'assistant Draft** | Recalculer nos analyses sur les parties (or à 15 min, ganks, envahir, duels, dégâts, types des champions), puis produire la page et le lien client Windows. | En dernier, après chaque passage par 1, 2, 3 ou 4. |
