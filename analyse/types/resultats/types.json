@@ -436,20 +436,17 @@
  },
  "tank": {
   "poids": {
-   "part_subis": -1.46,
-   "encaisse_min": 5.32,
-   "assassin_p": -0.96
+   "part_subis": -1.64,
+   "encaisse_min": 5.64,
+   "assassin_p": -1.19
   },
   "C": 3.0,
   "revus": 173,
-  "oui_retrouves": 18,
-  "oui": 20,
-  "faux_oui": 16,
-  "justesse": 0.896,
+  "oui_retrouves": 20,
+  "oui": 22,
+  "faux_oui": 13,
+  "justesse": 0.913,
   "erreurs": [
-   "Alistar",
-   "Ambessa",
-   "Galio",
    "Garen",
    "Jarvan IV",
    "Kled",
@@ -468,81 +465,210 @@
   ],
   "en_plus": [
    [
-    "Galio",
-    96
-   ],
-   [
-    "Alistar",
-    89
+    "Poppy",
+    85
    ],
    [
     "Shyvana",
-    84
-   ],
-   [
-    "Poppy",
-    83
+    85
    ],
    [
     "Singed",
-    76
+    81
    ],
    [
     "Nunu & Willump",
-    67
+    70
    ],
    [
     "Renekton",
-    66
-   ],
-   [
-    "Kled",
     64
    ],
    [
-    "Zaahen",
-    60
+    "Taric",
+    64
    ],
    [
-    "Garen",
-    59
+    "Kled",
+    61
    ],
    [
     "Urgot",
-    59
+    60
    ],
    [
-    "Volibear",
-    58
-   ],
-   [
-    "Taric",
+    "Zaahen",
     57
    ],
    [
+    "Volibear",
+    56
+   ],
+   [
+    "Garen",
+    55
+   ],
+   [
     "Jarvan IV",
-    52
+    54
    ],
    [
     "Trundle",
-    52
-   ],
-   [
-    "Ambessa",
     51
    ]
   ],
   "en_moins": [
    [
     "Mordekaiser",
-    17
+    11
    ],
    [
     "Maokai",
-    42
+    47
    ]
   ],
-  "meme_decision_A_B": 0.945
+  "meme_decision_A_B": 0.957
+ },
+ "hp": {
+  "poids": {
+   "encaisse_min": 1.57,
+   "dpm": -0.23
+  },
+  "C": 0.3,
+  "revus": 173,
+  "oui_retrouves": 47,
+  "oui": 49,
+  "faux_oui": 24,
+  "justesse": 0.85,
+  "erreurs": [
+   "Alistar",
+   "Cho'Gath",
+   "Dr. Mundo",
+   "Galio",
+   "Gragas",
+   "Illaoi",
+   "K'Sante",
+   "Leona",
+   "Lillia",
+   "Malphite",
+   "Maokai",
+   "Mordekaiser",
+   "Nasus",
+   "Nautilus",
+   "Ornn",
+   "Rammus",
+   "Rell",
+   "Sejuani",
+   "Shen",
+   "Sion",
+   "Skarner",
+   "Sylas",
+   "Tahm Kench",
+   "Udyr",
+   "Vladimir",
+   "Zac"
+  ],
+  "en_plus": [
+   [
+    "Sion",
+    98
+   ],
+   [
+    "Dr. Mundo",
+    95
+   ],
+   [
+    "Rammus",
+    94
+   ],
+   [
+    "Skarner",
+    94
+   ],
+   [
+    "K'Sante",
+    92
+   ],
+   [
+    "Sejuani",
+    92
+   ],
+   [
+    "Nasus",
+    90
+   ],
+   [
+    "Ornn",
+    90
+   ],
+   [
+    "Tahm Kench",
+    90
+   ],
+   [
+    "Zac",
+    89
+   ],
+   [
+    "Cho'Gath",
+    87
+   ],
+   [
+    "Alistar",
+    86
+   ],
+   [
+    "Udyr",
+    85
+   ],
+   [
+    "Illaoi",
+    84
+   ],
+   [
+    "Malphite",
+    83
+   ],
+   [
+    "Shen",
+    82
+   ],
+   [
+    "Nautilus",
+    80
+   ],
+   [
+    "Mordekaiser",
+    79
+   ],
+   [
+    "Rell",
+    77
+   ],
+   [
+    "Leona",
+    75
+   ],
+   [
+    "Galio",
+    74
+   ],
+   [
+    "Maokai",
+    70
+   ]
+  ],
+  "en_moins": [
+   [
+    "Vladimir",
+    40
+   ],
+   [
+    "Gragas",
+    49
+   ]
+  ],
+  "meme_decision_A_B": 0.994
  },
  "bloqueur": {
   "poids": {
@@ -924,9 +1050,5 @@
    ]
   ],
   "meme_decision_A_B": 0.884
- },
- "hp": {
-  "regle": "encaisse par minute ≥ moyenne + 0.5 écart-type, sans être tank",
-  "meme_decision_A_B": 0.988
  }
 }

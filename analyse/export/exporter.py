@@ -35,7 +35,8 @@ CATALOGUE = ANALYSE / "catalogues" / "catalogue_unifie.csv"          # les 10 ty
 ANCIEN = ANALYSE / "catalogues" / "ancien_catalogue_2026-10-24.csv"  # catégories de jungler des ganks et d'envahir
 ULTIMES = ANALYSE / "catalogues" / "ultimes_a_surveiller.csv"       # ultimes à surveiller, relus à la main
 NOTES = ANALYSE / "types" / "resultats" / "notes.csv"                # notes de chaque type, et « fragile »
-STYLES_AFFICHES = 2                                                   # en plus de Carry ou Enchanteur
+STYLES_AFFICHES = 2                                                   # en plus de Carry, Tank et HP
+TOUJOURS = ("carry", "tank", "hp")                                    # toujours affichés (choix du propriétaire, 27/10/2026)
 SORTS = ANALYSE / "catalogues" / "sorts.csv"                         # sorts par catégorie (Data Dragon)
 LANES_RES = ANALYSE / "lanes" / "resultats"
 RECUIT_RES = ANALYSE / "recuit" / "resultats"
@@ -52,7 +53,7 @@ def catalogue():
     """Pour chaque champion : ses types et sa catégorie de jungler de l'ancien catalogue (« groupe », seulement pour les
     ganks et envahir, confirmés avec ces catégories).
     - « tous » : tous ses types du catalogue unifié ;
-    - « types » : ceux que l'assistant affiche : Carry ou Enchanteur s'il l'est, plus ses deux autres types les mieux notés
+    - « types » : ceux que l'assistant affiche : Carry, Tank et HP s'il l'est, plus ses deux autres types les mieux notés
       (notes de analyse/types/resultats/notes.csv), choix du propriétaire du 26/10/2026 ;
     - « fragile » : il encaisse peu (notes.csv) ; l'assistant en fait une cible même s'il n'est ni carry ni enchanteur."""
     notes = {}
@@ -64,7 +65,7 @@ def catalogue():
     with open(CATALOGUE, encoding="utf-8", newline="") as f:
         for l in csv.DictReader(f, delimiter=";"):
             c, tous = l["champion"], [t for t in TYPES if l.get(t) == "oui"]
-            cible = [t for t in ("carry", "enchanteur") if t in tous]
+            cible = [t for t in TOUJOURS if t in tous]
             autres = sorted((t for t in tous if t not in cible), key=lambda t: (-note(c, t), TYPES.index(t)))[:STYLES_AFFICHES]
             sortie[c] = {"types": cible + autres, "tous": tous, "id": l.get("id_riot", ""), "groupe": "",
                          "fragile": (notes.get(c) or {}).get("fragile") == "oui" and "tank" not in tous}

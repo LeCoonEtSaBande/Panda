@@ -67,6 +67,7 @@ MESURES = {
     "plongeur": (["profondeur_p", "encaisse_min", "batiments_min_p"], 0.3),
     "attrapeur": (["pick_kill", "cc_min", "n_controle"], 0.3),
     "tank": (["part_subis", "encaisse_min", "assassin_p"], 3.0),
+    "hp": (["encaisse_min", "dpm"], 0.3),            # 27/10/2026, sur tes choix HP (49 oui) : 85 % justes sans les voir
     "bloqueur": (["cc_min", "encaisse_min_p", "batiments_min_p"], 0.3),
     "dueliste": (["solo_p", "seul_cote", "encaisse_min"], 1.0),
     "splitpusher": (["seul_cote_p", "n_protection", "part_top"], 1.0),
@@ -412,7 +413,7 @@ def main():
     texte = ["# Types des champions", "",
              f"- Appris sur les choix du propriétaire : {len(validations)} champions revus (10 types chacun), plus ses références ; "
              f"mesures du tas A, vérifiées sur B. Un champion revu garde ses choix ; un autre prend les types à {SEUIL} sur 100 ou plus ({MAX_TYPES} au plus, au moins un).",
-             f"- L'assistant affiche Carry ou Enchanteur, plus les deux autres styles les mieux notés de chaque champion ; « fragile » (cible même sans être carry ni enchanteur) : "
+             f"- L'assistant affiche Carry, Tank et HP, plus les deux autres styles les mieux notés de chaque champion ; « fragile » (cible même sans être carry ni enchanteur) : "
              f"encaisse par minute à plus d'un demi-écart-type sous la moyenne des champions ({sum(encaisse < FRAGILE)} champions).",
              f"- Parties de 15 min et plus : A {int((f.tas == 'A').sum() / 10)}, B {int((f.tas == 'B').sum() / 10)} environ ; postes avec au moins {MIN_PARTIES} parties.", "",
              "| Type | Champions retenus | Ses oui retrouvés sans les voir | Faux oui | Justesse sans les voir | Même décision A et B | Mesures (poids) |",
