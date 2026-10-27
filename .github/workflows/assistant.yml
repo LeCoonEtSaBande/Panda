@@ -1,5 +1,5 @@
 name: "5 · Générer l'assistant Draft (la page et le lien client)"
-# À QUOI IL SERT : recalculer nos analyses sur toutes les parties (or à 15 min, ganks, envahir, duels, dégâts,
+# À QUOI IL SERT : recalculer nos analyses sur toutes les parties (or à 15 min, ganks, duels, dégâts, chance de victoire,
 # types des champions) et produire la page « Assistant Draft - DL - <date>.html » et le lien client Windows (.exe).
 # QUAND : en dernier, après les boutons 1 à 3 (et 4 s'il a été lancé).
 
@@ -53,7 +53,6 @@ jobs:
         run: |
           cd "$PROJET/analyse"
           python3 lanes/dynamique.py > /dev/null
-          python3 lanes/envahir.py > /dev/null
           python3 lanes/ganks.py > /dev/null
           python3 lanes/duels.py > /dev/null
           python3 lanes/duree_degats.py --lolalytics "$PATCH" > /dev/null || echo "::warning::Mix de dégâts et early/late en échec : page générée sans."
