@@ -186,6 +186,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .duel b.pos{color:var(--bon)} .duel b.neg{color:var(--mauvais)} .duel b.nul{color:var(--doux)}
 .duel .tag{align-self:flex-start;padding:0 6px;border-radius:999px;border:1px dashed var(--doux);font-size:.7rem;color:var(--doux)}
 [hidden]{display:none!important}
+/* HP : un demi-cœur vert (la moitié gauche de 💚). */
+.demi-coeur{display:inline-block;width:.6em;overflow:hidden;vertical-align:bottom;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -627,7 +629,7 @@ function majValider() {
 
 // Les types (catalogue unifié) et les étiquettes au-dessus du nom.
 const TYPE = {carry: ["🎯", "Carry"], enchanteur: ["✨", "Enchanteur"], assassin: ["🗡️", "Assassin"], plongeur: ["🤿", "Plongeur"],
-  attrapeur: ["🪝", "Attrapeur"], tank: ["💚", "Tank"], bloqueur: ["🛡️", "Bloqueur"], dueliste: ["⚔️", "Dueliste"],
+  attrapeur: ["🪝", "Attrapeur"], tank: ["💚", "Tank"], hp: ['<span class="demi-coeur" aria-hidden="true">💚</span>', "HP"], bloqueur: ["🛡️", "Bloqueur"], dueliste: ["⚔️", "Dueliste"],
   splitpusher: ["♜", "Splitpusher"], teamfighter: ["🧑‍🤝‍🧑", "Teamfighter"]};
 const FAMILLES = [["cible", "🎯", "Cible", ["carry", "enchanteur"]], ["menace", "💀", "Menace", ["assassin", "plongeur", "attrapeur"]],
   ["tank", "💚", "Tank", ["tank"]], ["protecteur", "🛡️", "Protecteur", ["bloqueur"]]];
