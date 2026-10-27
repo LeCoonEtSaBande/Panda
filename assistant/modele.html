@@ -633,9 +633,10 @@ const TYPE = {carry: ["🎯", "Carry"], enchanteur: ["✨", "Enchanteur"], assas
   splitpusher: ["♜", "Splitpusher"], teamfighter: ["🧑‍🤝‍🧑", "Teamfighter"]};
 const FAMILLES = [["cible", "🎯", "Cible", ["carry", "enchanteur"]], ["menace", "💀", "Menace", ["assassin", "plongeur", "attrapeur"]],
   ["tank", "💚", "Tank", ["tank"]], ["protecteur", "🛡️", "Protecteur", ["bloqueur"]]];
-// D.cat[c] = [catégorie de jungler (ganks, envahir), styles affichés (Carry ou Enchanteur, plus ses deux styles principaux), fragile].
-const typesDe = c => ((D.cat[c] || [])[1]) || [];
-const aType = (c, t) => typesDe(c).includes(t);
+// D.cat[c] = [catégorie de jungler (ganks, envahir), styles affichés (Carry, Tank et HP, plus ses deux styles principaux), fragile, tous ses types].
+const typesDe = c => ((D.cat[c] || [])[1]) || [];                       // styles affichés
+const tousDe = c => ((D.cat[c] || [])[3]) || typesDe(c);                 // tous ses types : cibles, menaces, protecteurs
+const aType = (c, t) => tousDe(c).includes(t);
 const estFragile = c => !!((D.cat[c] || [])[2]);
 // Les cibles : les carrys, les enchanteurs et les autres champions fragiles.
 const estCible = c => !!c && (aType(c, "carry") || aType(c, "enchanteur") || estFragile(c));
@@ -644,7 +645,7 @@ const estMenace = c => aType(c, "assassin") || aType(c, "plongeur") || aType(c, 
 const estProtecteur = c => aType(c, "bloqueur") || aType(c, "enchanteur");
 const iconesTypes = c => typesDe(c).map(t => TYPE[t][0]).join(" ");
 const nomsTypes = c => typesDe(c).map(t => TYPE[t][1]).join(", ");
-const pourquoiCible = c => typesDe(c).filter(t => t === "carry" || t === "enchanteur").map(t => TYPE[t][1]).concat(estFragile(c) ? ["fragile"] : []).join(", ");
+const pourquoiCible = c => tousDe(c).filter(t => t === "carry" || t === "enchanteur").map(t => TYPE[t][1]).concat(estFragile(c) ? ["fragile"] : []).join(", ");
 // Sorts par catégorie exclusive (Data Dragon) : [touche, nom, catégorie, détail].
 function sortsDe(c, cat) { const S = D.sorts || {}; return (S[c] || S[lola(c)] || []).filter(s => !cat || s[2] === cat); }
 const unSort = ([k, nom, , det], qui) => `<span class="sort"><span class="touche">${k}</span>${esc(nom)}${qui ? ` <span class="petit">(${esc(qui)})</span>` : ""}${det ? ` <span class="petit">— ${esc(det)}</span>` : ""}</span>`;
