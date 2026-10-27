@@ -12,6 +12,7 @@
 | plongeur | 36 | 32 sur 36 | 19 | 87 % | 93 % | où il meurt après 14 min (0 = chez lui, 1 = base adverse) (comparé à son poste) +0.80, dégâts encaissés et atténués par minute +1.58, dégâts aux bâtiments par minute (comparé à son poste) +1.01 |
 | attrapeur | 29 | 27 sur 29 | 17 | 89 % | 98 % | kills à deux sur un ennemi isolé +1.56, temps de contrôle infligé +1.15, nombre de sorts de contrôle (Data Dragon) +0.75 |
 | tank | 20 | 18 sur 20 | 16 | 90 % | 94 % | part des dégâts encaissés par l'équipe -1.46, dégâts encaissés et atténués par minute +5.32, kills sur un ADC ou un mid, presque seul, après 14 min (comparé à son poste) -0.96 |
+| hp | 45 | pas encore de choix du propriétaire | | | 99 % | règle : encaisse par minute ≥ moyenne + 0.5 écart-type, sans être tank |
 | bloqueur | 39 | 33 sur 39 | 8 | 92 % | 99 % | temps de contrôle infligé +1.33, dégâts encaissés et atténués par minute (comparé à son poste) +1.07, dégâts aux bâtiments par minute (comparé à son poste) -1.01 |
 | dueliste | 43 | 41 sur 43 | 12 | 92 % | 96 % | solo kills (comparé à son poste) +1.98, seul sur une lane de côté à 20, 25 et 30 min +1.91, dégâts encaissés et atténués par minute +1.66 |
 | splitpusher | 25 | 25 sur 25 | 10 | 94 % | 90 % | seul sur une lane de côté à 20, 25 et 30 min (comparé à son poste) +2.81, nombre de sorts de protection (Data Dragon) +1.29, part de ses parties en top +1.20 |

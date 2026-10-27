@@ -34,7 +34,7 @@ SORTS = ICI / "sorts.csv"
 CORRECTIONS = ICI / "sorts_corrections.csv"
 BILAN = ICI / "datadragon.md"
 DDRAGON = "https://ddragon.leagueoflegends.com"
-TYPES = ("carry", "enchanteur", "assassin", "plongeur", "attrapeur", "tank", "bloqueur", "dueliste", "splitpusher", "teamfighter")
+TYPES = ("carry", "enchanteur", "assassin", "plongeur", "attrapeur", "tank", "hp", "bloqueur", "dueliste", "splitpusher", "teamfighter")
 COLONNES = ("champion", "id_riot") + TYPES + ("source",)
 CATEGORIES = ("controle", "deplacement", "protection")
 

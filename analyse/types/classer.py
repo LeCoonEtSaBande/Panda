@@ -1,7 +1,9 @@
 """Classification des champions en 10 types, apprise sur les choix du propriétaire.
 
 Les types (non exclusifs : un champion peut en avoir plusieurs) :
-    carry, enchanteur, assassin, plongeur, attrapeur, tank, bloqueur, dueliste, splitpusher, teamfighter.
+    carry, enchanteur, assassin, plongeur, attrapeur, tank, hp, bloqueur, dueliste, splitpusher, teamfighter.
+« hp » (27/10/2026) : encaisse beaucoup sans être un tank ; pas encore de choix du propriétaire, donc une règle (HP_SEUIL)
+en attendant qu'il valide à la main.
 
 Comment (version 4, 26/10/2026) :
 1. Pour chaque champion, des mesures tirées des parties (moyenne de ses postes, pondérée par les parties) : part des
@@ -41,13 +43,14 @@ sys.path.insert(0, str(ANALYSE / "base"))
 import lecture  # noqa: E402
 import commun  # noqa: E402
 
-TYPES = ("carry", "enchanteur", "assassin", "plongeur", "attrapeur", "tank", "bloqueur", "dueliste", "splitpusher", "teamfighter")
+TYPES = ("carry", "enchanteur", "assassin", "plongeur", "attrapeur", "tank", "hp", "bloqueur", "dueliste", "splitpusher", "teamfighter")
 REFERENCES = ICI / "references.csv"
 VALIDATIONS = ICI / "validations.csv"
 RESULTATS = ICI / "resultats"
 CATALOGUE = ANALYSE / "catalogues" / "catalogue_unifie.csv"
 SEUIL = 50
 MAX_TYPES = 3      # champion pas encore revu : 3 types au plus (les mieux notés)
+HP_SEUIL = 0.5     # hp : encaisse par minute à plus d'un demi-écart-type au-dessus de la moyenne des champions, sans être tank
 FRAGILE = -0.5     # fragile : dégâts encaissés et atténués par minute à plus d'un demi-écart-type sous la moyenne des champions
 MIN_PARTIES = 150
 POSTES = ("top", "jgl", "mid", "adc", "sup")
@@ -310,6 +313,8 @@ def classer(x_A, x_B, x_tout, validations, refs):
     z_A, z_B, z_T = z(x_A), z(x_B), z(x_tout)
     notes, bilan = pd.DataFrame(index=x_tout.index), {}
     for t in TYPES:
+        if t not in MESURES:      # hp : règle à part (main), pas encore de choix du propriétaire pour apprendre
+            continue
         ms, C = MESURES[t]
         revus = [c for c in z_A.index if c in validations and t in validations[c]]
         y = np.array([validations[c][t] for c in revus], dtype=int)
@@ -358,6 +363,14 @@ def main():
     parties = a_T.groupby("champion").n.sum()
     # Fragile : encaisse peu (dégâts subis et atténués par minute, en logarithme), comparé à tous les champions.
     encaisse = (x_T["encaisse_min"] - x_T["encaisse_min"].mean()) / x_T["encaisse_min"].std()
+    # HP : encaisse beaucoup (dégâts subis et atténués par minute) ; note 50 au seuil. Le tank passe avant (dans le catalogue).
+    z_enc = lambda x: (x["encaisse_min"] - x["encaisse_min"].mean()) / x["encaisse_min"].std()
+    if not any(t == "hp" for c in validations for t in validations[c]):
+        notes["hp"] = 100 / (1 + np.exp(-3 * (encaisse - HP_SEUIL)))
+        za, zb = z_enc(x_A), z_enc(x_B)
+        communs = za.index.intersection(zb.index)
+        bilan["hp"] = {"regle": f"encaisse par minute ≥ moyenne + {HP_SEUIL} écart-type, sans être tank",
+                       "meme_decision_A_B": round(float(np.mean((za[communs] >= HP_SEUIL) == (zb[communs] >= HP_SEUIL))), 3)}
     RESULTATS.mkdir(parents=True, exist_ok=True)
     with open(RESULTATS / "notes.csv", "w", encoding="utf-8", newline="") as fo:
         w = csv.writer(fo, delimiter=";", lineterminator="\n")
@@ -368,12 +381,17 @@ def main():
 
     with open(CATALOGUE, encoding="utf-8", newline="") as fi:
         lecteur = csv.DictReader(fi, delimiter=";")
-        entete, lignes = lecteur.fieldnames, list(lecteur)
+        entete, lignes = list(lecteur.fieldnames), list(lecteur)
+    if "hp" not in entete:
+        entete.insert(entete.index("tank") + 1, "hp")
     for l in lignes:
         c = l["champion"]
         if c in validations:
             for t in TYPES:
-                l[t] = "oui" if validations[c].get(t) else ""
+                if t in validations[c]:
+                    l[t] = "oui" if validations[c][t] else ""
+                else:             # type pas encore revu (hp) : le calcul, mais jamais avec Tank
+                    l[t] = "oui" if t in notes and c in notes.index and notes[t][c] >= SEUIL and not validations[c].get("tank") else ""
         elif c in notes.index:
             # Ses types : ceux à 50 ou plus, les MAX_TYPES meilleurs ; au moins un (le mieux noté).
             n = notes.loc[c].sort_values(ascending=False)
@@ -401,6 +419,10 @@ def main():
              "|---|---|---|---|---|---|---|"]
     for t in TYPES:
         b = bilan.get(t, {})
+        if "regle" in b:
+            nb = sum(1 for l in lignes if l[t] == "oui")
+            texte.append(f"| {t} | {nb} | pas encore de choix du propriétaire | | | {100 * b['meme_decision_A_B']:.0f} % | règle : {b['regle']} |")
+            continue
         if "poids" not in b:
             texte.append(f"| {t} | — | {b.get('erreur', '')} | | | | |")
             continue

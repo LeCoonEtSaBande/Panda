@@ -45,7 +45,7 @@ SORTIE = ICI / "assistant_donnees.json"
 
 MIX_IMPOSE = {"magique < 20 %": -3.0, "magique > 70 %": -3.0}   # points de victoire, choix du propriétaire
 
-TYPES = ("carry", "enchanteur", "assassin", "plongeur", "attrapeur", "tank", "bloqueur", "dueliste", "splitpusher", "teamfighter")
+TYPES = ("carry", "enchanteur", "assassin", "plongeur", "attrapeur", "tank", "hp", "bloqueur", "dueliste", "splitpusher", "teamfighter")
 
 
 def catalogue():
