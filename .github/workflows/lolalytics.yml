@@ -8,6 +8,11 @@ name: "2 · Lolalytics : stats du patch (force des champions, contres, matchups)
 # Ensuite : « Générer l'assistant Draft ».
 on:
   workflow_dispatch:
+    inputs:
+      diagnostic:
+        description: "Diagnostic seulement : chercher où Lolalytics charge la synergie (une dizaine de pages), sans récupérer le patch"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -31,7 +36,12 @@ jobs:
           fetch-depth: 0
 
       - name: Récupérer le patch
+        if: ${{ !inputs.diagnostic }}
         run: python3 lolalytics/recuperer.py
+
+      - name: Diagnostic de la synergie
+        if: ${{ inputs.diagnostic }}
+        run: python3 lolalytics/diagnostic_synergie.py | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Enregistrer
         if: always()
