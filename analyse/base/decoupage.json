@@ -1,7 +1,7 @@
 {
-  "version": 3,
+  "version": 4,
   "valide": true,
-  "commentaire": "Validé avec le propriétaire le 24/10/2026 (réorganisation). Toutes les parties connues servent à apprendre : A (3/4) et B (1/4), même graine que le gel n° 2, donc les anciennes parties gardent leur tas. C = les parties collectées après ce gel, pour les prochaines confirmations.",
+  "commentaire": "Posé automatiquement le 27/10/2026 après le recuit n° 3 (styles du 27/10/2026) : toutes les parties déjà collectées passent en A et B, le C du gel n° 3 n'avait servi à rien. Même graine : chaque partie garde son tas A ou B ; C repart de zéro.",
   "rangs": [
     "D",
     "E"
@@ -10,61 +10,61 @@
   "part_B": 0.25,
   "graine": "panda-2026-10-23-gel2",
   "gel": {
-    "position": 42101,
-    "dernier_match": "8009378225",
-    "date": "2026-10-24T18:39:32+02:00"
+    "position": 45503,
+    "dernier_match": "8025602223",
+    "date": "2026-10-27T10:09:38+01:00"
   },
   "regle_AB": "Apprentissage = archive + parties de parties.csv jusqu'au gel (Émeraude-Diamant). B (jugement) si sha256(graine:match) % 1000 < 1000 × part_B, sinon A (choix).",
   "regle_C": "Parties de parties.csv écrites après le gel (Émeraude-Diamant), sauf les parties de l'archive recollectées.",
-  "precedent": "Gel n° 2 du 23/10/2026 (position 23114, dernier match 8010930615) : son C a servi aux confirmations du 24/10/2026.",
+  "precedent": "Gel n° 3 (position 42101, dernier match 8009378225) : son C a servi à le recuit n° 3 (styles du 27/10/2026) : toutes les parties déjà collectées passent en A et B, le C du gel n° 3 n'avait servi à rien.",
   "comptes_au_moment_de_la_proposition": [
     {
       "tas": "A",
       "source": "archive",
       "rang": "D",
-      "parties": 8093
+      "parties": 7963
     },
     {
       "tas": "A",
       "source": "archive",
       "rang": "E",
-      "parties": 2674
+      "parties": 2670
     },
     {
       "tas": "A",
       "source": "neuf",
       "rang": "D",
-      "parties": 20998
+      "parties": 23055
     },
     {
       "tas": "A",
       "source": "neuf",
       "rang": "E",
-      "parties": 10616
+      "parties": 11125
     },
     {
       "tas": "B",
       "source": "archive",
       "rang": "D",
-      "parties": 2573
+      "parties": 2539
     },
     {
       "tas": "B",
       "source": "archive",
       "rang": "E",
-      "parties": 863
+      "parties": 861
     },
     {
       "tas": "B",
       "source": "neuf",
       "rang": "D",
-      "parties": 6979
+      "parties": 7651
     },
     {
       "tas": "B",
       "source": "neuf",
       "rang": "E",
-      "parties": 3508
+      "parties": 3672
     }
   ]
 }

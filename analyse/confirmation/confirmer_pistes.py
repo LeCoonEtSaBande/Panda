@@ -30,6 +30,7 @@ import commun  # noqa: E402
 import bloc2_compos as bloc2  # noqa: E402
 import bloc3_biais as bloc3  # noqa: E402
 import recuit_pistes as rp  # noqa: E402
+import recuit_styles as rs  # noqa: E402
 
 
 def p_unilaterale(taux, erreur, sens):
@@ -42,7 +43,7 @@ def p_unilaterale(taux, erreur, sens):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--fichier", required=True)
-    parser.add_argument("--catalogue", required=True, help="catalogue unifié utilisé pendant le recuit")
+    parser.add_argument("--catalogue", help="catalogue utilisé pendant le recuit n° 2 (le n° 3 a le sien, figé dans son résultat)")
     parser.add_argument("--effets", help="assistant_donnees.json : effets retenus pour l'assistant, testés un par un")
     parser.add_argument("--hasard", type=int, default=40)
     args = parser.parse_args()
@@ -50,7 +51,9 @@ def main():
     commun.exiger_validation(regle)
     recuit = json.loads((rp.RESULTATS / args.fichier).read_text(encoding="utf-8"))
     piste, params = recuit["piste"], recuit["palmares"][0]["parametres"]
-    cat = rp.lire_catalogue(args.catalogue)
+    styles = piste.startswith("styles")
+    cat = recuit["catalogue_fige"] if styles else rp.lire_catalogue(args.catalogue)
+    Fabrique = rs.Machine if styles else rp.Machine
 
     table = commun.drafts(regle)
     origine = bloc2.Index(table[table["tas"].isin(["A", "B"])].reset_index(drop=True)).champions
@@ -70,7 +73,7 @@ def main():
     nb = {t: int((table["tas"] == t).sum()) for t in ("A", "B")}
     print(f"Confirmation de {args.fichier} : apprentissage A + B = {nb['A']} parties, mesure sur C = {nb['B']} parties.", flush=True)
 
-    machine = rp.Machine(table, piste, cat)
+    machine = Fabrique(table, piste, cat)
     ev = machine.juger(params)
     print(f"Gain sur C : {ev.score:.3f} (sur B pendant le recuit : {recuit['palmares'][0]['score_jugement']:.3f})", flush=True)
 
@@ -84,7 +87,7 @@ def main():
     for s in range(args.hasard):
         t = table.copy()
         t["bleu_gagne"] = (np.random.default_rng(7000 + s).random(len(t)) < proba).astype(int)
-        hasard.append(rp.Machine(t, piste, cat).juger(params).score)
+        hasard.append(Fabrique(t, piste, cat).juger(params).score)
         print(f"  hasard {s + 1}/{args.hasard} : {hasard[-1]:.3f}", flush=True)
     hasard = np.array(hasard)
     part = float((hasard >= ev.score).mean()) if len(hasard) else None
@@ -92,7 +95,7 @@ def main():
     # Effets un par un : la liste et le sens sont fixés par l'export (mesurés sur B), avant de lire C.
     tests = []
     if args.effets:
-        effets = json.loads(Path(args.effets).read_text(encoding="utf-8"))["teamfight"]["effets"]
+        effets = json.loads(Path(args.effets).read_text(encoding="utf-8"))[piste if styles else "teamfight"]["effets"]
         mesures = {b["nom"]: b for b in ev.biais}
         for e in effets:
             b = mesures.get(e["nom"])
@@ -129,7 +132,7 @@ def main():
         else:
             lignes.append(f"| {t['nom']} | {100 * t['taux_B_recuit']:.1f} % | {100 * t['taux_C']:.1f} % | {t['parties_C']} | {t['verdict']} |")
     lignes += ["", "Taux = victoires de l'équipe concernée, à force de champions égale (50 % = aucun effet). "
-               "Confirmé : moins de 5 % de chances d'être un hasard après correction pour les 13 tests.", ""]
+               f"Confirmé : moins de 5 % de chances d'être un hasard après correction pour les {len(tests)} tests.", ""]
     base.with_suffix(".md").write_text("\n".join(lignes) + "\n", encoding="utf-8")
     print("\n".join(lignes))
     return 0

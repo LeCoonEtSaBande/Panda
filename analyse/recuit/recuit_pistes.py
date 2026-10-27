@@ -360,6 +360,8 @@ def borner(x, nom):
 
 
 def voisin(params, rng, machine):
+    if hasattr(machine, "voisin_params"):       # recuit n° 3 (styles) : ses propres réglages
+        return machine.voisin_params(params, rng)
     p = copy.deepcopy(params)
     tirage = rng.random()
     if tirage < 0.35:
@@ -443,6 +445,8 @@ def recuit(machine, minutes, graine=1, journal=print, t0=0.30, t_fin=0.005, essa
 # --- Rapport ------------------------------------------------------------------------------------
 
 def decrire(params, machine):
+    if hasattr(machine, "decrire_params"):
+        return machine.decrire_params(params)
     r = params["roles"]
     lignes = [f"Poids des postes : jungle {r['jgl']:.2f}, support {r['sup']:.2f}, autres lanes {r['lanes']:.2f} ; "
               f"seuil « compo X » : {params['seuil']:.2f} équivalents champions"]
@@ -474,7 +478,8 @@ def rapport(machine, palmares, historique, iterations, essais, minutes, graine, 
     dossier = RESULTATS
     dossier.mkdir(parents=True, exist_ok=True)
     date = datetime.now(timezone.utc).astimezone().strftime("%Y%m%d_%H%M")
-    base = f"recuit2_{machine.piste}_{date}" + ("_hasard" if melange else "")
+    numero = getattr(machine, "numero", 2)
+    base = f"recuit{numero}_{machine.piste}_{date}" + ("_hasard" if melange else "")
     depart = DEPART[machine.piste]
     score_depart, jugement_depart = machine.evaluer(depart), machine.juger(depart)
     meilleurs = sorted(palmares.values(), key=lambda e: -e[0])[:5]
@@ -483,6 +488,7 @@ def rapport(machine, palmares, historique, iterations, essais, minutes, graine, 
               "victoires_tirees_au_sort": melange, "lambda": machine.lam, "lambda_force": machine.lambda_force,
               "tas": {"A": int(len(machine.lignes_a)), "B": int(len(machine.lignes_b))},
               "champions_hors_catalogue": machine.inconnus,
+              "catalogue_fige": getattr(machine, "catalogue_fige", None),
               "depart": {"parametres": depart, "score_choix": score_depart, "score_jugement": jugement_depart.score},
               "historique": historique,
               "palmares": [{"rang": i + 1, "score_choix": s, "score_jugement": ev.score, "parametres": p,
@@ -494,11 +500,11 @@ def rapport(machine, palmares, historique, iterations, essais, minutes, graine, 
         ecrivain.writerow(["essai", "secondes", "temperature", "score", "accepte", "changement", "parametres"])
         ecrivain.writerows(essais)
     if not melange:
-        (dossier / f"dernier_recuit2_{machine.piste}.json").write_text(
+        (dossier / f"dernier_recuit{numero}_{machine.piste}.json").write_text(
             json.dumps({"fichier": f"{base}.json"}, ensure_ascii=False) + "\n", encoding="utf-8")
 
     s, p, ev = juges[0]
-    lignes = [f"# Recuit n° 2, piste {machine.piste}, du {date}" + (" (seuil de hasard)" if melange else ""), "",
+    lignes = [f"# Recuit n° {numero}, piste {machine.piste}, du {date}" + (" (seuil de hasard)" if melange else ""), "",
               f"- {iterations} réglages essayés en {minutes:g} min (graine {graine}).",
               f"- A (choix) : {len(machine.lignes_a)} parties, notées en 5 rotations. B (jugement) : {len(machine.lignes_b)} "
               "parties, lues une fois à la fin. C n'a pas été lu.",

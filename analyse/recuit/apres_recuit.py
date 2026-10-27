@@ -48,8 +48,20 @@ def resume(texte):
     print(texte)
 
 
+def effets_styles(recuit):
+    """Recuit n° 3 : les effets du meilleur réglage qui vont dans le même sens sur A et sur B (au moins 300 parties de B,
+    1,5 point d'écart à 50 % sur B). Fixés avant de lire C ; testés un par un sur C dans le sens de B."""
+    sortie = []
+    for b in recuit["palmares"][0]["biais"]:
+        ta, tb = b["taux_A"], b["taux_B"]
+        if ta == ta and tb == tb and b["parties_B"] >= 300 and (ta - 0.5) * (tb - 0.5) > 0 and abs(tb - 0.5) >= 0.015:
+            sortie.append({"nom": b["nom"], "taux_A": ta, "taux_B": tb, "parties_A": b["parties_A"], "parties_B": b["parties_B"]})
+    return sortie
+
+
 def preparer(piste, minimum):
-    pointeur = RESULTATS / f"dernier_recuit2_{piste}.json"
+    numero = 3 if piste.startswith("styles") else 2
+    pointeur = RESULTATS / f"dernier_recuit{numero}_{piste}.json"
     if not pointeur.exists():
         resume("Pas de recuit trouvé : rien à confirmer.")
         return sortie_github(confirmer="false", fichier="")
@@ -66,7 +78,9 @@ def preparer(piste, minimum):
     if piste == "teamfight":
         import exporter
         effets = exporter.teamfight()["effets"]
-    EFFETS.write_text(json.dumps({"teamfight": {"effets": effets}}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    elif piste.startswith("styles"):
+        effets = effets_styles(json.loads((RESULTATS / fichier).read_text(encoding="utf-8")))
+    EFFETS.write_text(json.dumps({piste: {"effets": effets}}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     resume(f"Recuit {fichier} enregistré ; confirmation sur {nb_c} parties C, {len(effets)} effets testés un par un.")
     return sortie_github(confirmer="true", fichier=fichier)
 
@@ -88,7 +102,7 @@ def main():
     parser = argparse.ArgumentParser()
     sous = parser.add_subparsers(dest="action", required=True)
     p = sous.add_parser("preparer")
-    p.add_argument("--piste", required=True, choices=("scenarios", "teamfight"))
+    p.add_argument("--piste", required=True, choices=("scenarios", "teamfight", "styles", "styles_libre"))
     p.add_argument("--minimum", type=int, default=5000)
     g = sous.add_parser("nouveau-gel")
     g.add_argument("--raison", required=True)
