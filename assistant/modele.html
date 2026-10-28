@@ -700,9 +700,9 @@ function quiEstQui(nous, eux) {
 }
 
 // Les cibles d'une équipe, en haut : chacune avec sa fuite et sa propre protection.
-function cartesCibles(eq, cote) {
+function cartesCibles(eq, cote, moi) {
   const cl = cote === "eux" ? "e" : "n";
-  return `<div class="cibles">${eq.map(({p, c}) => `<div class="cible"><div class="qui-c">🎯 <span class="${cl}">${esc(c)}</span> <span class="petit">${NOM_POSTE[p]} · ${esc(pourquoiCible(c))}</span></div>
+  return `<div class="cibles">${eq.map(({p, c}) => `<div class="cible"><div class="qui-c">🎯 <span class="${cl}">${esc(c)}</span>${cote === "nous" && c === moi ? " <b>(toi)</b>" : ""} <span class="petit">${NOM_POSTE[p]} · ${esc(pourquoiCible(c))}</span></div>
     <span><b>Fuite</b> : ${listeSorts(sortsDe(c, "deplacement"), "aucune")}</span>
     <span><b>Se protège</b> : ${listeSorts(sortsDe(c, "protection"), "rien")}</span>
     <span><b>Contrôles</b> : ${listeSorts(sortsDe(c, "controle"), "aucun")}</span></div>`).join("")}</div>`;
@@ -734,7 +734,11 @@ function blocAtteindre(nous, eux, moi) {
   const detail = x => `${n(x.fuite, "fuite")}, ${n(x.prot, "protection")}, ${n(x.ctrl, "contrôle")}`;
   let lecture = `🎯 <b>Cible la plus accessible : <span class="e">${esc(m.c)}</span></b> (${detail(m)}).`;
   if (notees.length > 1) { const d = notees[notees.length - 1];
-    lecture += ` La plus protégée : <span class="e">${esc(d.c)}</span> (${detail(d)}${gardes.some(g => g.p !== d.p) ? ", et des protecteurs" : ""}) : fais tomber ces sorts avant d'y aller.`; }
+    const aCote = g => (d.p === "adc" && g.p === "sup") || (d.p === "sup" && g.p === "adc");
+    const sesGardes = gardes.filter(g => g.p !== d.p).sort((a, b) => aCote(b) - aCote(a));
+    const qui = sesGardes.map(g => `<span class="e">${esc(g.c)}</span>${aCote(g) ? ` (son ${g.p === "sup" ? "support" : "ADC"}, à côté en bot)` : ""}`);
+    const liste = qui.length > 1 ? qui.slice(0, -1).join(", ") + " et " + qui[qui.length - 1] : qui[0];
+    lecture += ` La plus protégée : <span class="e">${esc(d.c)}</span>${qui.length ? `, protégée par ${liste}` : ""} (à elle seule : ${detail(d)}) : fais tomber ${qui.length ? "les sorts de ses protecteurs" : "ses sorts"} avant d'y aller.`; }
   return `<div class="b-titre">Leurs cibles</div>${cartesCibles(notees, "eux")}
     <div class="b-titre">Qui les protège</div>${gardes.length ? gardes.map(g => g.html).join("") : `<p class="petit" style="margin:0">Personne : pas de bloqueur ni d'enchanteur en face.</p>`}
     <div class="lecture">${lecture}</div>`;
@@ -754,14 +758,19 @@ function blocProteger(nous, eux, moi) {
       ${aType(c, "assassin") || aType(c, "plongeur") ? `<span><b>Comment il arrive</b> : ${listeSorts(arrive, "sans sort de mobilité")}</span>` : ""}
       ${attrape.length ? `<span><b>Comment il attrape</b> : ${listeSorts(attrape, "")}</span>` : ""}</div></div>`;
   });
-  let lecture = fragile ? `🎯 <b>Reste près de <span class="n">${esc(fragile.c)}</span></b> (${poidsSorts(fragile.c) ? `${poidsSorts(fragile.c)} sort${poidsSorts(fragile.c) > 1 ? "s" : ""} pour se sauver` : "aucune fuite ni protection"}).` : "";
+  const sauver = c => poidsSorts(c) ? `${poidsSorts(c)} sort${poidsSorts(c) > 1 ? "s" : ""} pour se sauver` : "aucune fuite ni protection";
+  // La cible à protéger : la plus fragile qui n'est pas toi (un carry d'abord à fragilité égale).
+  const aProteger = nosCibles.filter(x => x.c !== moi).sort((a, b) => a.poids - b.poids || aType(b.c, "carry") - aType(a.c, "carry"))[0];
+  let lecture = "";
+  if (fragile && fragile.c === moi) lecture += `⚠️ <b>Attention, c'est toi la cible la plus fragile de ton équipe</b> (${sauver(moi)}) : ne te mets pas en avant, reste avec ton équipe. `;
+  if (aProteger) lecture += `🎯 <b>${estProtecteur(moi) ? "Ton rôle : protège" : "Reste près de"} <span class="n">${esc(aProteger.c)}</span></b> (${sauver(aProteger.c)}).`;
   if (menaces.length) {
     const m = menaces[0], mienCtrl = moi ? sortsDe(moi, "controle").slice().sort((a, b) => rangCtrl(a) - rangCtrl(b)) : [];
     const arrive = sortsDe(m.c, "deplacement")[0], g0 = gardes[0];
     const garde = mienCtrl.length ? `<b>${mienCtrl[0][0]} ${esc(mienCtrl[0][1])}</b>` : (g0 ? `les sorts de <b>${esc(g0.c)}</b>` : "");
     if (garde) lecture += ` Garde ${garde} pour <span class="e">${esc(m.c)}</span>${arrive ? ` : il arrive avec ${arrive[0]} ${esc(arrive[1])}${arrive[3] ? " (" + esc(arrive[3]) + ")" : ""}` : ""}.`;
   }
-  return `${nosCibles.length ? `<div class="b-titre">Vos cibles</div>${cartesCibles(nosCibles, "nous")}` : ""}
+  return `${nosCibles.length ? `<div class="b-titre">Vos cibles</div>${cartesCibles(nosCibles, "nous", moi)}` : ""}
     <div class="b-titre">Qui les protège</div>${gardes.length ? gardes.map(g => g.html).join("") : `<p class="petit" style="margin:0">Aucun sort pour protéger vos cibles.</p>`}
     ${lignesMenaces.length ? `<div class="b-titre">Leurs menaces</div>${lignesMenaces.join("")}` : ""}
     ${lecture ? `<div class="lecture">${lecture}</div>` : ""}`;

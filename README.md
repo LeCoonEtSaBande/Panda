@@ -36,13 +36,13 @@ Les **cibles** : les carrys, les enchanteurs et les autres champions **fragiles*
 **Atteindre leurs cibles** (vu par exemple de Darius, qui veut prendre un reset sur une cible fragile) :
 - en haut, **leurs cibles**, chacune avec **sa fuite** (sorts de déplacement), ce qui **la protège elle-même** (bouclier, invulnérabilité, mur contre les projectiles…) et **ses contrôles** ;
 - en dessous, **qui les protège** : les bloqueurs et enchanteurs de leur équipe, avec leurs contrôles et leurs protections ; le support est « à côté » de son ADC ;
-- la lecture : la **cible la plus accessible** est celle qui a le moins d'obstacles (fuites, protections et contrôles, un protecteur à côté compte double) ; la plus protégée est nommée avec ce qu'il faut faire tomber avant d'y aller.
+- la lecture : la **cible la plus accessible** est celle qui a le moins d'obstacles (fuites, protections et contrôles, un protecteur à côté compte double) ; la plus protégée est nommée avec **qui la protège** (son support à côté d'abord) et ce qu'il faut faire tomber avant d'y aller.
 
 **Protéger vos cibles** (vu par exemple d'Ivern, qui reste près de son carry) :
 - en haut, **vos cibles**, chacune avec sa fuite, ce qui la protège elle-même et ses contrôles ;
 - en dessous, **qui les protège** : vos bloqueurs et enchanteurs avec leurs contrôles et leurs protections, et les boucliers et soins pour les alliés des autres ;
 - puis **leurs menaces** (assassin, puis plongeur, puis attrapeur) : **comment il arrive** (sa mobilité) ou **comment il attrape** (ses contrôles) ;
-- la lecture : **reste près de** votre cible la plus fragile (le moins de fuites et de protections ; l'ADC d'abord à égalité), et **garde** ton meilleur contrôle de base (Q, W ou E avant l'ultime, le plus fort d'abord) pour la menace principale, avec le sort par lequel elle arrive.
+- la lecture : si c'est toi la cible la plus fragile, **attention** (ne te mets pas en avant) ; puis **protège** (si tu es protecteur) ou **reste près de** la cible la plus fragile qui n'est pas toi (le moins de fuites et de protections ; un carry d'abord à égalité), et **garde** ton meilleur contrôle de base (Q, W ou E avant l'ultime, le plus fort d'abord) pour la menace principale, avec le sort par lequel elle arrive.
 
 Les types viennent des choix du propriétaire, classés par les notes de nos parties (branche `analyse`, `analyse/types/`), les sorts de Data Dragon (`analyse/catalogues/sorts.csv`). Ce sont des descriptions des champions : elles ne prédisent pas la victoire, elles n'ont donc pas de tas C.
 
