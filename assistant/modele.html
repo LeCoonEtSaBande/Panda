@@ -730,15 +730,21 @@ function blocAtteindre(nous, eux, moi) {
   const garde = x => gardes.filter(g => g.p !== x.p).reduce((s, g) => s + (((x.p === "adc" && g.p === "sup") || (x.p === "sup" && g.p === "adc")) ? 2 : 0.5), 0);
   const notees = cibles.map(x => ({...x, fuite: sortsDe(x.c, "deplacement"), prot: sortsDe(x.c, "protection")}))
     .map(x => ({...x, ctrl: sortsDe(x.c, "controle")})).map(x => ({...x, obstacle: x.fuite.length + x.prot.length + x.ctrl.length + garde(x)})).sort((a, b) => a.obstacle - b.obstacle);
-  const m = notees[0], n = (L, mot) => L.length ? `${L.length} ${mot}${L.length > 1 ? "s" : ""}` : `pas de ${mot}`;
-  const detail = x => `${n(x.fuite, "fuite")}, ${n(x.prot, "protection")}, ${n(x.ctrl, "contrôle")}`;
-  let lecture = `🎯 <b>Cible la plus accessible : <span class="e">${esc(m.c)}</span></b> (${detail(m)}).`;
-  if (notees.length > 1) { const d = notees[notees.length - 1];
+  // La lecture, en deux consignes : sur qui aller, et qui éviter tant que ses protecteurs ont leurs sorts.
+  const noms = (L, mot = ", ") => L.map(x => `${x[0]} ${esc(x[1])}`).join(mot);
+  const avecEffet = L => L.map(x => `${x[0]} ${esc(x[1])}${x[3] ? ` (${esc(x[3])})` : ""}`).join(", ");
+  const m = notees[0];
+  const quoi = [m.fuite.length ? `elle fuit avec ${noms(m.fuite)}` : "", m.prot.length ? `elle se protège avec ${noms(m.prot)}` : "",
+                m.ctrl.length ? `attention à ${avecEffet(m.ctrl)}` : ""].filter(Boolean);
+  let lecture = `🎯 <b>Va sur <span class="e">${esc(m.c)}</span></b> : ${m.fuite.length || m.prot.length ? "c'est la moins protégée" : "rien pour fuir ni se protéger"}${quoi.length ? " ; " + quoi.join(" ; ") : ""}.`;
+  if (notees.length > 1) {
+    const d = notees[notees.length - 1];
     const aCote = g => (d.p === "adc" && g.p === "sup") || (d.p === "sup" && g.p === "adc");
-    const sesGardes = gardes.filter(g => g.p !== d.p).sort((a, b) => aCote(b) - aCote(a));
-    const qui = sesGardes.map(g => `<span class="e">${esc(g.c)}</span>${aCote(g) ? ` (son ${g.p === "sup" ? "support" : "ADC"}, à côté en bot)` : ""}`);
-    const liste = qui.length > 1 ? qui.slice(0, -1).join(", ") + " et " + qui[qui.length - 1] : qui[0];
-    lecture += ` La plus protégée : <span class="e">${esc(d.c)}</span>${qui.length ? `, protégée par ${liste}` : ""} (à elle seule : ${detail(d)}) : fais tomber ${qui.length ? "les sorts de ses protecteurs" : "ses sorts"} avant d'y aller.`; }
+    // Ceux qui peuvent vraiment la sauver : son support (à côté en bot) et ceux qui ont un sort pour protéger un allié.
+    const sauveurs = gardes.filter(g => g.p !== d.p).map(g => ({...g, sorts: sortsDe(g.c, "protection").filter(s => aCote(g) || /allié/.test(s[3]))}))
+      .filter(g => g.sorts.length).sort((a, b) => aCote(b) - aCote(a));
+    if (sauveurs.length) lecture += `<br>🛡️ <b>Évite <span class="e">${esc(d.c)}</span></b> tant que ${sauveurs.map(g => `<span class="e">${esc(g.c)}</span>${aCote(g) ? ` (son ${g.p === "sup" ? "support" : "ADC"})` : ""} a encore ${noms(g.sorts, " ou ")}`).join(", et que ")} : ${sauveurs.length > 1 ? "ils peuvent" : "il peut"} la sauver. Attends que ces sorts soient utilisés.`;
+  }
   return `<div class="b-titre">Leurs cibles</div>${cartesCibles(notees, "eux")}
     <div class="b-titre">Qui les protège</div>${gardes.length ? gardes.map(g => g.html).join("") : `<p class="petit" style="margin:0">Personne : pas de bloqueur ni d'enchanteur en face.</p>`}
     <div class="lecture">${lecture}</div>`;

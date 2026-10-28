@@ -36,7 +36,7 @@ Les **cibles** : les carrys, les enchanteurs et les autres champions **fragiles*
 **Atteindre leurs cibles** (vu par exemple de Darius, qui veut prendre un reset sur une cible fragile) :
 - en haut, **leurs cibles**, chacune avec **sa fuite** (sorts de déplacement), ce qui **la protège elle-même** (bouclier, invulnérabilité, mur contre les projectiles…) et **ses contrôles** ;
 - en dessous, **qui les protège** : les bloqueurs et enchanteurs de leur équipe, avec leurs contrôles et leurs protections ; le support est « à côté » de son ADC ;
-- la lecture : la **cible la plus accessible** est celle qui a le moins d'obstacles (fuites, protections et contrôles, un protecteur à côté compte double) ; la plus protégée est nommée avec **qui la protège** (son support à côté d'abord) et ce qu'il faut faire tomber avant d'y aller.
+- la lecture, en deux consignes : **va sur** la cible la plus accessible (le moins d'obstacles : fuites, protections et contrôles, un protecteur à côté compte double), avec ses fuites, ses protections et les contrôles auxquels faire attention ; **évite** la plus protégée **tant que** ceux qui peuvent la sauver (son support à côté en bot, et ceux qui ont un sort pour protéger un allié) ont encore ces sorts, nommés.
 
 **Protéger vos cibles** (vu par exemple d'Ivern, qui reste près de son carry) :
 - en haut, **vos cibles**, chacune avec sa fuite, ce qui la protège elle-même et ses contrôles ;
