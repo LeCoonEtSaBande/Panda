@@ -1,28 +1,28 @@
-# Bilan de collecte (29/10/2026 00:40 UTC)
+# Bilan de collecte (29/10/2026 15:24 UTC)
 
-- **70171 parties** dans `donnees/parties.csv`, dont 70171 avec détails et 70085 avec timeline.
-- 1717 parties écartées (jamais retéléchargées).
+- **77060 parties** dans `donnees/parties.csv`, dont 77060 avec détails et 76955 avec timeline.
+- 1863 parties écartées (jamais retéléchargées).
 
 | Patch | Parties |
 |---|---|
-| 16.20 | 38406 |
-| 16.21 | 31765 |
+| 16.20 | 40005 |
+| 16.21 | 37055 |
 
 | Palier | Parties |
 |---|---|
-| D1 | 9869 |
-| D2 | 6159 |
-| D3 | 17508 |
-| D4 | 14585 |
-| E1 | 2902 |
-| E2 | 7052 |
-| E3 | 6628 |
-| E4 | 5468 |
+| D1 | 10331 |
+| D2 | 6494 |
+| D3 | 18448 |
+| D4 | 15229 |
+| E1 | 3414 |
+| E2 | 8471 |
+| E3 | 7971 |
+| E4 | 6702 |
 
 | Raison d'écart | Parties |
 |---|---|
 | file | 1 |
-| kayn_sans_forme | 60 |
-| postes | 19 |
-| remake | 1635 |
+| kayn_sans_forme | 67 |
+| postes | 22 |
+| remake | 1771 |
 | sans_vainqueur | 2 |
