@@ -185,6 +185,35 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .duel .d-tete .petit{font-family:var(--corps)}
 .duel b.pos{color:var(--bon)} .duel b.neg{color:var(--mauvais)} .duel b.nul{color:var(--doux)}
 .duel .tag{align-self:flex-start;padding:0 6px;border-radius:999px;border:1px dashed var(--doux);font-size:.7rem;color:var(--doux)}
+/* Onglet Manuel : le petit manuel du forestier (arbre de décision du jungler). */
+.manuel{display:flex;flex-direction:column;gap:16px}
+.manuel-tete{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.manuel-tete h2{font-size:1.25rem}
+.mute{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;border:1px solid var(--mauvais);
+  background:color-mix(in srgb,var(--mauvais) 14%,transparent);font-family:var(--titre);font-size:.85rem}
+.alerte{background:color-mix(in srgb,var(--mauvais) 10%,var(--carte));border:1px solid color-mix(in srgb,var(--mauvais) 55%,var(--carte));
+  border-left:4px solid var(--mauvais);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.alerte h2{color:var(--mauvais)}
+.alerte ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
+.phases{display:grid;grid-template-columns:minmax(0,1.35fr) repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.question .question{padding:8px 6px}
+.question .question .etape{padding:8px 6px}
+@media (max-width:900px){.phases{grid-template-columns:1fr}}
+.phase{border-top:3px solid var(--nous);align-items:stretch}
+.phase>h2{text-align:center;padding-bottom:8px;border-bottom:1px solid var(--ligne)}
+.etape{background:var(--carte2);border:1px solid var(--ligne);border-radius:8px;padding:10px 12px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center;min-width:0}
+.etape.depart{border-color:var(--nous);background:var(--nous-doux)}
+.etape .puces{justify-content:center}
+.etape ul{text-align:left;margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;align-self:stretch}
+.fleche{text-align:center;color:var(--doux);font-size:1.1rem;line-height:1}
+.question{border:1px dashed var(--ligne);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.question>.q{font-family:var(--titre);text-align:center}
+.question>.petit{text-align:center;margin-top:-6px}
+.branches{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
+.branche{display:flex;flex-direction:column;gap:5px;min-width:0}
+.oui,.non{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.oui{color:var(--bon)} .non{color:var(--mauvais)}
+.retour{text-align:center;font-size:.82rem;color:var(--doux)}
 [hidden]{display:none!important}
 /* HP : un demi-cœur vert (la moitié gauche de 💚). */
 .demi-coeur{display:inline-block;width:.6em;overflow:hidden;vertical-align:bottom;white-space:nowrap}
@@ -197,6 +226,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
     <div class="onglets" role="tablist">
       <button type="button" role="tab" id="onglet-draft" data-onglet="draft">Draft</button>
       <button type="button" role="tab" id="onglet-profils" data-onglet="profils">Profils</button>
+      <button type="button" role="tab" id="onglet-manuel" data-onglet="manuel">Manuel</button>
     </div>
     <span class="meta" id="meta"></span>
     <div class="droite">
@@ -288,13 +318,88 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div class="boutons"><button type="button" id="ajouter-profil">Ajouter un profil</button></div>
     </div>
   </div>
+
+  <div id="vue-manuel" hidden>
+    <div class="manuel">
+      <div class="manuel-tete">
+        <h2>Le petit manuel du forestier</h2>
+        <span class="mute">🔇 /mute all — toutes les games</span>
+      </div>
+
+      <section class="alerte" aria-label="Éviter les teamfights pourris">
+        <h2>Éviter les teamfights pourris</h2>
+        <ul>
+          <li>Tes alliés se font catch.</li>
+          <li>Objectifs que vous ne pouvez pas défendre.</li>
+          <li>Se battre avec des toplaners qui peuvent 1v3 (Illaoi, Yone, Mordekaiser…).</li>
+          <li>Quand vous êtes en infériorité numérique.</li>
+        </ul>
+      </section>
+
+      <div class="phases">
+        <section class="panneau phase">
+          <h2>Early game</h2>
+          <div class="etape depart">↻ Perma full clear → botlane
+            <div class="puces"><span class="puce">Tempo</span><span class="puce">Vision</span></div></div>
+          <div class="fleche">↓</div>
+          <div class="question">
+            <div class="q">Priorité ?</div>
+            <div class="branches">
+              <div class="branche"><span class="oui">Oui</span><div class="etape">Faire le scuttle et aider à crash</div></div>
+              <div class="branche"><span class="non">Non</span>
+                <div class="question">
+                  <div class="q">Gank possible ?</div>
+                  <div class="petit">Jungler adverse ? 3 contre 2 ?</div>
+                  <div class="branches">
+                    <div class="branche"><span class="oui">Oui</span><div class="etape">Gank + aider à crash</div></div>
+                    <div class="branche"><span class="non">Non</span><div class="etape">Reset<span class="petit">↺ puis full clear</span></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="fleche">↓</div>
+          <div class="etape">Drake à faire si c'est gratuit
+            <div class="puces"><span class="puce">Gold OK</span></div></div>
+          <div class="retour">↺ Puis reset, et on recommence le full clear</div>
+        </section>
+
+        <section class="panneau phase">
+          <h2>Mid game</h2>
+          <div class="etape depart">Farmer la jungle à côté de vos alliés les plus forts (jungle alliée ou ennemie).
+            <div class="puces"><span class="puce">Strong side</span><span class="puce">Obj. trade</span></div></div>
+          <div class="fleche">↓</div>
+          <div class="etape"><b>Ganks <i>uniquement</i> si :</b>
+            <ul>
+              <li>il y a des <b>free kills</b> à prendre <b>et</b> tu es en <b>powerspike</b> (pas de gold sur toi, ultime up, HP hauts…) ;</li>
+              <li><b>cibles isolées</b> ou cibles <b>low HP</b>.</li>
+            </ul></div>
+        </section>
+
+        <section class="panneau phase">
+          <h2>Late game</h2>
+          <div class="etape depart">Même plan qu'en mid game.</div>
+          <div class="fleche">↓</div>
+          <div class="question">
+            <div class="q">Jouer autour des objectifs ?</div>
+            <div class="branches">
+              <div class="branche"><span class="oui">Oui</span><div class="etape"><b>Push les lanes à côté des objectifs.</b>
+                <span class="petit">Nashor up ⇒ push mid + avancer la vision.</span></div></div>
+              <div class="branche"><span class="non">Non</span><div class="etape"><b>Push à l'opposé de l'objectif.</b>
+                <span class="petit">Nashor injouable ⇒ push bot et gratter tourelles / jungle adverse.</span></div></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 const D = __DONNEES__;
 const POSTES = ["top", "jgl", "mid", "adc", "sup"];
 const NOM_POSTE = {top: "Top", jgl: "Jungle", mid: "Mid", adc: "ADC", sup: "Support"};
-const POOL_JUNGLE = ["Fiddlesticks", "Ivern", "Dr. Mundo", "Kayn bleu", "Kayn rouge", "Viego", "Maokai", "Skarner"];
+const POOL_JUNGLE = ["Briar", "Darius", "Dr. Mundo", "Fiddlesticks", "Gwen", "Ivern", "Kayn bleu", "Viego", "Lee Sin"];
 const CLE = "assistant-draft-v2";
 
 // --- Matchups Lolalytics : table de recherche ---------------------------------------------------
@@ -311,9 +416,9 @@ const nouveauProfil = (nom, postes, pool) => ({id: "p" + Date.now().toString(36)
 let etat = null;
 try { etat = JSON.parse(localStorage.getItem(CLE) || "null"); } catch (e) {}
 if (!etat || !Array.isArray(etat.profils) || !etat.profils.length) {
-  let ancien = null; try { ancien = JSON.parse(localStorage.getItem("assistant-panda") || "null"); } catch (e) {}
-  const moi = nouveauProfil("Moi", ["jgl"], {jgl: (ancien && ancien.pool) || POOL_JUNGLE});
-  etat = {profils: [moi], actif: moi.id, poste: "jgl", onglet: "draft", tous: false, choix: "", manuel: false,
+  // Profils de départ : « Lee » (jungle, son pool) et « All » (jungle, tous les champions du poste).
+  const moi = nouveauProfil("Lee", ["jgl"], {jgl: POOL_JUNGLE.slice()}), tous = nouveauProfil("All", ["jgl"], {jgl: []});
+  etat = {profils: [moi, tous], actif: moi.id, poste: "jgl", onglet: "draft", tous: false, choix: "", manuel: false,
           nous: POSTES.map(p => ({poste: p, champ: ""})), eux: POSTES.map(() => ({poste: "", champ: ""}))};
 }
 function garder() { try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {} }
@@ -895,14 +1000,15 @@ function dessinerProfils() {
     </section>`).join("");
 }
 function montrer() {
-  const o = etat.onglet === "profils" ? "profils" : "draft";
+  const o = ["profils", "manuel"].includes(etat.onglet) ? etat.onglet : "draft";
   if (etat.valide && compoComplete() < 10) etat.valide = false;
   const recap = o === "draft" && etat.valide;
   document.getElementById("vue-draft").hidden = o !== "draft" || recap; document.getElementById("vue-recap").hidden = !recap;
   document.getElementById("vue-profils").hidden = o !== "profils";
+  document.getElementById("vue-manuel").hidden = o !== "manuel";
   if (recap) { document.querySelectorAll("[data-onglet]").forEach(b => b.setAttribute("aria-selected", b.dataset.onglet === o ? "true" : "false")); dessinerRecap(); garder(); return; }
   document.querySelectorAll("[data-onglet]").forEach(b => b.setAttribute("aria-selected", b.dataset.onglet === o ? "true" : "false"));
-  if (o === "draft") { dessinerBarre(); dessinerEquipes(); dessinerReco(); majValider(); } else dessinerProfils();
+  if (o === "draft") { dessinerBarre(); dessinerEquipes(); dessinerReco(); majValider(); } else if (o === "profils") dessinerProfils();
   garder();
 }
 function toutDraft() { dessinerBarre(); dessinerEquipes(); dessinerReco(); majValider(); garder(); }
@@ -1040,7 +1146,7 @@ function appliquerSelection(r) {
   document.getElementById("bans").textContent = etat.bans.length ? `Bannis : ${etat.bans.filter(n => n !== "Kayn rouge").map(n => n === "Kayn bleu" ? "Kayn" : n).join(", ")}` : "";
   // Fin de la sélection : récapitulatif automatique (une fois par partie).
   if (["FINALIZATION", "GAME_STARTING"].includes(r.phase) && compoComplete() === 10 && !etat.recapAuto) { etat.recapAuto = true; etat.valide = true; }
-  if (etat.onglet !== "profils") montrer(); else garder();
+  if (etat.onglet === "draft") montrer(); else garder();
 }
 // Version du jeu (lue par le lien client) comparée au patch de l'assistant (Lolalytics).
 const versionNum = v => { const m = /^(\d+)\.(\d+)/.exec(v || ""); return m ? [+m[1], +m[2]] : null; };
@@ -1064,7 +1170,7 @@ async function interrogerClient() {
 }
 
 document.getElementById("tous").checked = !!etat.tous;
-const VERSION = "V 2.0";
+const VERSION = "V 2.1";
 document.getElementById("meta").textContent = `${VERSION} · ${Number(D.meta.parties_lanes).toLocaleString("fr-FR")} parties`;
 document.getElementById("meta").title = `Lolalytics : patch ${D.meta.patch}, Platine et plus. Nos analyses : ${D.meta.parties_lanes} parties Émeraude-Diamant, calculées le ${D.meta.export}.`;
 majVersion("");
