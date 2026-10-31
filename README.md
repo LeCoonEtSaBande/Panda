@@ -48,9 +48,21 @@ Les **cibles** : les carrys, les enchanteurs et les autres champions **fragiles*
 
 Les types viennent des choix du propriétaire, classés par les notes de nos parties (branche `analyse`, `analyse/types/`), les sorts de Data Dragon (`analyse/catalogues/sorts.csv`). Ce sont des descriptions des champions : elles ne prédisent pas la victoire, elles n'ont donc pas de tas C.
 
+## La surcouche en jeu (lancée par le lien client)
+
+Pendant une partie, le lien client ouvre une petite fenêtre au bord droit de l'écran (`assistant/surcouche.py`), par-dessus le jeu. Elle disparaît hors partie. Le jeu doit être en **« Fenêtré sans bordure »** (une fenêtre ne peut pas passer par-dessus le plein écran). On la déplace en tirant son bandeau du haut ; elle retient sa place.
+
+- **En haut** : le prochain dragon (le Dragon ancien après une âme) et le Héraut, avec leur compte à rebours ; **bip et texte orange 1 min 30 avant**. Tout est lu par le jeu lui-même (dragons et Héraut tués, par toi ou par eux) : rien à faire.
+- **Or des objets** : total de chaque équipe, puis, pour chaque adversaire, l'or dépensé dans ses objets (prix Data Dragon, consommables exclus), comme dans le tableau des scores.
+- **Saut éclair (F)** de chaque adversaire : **clic quand il flash**, le compte à rebours démarre (reclic : remis à zéro). La recharge tient compte de ses Bottes de lucidité ioniennes ou de sa Lucidité pourpre (lues dans ses objets, même achetées après) et de Perspicacité cosmique, **supposée dès qu'il a l'arbre Inspiration** (marquée ✦ : le jeu ne donne pas les petites runes des autres ; le sort revient au pire un peu plus tôt qu'annoncé). **On retire 10 secondes** : le temps de voir le flash et de cliquer.
+- **Sablier de Zhonya (Z)** : seulement chez ceux qui l'ont ; même principe (Perspicacité cosmique comptée, 10 secondes retirées).
+- **Valeurs du patch** (recharges, hâte, timers, prix) : `lolalytics/valeurs_jeu.json` de la branche `scraping`, refait à chaque passage du bouton « 2 · Lolalytics » et téléchargé au lancement (copie gardée à côté du programme pour jouer sans connexion ; à défaut, valeurs vérifiées le 31/10/2026).
+- Source : l'interface officielle de Riot pendant une partie (Live Client Data API, sur ton PC seulement). Rien n'est lu dans la mémoire du jeu, rien n'est envoyé au jeu. Les timers d'ultimes ennemis sont interdits par Riot depuis 2025 : il n'y en a pas. Les timers de sorts d'invocateur manuels sont tolérés à ce jour mais à l'étude chez Riot ; le Zhonya est un timer d'objet manuel, même zone.
+- Sans surcouche : lancer le lien client avec `--sans-surcouche`.
+
 ## Voir les picks du client League automatiquement
 
-- Sous Windows : télécharger `Assistant Draft - Lien client.exe` (même endroit que la page, bouton « Download raw file »), le mettre dans le même dossier que la page et le lancer avant de jouer. Une petite fenêtre reste ouverte ; elle ouvre la page.
+- Sous Windows : télécharger `Assistant Draft - Lien client.exe` (même endroit que la page, bouton « Download raw file »), le mettre dans le même dossier que la page et le lancer avant de jouer. Une petite fenêtre reste ouverte ; elle ouvre la page, puis la surcouche en jeu pendant les parties.
 - Sur Mac, ou si Python est installé : `python3 assistant/lien_client.py`.
 - **Version du jeu** : en haut à droite, la page compare la version de ton jeu (lue dans le client) au patch de l'assistant : « Patch 16.21 à jour » en vert, ou, en orange, « Jeu en 16.22, assistant en 16.21 : à mettre à jour » (relancer « Récupérer les stats Lolalytics du patch » puis « Générer l'assistant Draft », et retélécharger la page). Sans lien client, seul le patch de l'assistant est affiché.
 - **Côté bleu ou rouge** : lu dans le client pendant la sélection ; sur la carte du récapitulatif, ta base passe en haut à droite côté rouge (ton équipe reste en bleu) (la case « on est côté rouge » reste modifiable à la main).

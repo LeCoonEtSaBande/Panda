@@ -10,7 +10,10 @@ Utilisation : lancer ce programme (ou « Assistant Draft - Lien client.exe » so
 partie, puis ouvrir la page de l'assistant. Il ouvre aussi la page s'il la trouve dans le même dossier.
 Bibliothèque standard Python seulement.
 
-    python3 lien_client.py [--port 47123] [--lockfile <chemin>] [--sans-page]
+Pendant les parties, il ouvre aussi la surcouche en jeu (assistant/surcouche.py) : dragons, Héraut, flashs et Zhonya
+adverses, or des objets.
+
+    python3 lien_client.py [--port 47123] [--lockfile <chemin>] [--sans-page] [--sans-surcouche]
 """
 
 import argparse
@@ -247,6 +250,7 @@ def main():
     parser.add_argument("--port", type=int, default=PORT)
     parser.add_argument("--lockfile", help="chemin du lockfile du client, si le jeu est installé ailleurs")
     parser.add_argument("--sans-page", action="store_true", help="ne pas ouvrir la page de l'assistant")
+    parser.add_argument("--sans-surcouche", action="store_true", help="ne pas ouvrir la surcouche en jeu (dragons, flashs, Zhonya, or)")
     args = parser.parse_args()
     etat = Etat()
     try:
@@ -258,7 +262,16 @@ def main():
     if not args.sans_page:
         ouvrir_page()
     try:
-        boucle(etat, args.lockfile)
+        if args.sans_surcouche:
+            boucle(etat, args.lockfile)
+        else:
+            # La lecture du client tourne à part ; la surcouche en jeu (fenêtre) a besoin du fil principal.
+            threading.Thread(target=boucle, args=(etat, args.lockfile), daemon=True).start()
+            print("Surcouche en jeu prête : elle apparaît pendant les parties (jeu en « Fenêtré sans bordure »).", flush=True)
+            import surcouche
+            if not surcouche.lancer(dossier_du_programme()):
+                while True:
+                    time.sleep(3600)
     except KeyboardInterrupt:
         pass
     return 0
