@@ -18,7 +18,9 @@ envoyé au jeu.
 Les recharges tiennent compte de la hâte des invocateurs (Bottes de lucidité ioniennes, Lucidité pourpre, lues dans
 ses objets ; Perspicacité cosmique, supposée dès qu'il a l'arbre Inspiration, marquée « ✦ », car le jeu ne donne
 pas les petites runes des autres), et on retire une marge de 10 secondes (le temps de cliquer). Les valeurs du patch
-viennent de lolalytics/valeurs_jeu.json (branche scraping), téléchargé au lancement et gardé en copie.
+viennent de lolalytics/valeurs_jeu.json (branche scraping), téléchargé au lancement et gardé en copie ; les images
+(portraits, icônes) de lolalytics/images_surcouche.json, retéléchargé seulement au changement de patch. Les deux
+sont préparés par le bouton « 2 · Lolalytics » : la surcouche ne va jamais elle-même sur Data Dragon.
 
 Le jeu doit être en « Fenêtré sans bordure » : une fenêtre ne peut pas s'afficher par-dessus le plein écran.
 """
@@ -34,7 +36,7 @@ from pathlib import Path
 
 API_JEU = "https://127.0.0.1:2999/liveclientdata/allgamedata"
 URL_VALEURS = "https://raw.githubusercontent.com/LeCoonEtSaBande/panda/scraping/lolalytics/valeurs_jeu.json"
-DDRAGON = "https://ddragon.leagueoflegends.com/cdn"
+URL_IMAGES = "https://raw.githubusercontent.com/LeCoonEtSaBande/panda/scraping/lolalytics/images_surcouche.json"
 MARGE_S = 10            # retirée des recharges : le temps de voir le sort et de cliquer
 ALERTE_AVANT_S = 90     # bip et surlignage 1 min 30 avant un objectif
 
@@ -247,32 +249,27 @@ def charger_valeurs(dossier):
         except (OSError, ValueError):
             lues = {}
     valeurs.update({k: v for k, v in lues.items() if k in VALEURS_DEFAUT and v not in (None, "")})
-    if not valeurs["prix_objets"] and valeurs["version_ddragon"]:
-        try:      # prix absents du fichier : directement dans Data Dragon
-            with urllib.request.urlopen(f"{DDRAGON}/{valeurs['version_ddragon']}/data/en_US/item.json", timeout=8) as r:
-                valeurs["prix_objets"] = {k: o["gold"]["total"] for k, o in json.load(r)["data"].items()}
-        except (urllib.error.URLError, OSError, ValueError, KeyError):
-            pass
     return valeurs
 
 
-def image_ddragon(dossier, version, genre, nom):
-    """Chemin d'une image de Data Dragon (téléchargée une fois) : genre « champion », « spell » (sort d'invocateur)
-    ou « item » (objet). None si elle est introuvable."""
-    if not nom:
-        return None
-    cache = dossier / "surcouche_images"
-    chemin = cache / f"{genre}_{nom}.png"
-    if not chemin.exists():
-        if not version:
-            return None
-        try:
-            cache.mkdir(exist_ok=True)
-            with urllib.request.urlopen(f"{DDRAGON}/{version}/img/{genre}/{nom}.png", timeout=5) as r:
-                chemin.write_bytes(r.read())
-        except (urllib.error.URLError, OSError):
-            return None
-    return chemin
+def charger_images(dossier, patch):
+    """Images de la surcouche ({« champion_Aatrox », « spell_SummonerFlash », « item_3157 »… : PNG en base64}),
+    préparées par le bouton « 2 · Lolalytics » (branche scraping). Retéléchargées seulement au changement de patch ;
+    sinon la copie gardée à côté du programme."""
+    copie = dossier / "surcouche_images.json"
+    try:
+        gardees = json.loads(copie.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        gardees = {}
+    if gardees.get("images") and (not patch or gardees.get("patch") == patch):
+        return gardees["images"]
+    try:
+        with urllib.request.urlopen(URL_IMAGES, timeout=15) as r:
+            lues = json.load(r)
+        copie.write_text(json.dumps(lues), encoding="utf-8")
+        return lues.get("images", {})
+    except (urllib.error.URLError, OSError, ValueError):
+        return gardees.get("images", {})
 
 
 def lire_jeu():
@@ -307,6 +304,7 @@ class Fenetre:
         import tkinter as tk
         self.tk, self.dossier = tk, dossier
         self.valeurs = charger_valeurs(dossier)
+        self.donnees_images = charger_images(dossier, self.valeurs.get("patch"))
         self.suivi = Suivi()
         self.donnees, self.temps_lu, self.verrou = None, 0.0, threading.Lock()
         self.alertes_faites, self.lignes, self.images = set(), [], {}
@@ -325,11 +323,17 @@ class Fenetre:
         self.police, self.police_gras = ("Segoe UI", 9), ("Segoe UI", 9, "bold")
         self.police_compte = ("Segoe UI", 10, "bold")
 
-        self.bandeau = tk.Label(self.racine, text="", bg=FOND, fg=TEXTE, font=self.police_gras, anchor="w", padx=6, pady=3)
+        # Bandeau : le dragon à gauche, le Héraut (puis le Nashor) à droite.
+        self.bandeau = tk.Frame(self.racine, bg=FOND, padx=6, pady=3)
         self.bandeau.pack(fill="x")
-        self.bandeau.bind("<ButtonPress-1>", self._debut_glisser)
-        self.bandeau.bind("<B1-Motion>", self._glisser)
-        self.bandeau.bind("<ButtonRelease-1>", self._fin_glisser)
+        self.objectif_gauche = tk.Label(self.bandeau, text="", bg=FOND, fg=TEXTE, font=self.police_gras)
+        self.objectif_gauche.pack(side="left")
+        self.objectif_droite = tk.Label(self.bandeau, text="", bg=FOND, fg=TEXTE, font=self.police_gras)
+        self.objectif_droite.pack(side="right")
+        for w in (self.bandeau, self.objectif_gauche, self.objectif_droite):     # déplacer en tirant le bandeau
+            w.bind("<ButtonPress-1>", self._debut_glisser)
+            w.bind("<B1-Motion>", self._glisser)
+            w.bind("<ButtonRelease-1>", self._fin_glisser)
         self.cadre = tk.Frame(self.racine, bg=FOND, padx=4, pady=3)
         self.cadre.pack(fill="both")
         self._placer()
@@ -377,9 +381,9 @@ class Fenetre:
                 normale = self._image(genre, nom)
                 self.images[cle] = self._griser(normale) if normale else None
             else:
-                chemin = image_ddragon(self.dossier, self.valeurs.get("version_ddragon"), genre, nom)
+                donnees = self.donnees_images.get(f"{genre}_{nom}")
                 try:
-                    img = self.tk.PhotoImage(file=str(chemin)) if chemin else None
+                    img = self.tk.PhotoImage(data=donnees) if donnees else None
                     if img is not None:
                         img = img.subsample(max(1, round(img.width() / (30 if genre == "champion" else ICONE))))
                     self.images[cle] = img
@@ -504,21 +508,18 @@ class Fenetre:
                 self.racine.attributes("-topmost", True)
 
             # Objectifs : dragon, puis Héraut (ou Nashor quand le Héraut n'est plus là).
-            morceaux, alerte = [], False
-            for nom, apparition, en_vie in objectifs(temps, (donnees.get("events") or {}).get("Events") or [], noms, self.valeurs):
+            for w, (nom, apparition, en_vie) in zip((self.objectif_gauche, self.objectif_droite),
+                                                   objectifs(temps, (donnees.get("events") or {}).get("Events") or [], noms, self.valeurs)):
                 if apparition is None:
-                    continue
-                if en_vie:
-                    morceaux.append(f"{nom} dispo")
-                    continue
-                reste = apparition - temps
-                morceaux.append(f"{nom} {format_temps(reste)}")
-                if reste <= ALERTE_AVANT_S:
-                    alerte = True
-                    if (nom, apparition) not in self.alertes_faites:
+                    w.configure(text="")
+                elif en_vie:
+                    w.configure(text=f"{nom} dispo", fg=TEXTE)
+                else:
+                    reste = apparition - temps
+                    w.configure(text=f"{nom} {format_temps(reste)}", fg=COULEURS["orange"] if reste <= ALERTE_AVANT_S else TEXTE)
+                    if reste <= ALERTE_AVANT_S and (nom, apparition) not in self.alertes_faites:
                         self.alertes_faites.add((nom, apparition))
                         threading.Thread(target=bip, daemon=True).start()
-            self.bandeau.configure(text="   ".join(morceaux) or "—", fg=COULEURS["orange"] if alerte else TEXTE)
 
             # Chaque vis-à-vis : or des objets (couleurs du plus riche), Saut éclair et Zhonya de l'adversaire.
             actuels = {(j.get("team"), id_champion(j)): j for j in donnees.get("allPlayers") or []}
