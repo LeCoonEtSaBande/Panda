@@ -388,6 +388,30 @@ class Fenetre:
             x = self.racine.winfo_screenwidth() - self.racine.winfo_width() - round(self.icone / 2)
             self.racine.geometry(f"+{x}+{round(self.racine.winfo_screenheight() * HAUT_LIBRE)}")
 
+    # Sous Windows, cliquer sur une fenêtre la rend « active » et retire la main au jeu (il faut ensuite recliquer
+    # plusieurs fois dans le jeu). On marque donc la surcouche comme « jamais active » : elle reçoit les clics sans
+    # jamais prendre le clavier ni la souris au jeu. Par sécurité, après chaque clic, on rend aussi la main au jeu.
+    def _ne_jamais_prendre_la_main(self):
+        try:
+            import ctypes
+            user32 = ctypes.windll.user32
+        except (ImportError, AttributeError, OSError):
+            return
+        GWL_EXSTYLE, WS_EX_NOACTIVATE, WS_EX_TOOLWINDOW = -20, 0x08000000, 0x00000080
+        lire = getattr(user32, "GetWindowLongPtrW", user32.GetWindowLongW)
+        ecrire = getattr(user32, "SetWindowLongPtrW", user32.SetWindowLongW)
+        fenetre = user32.GetParent(self.racine.winfo_id()) or self.racine.winfo_id()
+        ecrire(fenetre, GWL_EXSTYLE, lire(fenetre, GWL_EXSTYLE) | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW)
+
+    def _rendre_la_main_au_jeu(self):
+        try:
+            import ctypes
+            jeu = ctypes.windll.user32.FindWindowW(None, "League of Legends (TM) Client")
+            if jeu:
+                ctypes.windll.user32.SetForegroundWindow(jeu)
+        except (ImportError, AttributeError, OSError):
+            pass
+
     def _borner(self):
         self.racine.update_idletasks()
         x, y = self.racine.winfo_x(), self.racine.winfo_y()
@@ -405,6 +429,7 @@ class Fenetre:
     def _fin_glisser(self, _e):
         self.position_choisie = True
         self._borner()
+        self._rendre_la_main_au_jeu()
         try:
             self.position_fichier.write_text(json.dumps([self.racine.winfo_x(), self.racine.winfo_y()]), encoding="utf-8")
         except OSError:
@@ -528,6 +553,7 @@ class Fenetre:
         duree = self._durees(j)[sort]
         self.suivi.basculer(champion, sort, temps, self.suivi.restant(champion, sort, temps, duree))
         self._rafraichir(planifier=False)
+        self._rendre_la_main_au_jeu()
 
     def _icone(self, w, sort, present, reste):
         """Icône en couleur : disponible ; grisée avec le compte à rebours par-dessus : en recharge."""
@@ -560,6 +586,7 @@ class Fenetre:
                 self.racine.deiconify()
                 self.racine.attributes("-topmost", True)
                 self._borner()
+                self._ne_jamais_prendre_la_main()
 
             # Objectifs : dragon, puis Héraut (ou Nashor quand le Héraut n'est plus là).
             for w, (nom, apparition, en_vie) in zip((self.objectif_gauche, self.objectif_droite),
