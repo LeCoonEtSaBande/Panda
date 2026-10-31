@@ -7,7 +7,7 @@ D'où viennent les valeurs, dans l'ordre :
 1. Data Dragon (les fichiers officiels de Riot) : version du patch, recharge de Saut éclair, hâte des invocateurs
    des objets (Bottes de lucidité ioniennes, Lucidité pourpre, et tout nouvel objet qui en donne), hâte de la
    rune Perspicacité cosmique, prix total de chaque objet, identifiant du Sablier de Zhonya.
-2. Le wiki League of Legends : recharge du Sablier de Zhonya, apparition des dragons et du Héraut (Data Dragon ne
+2. Le wiki League of Legends : recharge du Sablier de Zhonya, apparition des dragons, du Héraut et du Nashor (Data Dragon ne
    les donne pas). Une valeur lue n'est gardée que si elle reste dans une fourchette plausible.
 3. Sinon, la valeur du fichier précédent, et en dernier recours la valeur par défaut (vérifiée le 31/10/2026).
 
@@ -48,6 +48,8 @@ DEFAUTS = {
     "ancien_reapparition_s": 360,       # Dragon ancien : 6 min après l'âme, puis après chaque ancien
     "heraut_apparition_s": 900,         # Héraut à 15:00, une seule fois par partie
     "heraut_disparition_s": 1185,       # disparaît à 19:45 s'il n'est pas tué
+    "baron_apparition_s": 1200,         # Nashor à 20:00
+    "baron_reapparition_s": 360,        # puis 6 min après chaque Nashor
 }
 
 # Fourchettes plausibles : une valeur lue en dehors est ignorée (page mal lue, texte d'un autre mode de jeu…).
@@ -55,6 +57,7 @@ FOURCHETTES = {
     "flash_s": (120, 420), "zhonya_s": (60, 240), "cosmic_hate_invocateur": (5, 40), "cosmic_hate_objets": (0, 30),
     "dragon_premier_s": (180, 480), "dragon_reapparition_s": (180, 480), "ancien_reapparition_s": (240, 600),
     "heraut_apparition_s": (480, 1200), "heraut_disparition_s": (900, 1500),
+    "baron_apparition_s": (900, 1800), "baron_reapparition_s": (180, 600),
 }
 
 
@@ -164,6 +167,20 @@ def lire_heraut_wiki(texte):
     return r
 
 
+def lire_baron_wiki(texte):
+    """Apparition du Nashor (« spawns at 20:00 ») et réapparition (« respawns … 6 minutes »)."""
+    if not texte:
+        return {}
+    r = {}
+    m = re.search(r"spawns?\s+(?:at|after)\s+(\d{1,2}:\d{2})", texte, re.I)
+    if m:
+        r["baron_apparition_s"] = minutes_secondes(m.group(1))
+    m = re.search(r"respawns?[^.]{0,40}?(\d+(?:[.,]\d+)?)\s*minutes", texte, re.I)
+    if m:
+        r["baron_reapparition_s"] = int(float(m.group(1).replace(",", ".")) * 60)
+    return r
+
+
 def lire_dragons_wiki(texte):
     """Premier dragon (« first … spawns at 5:00 ») et réapparitions (« respawn … 5 minutes »)."""
     if not texte:
@@ -231,6 +248,8 @@ def main():
 
     lus["zhonya_s"] = (lire_zhonya_wiki(page_wiki("Zhonya's Hourglass")), "wiki")
     for cle, val in lire_heraut_wiki(page_wiki("Rift Herald")).items():
+        lus[cle] = (val, "wiki")
+    for cle, val in lire_baron_wiki(page_wiki("Baron Nashor")).items():
         lus[cle] = (val, "wiki")
     for cle, val in lire_dragons_wiki(page_wiki("Dragon")).items():
         lus[cle] = (val, "wiki")

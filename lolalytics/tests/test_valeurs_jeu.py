@@ -46,6 +46,10 @@ class WikiTest(unittest.TestCase):
         self.assertEqual(v.lire_dragons_wiki(t), {"dragon_premier_s": 300, "dragon_reapparition_s": 300,
                                                   "ancien_reapparition_s": 360})
 
+    def test_baron(self):
+        t = "Baron Nashor spawns at 20:00 in the Baron pit and respawns 6 minutes after being slain."
+        self.assertEqual(v.lire_baron_wiki(t), {"baron_apparition_s": 1200, "baron_reapparition_s": 360})
+
     def test_zhonya(self):
         self.assertEqual(v.lire_zhonya_wiki("Active - Stasis: put yourself in stasis (120 seconds cooldown)."), 120)
         self.assertIsNone(v.lire_zhonya_wiki("Rien d'utile ici, 5 seconds cooldown"))
