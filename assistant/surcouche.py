@@ -1,9 +1,13 @@
 """Surcouche en jeu : une petite fenêtre par-dessus League of Legends, lancée par le lien client.
 
 Ce qu'elle affiche, sur le bord droit de l'écran (déplaçable en tirant son bandeau du haut) :
-- le prochain dragon (ou le Dragon ancien après une âme) et le Héraut, avec un bip 1 min 30 avant ;
-- pour chaque champion adverse : l'or de ses objets, son Saut éclair et son Sablier de Zhonya s'il en a un.
-  Clic gauche sur « F » ou « Z » quand il l'utilise : le compte à rebours démarre ; reclic : remis à zéro.
+- le prochain dragon (ou le Dragon ancien après une âme) et le Héraut, puis le Nashor quand le Héraut n'est plus
+  là, avec un bip 1 min 30 avant ;
+- une ligne par poste, en vis-à-vis : à gauche l'adversaire (portrait, or de ses objets, Saut éclair, Sablier de
+  Zhonya s'il en a un), à droite ton coéquipier du même poste (or de ses objets, portrait). Le plus riche des deux
+  en vert, l'autre en rouge ; les deux en orange à moins de 500 d'écart. Dessous, les deux totaux.
+  Clic sur l'icône du Saut éclair ou du Zhonya quand il l'utilise : l'icône devient grise avec le compte à rebours
+  par-dessus ; reclic : remis à zéro. Icône en couleur : le sort est disponible.
 
 D'où viennent les informations : l'interface officielle de Riot pendant une partie (« Live Client Data API »,
 https://127.0.0.1:2999, sur ton PC seulement). Elle donne le temps de jeu, les objets et sorts de chaque champion
@@ -39,7 +43,8 @@ VALEURS_DEFAUT = {
     "flash_s": 300, "zhonya_s": 120, "zhonya_ids": ["3157"], "hate_invocateur_objets": {"3158": 10, "3171": 20},
     "cosmic_hate_invocateur": 18, "cosmic_hate_objets": 10, "cosmic_id": 8347, "inspiration_id": 8300,
     "dragon_premier_s": 300, "dragon_reapparition_s": 300, "ancien_reapparition_s": 360,
-    "heraut_apparition_s": 900, "heraut_disparition_s": 1185, "prix_objets": {}, "version_ddragon": "", "patch": "",
+    "heraut_apparition_s": 900, "heraut_disparition_s": 1185,
+    "baron_apparition_s": 1200, "baron_reapparition_s": 360, "prix_objets": {}, "version_ddragon": "", "patch": "",
 }
 
 CONTEXTE_LOCAL = ssl.create_default_context()
@@ -145,11 +150,54 @@ def objectifs(temps, evenements, noms_equipes, valeurs):
         prochain, nom = dragons[-1]["EventTime"] + valeurs["dragon_reapparition_s"], "Dragon"
     resultat = [(nom, prochain, temps >= prochain)]
     heraut_tue = any(e.get("EventName") == "HeraldKill" for e in evenements)
-    if heraut_tue or temps >= valeurs["heraut_disparition_s"]:
-        resultat.append(("Héraut", None, False))
-    else:
+    if not heraut_tue and temps < valeurs["heraut_disparition_s"]:
         resultat.append(("Héraut", valeurs["heraut_apparition_s"], temps >= valeurs["heraut_apparition_s"]))
+    else:                                    # Héraut tué ou disparu : le Nashor prend sa place
+        barons = [e for e in evenements if e.get("EventName") == "BaronKill"]
+        apparition = barons[-1]["EventTime"] + valeurs["baron_reapparition_s"] if barons else valeurs["baron_apparition_s"]
+        resultat.append(("Nashor", apparition, temps >= apparition))
     return resultat
+
+
+POSTES = ("TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY")
+
+
+def ranger_par_poste(joueurs):
+    """Les 5 joueurs d'une équipe dans l'ordre top, jungle, mid, ADC, support (None si la place est vide).
+    Poste donné par le jeu ; à défaut, le porteur de Châtiment va en jungle et les autres comblent les trous."""
+    places, restants = [None] * 5, []
+    for j in joueurs:
+        poste = (j.get("position") or "").upper()
+        if poste in POSTES and places[POSTES.index(poste)] is None:
+            places[POSTES.index(poste)] = j
+        else:
+            restants.append(j)
+    if places[1] is None:
+        chatiment = next((j for j in restants if a_le_sort(j, "SummonerSmite")), None)
+        if chatiment:
+            places[1] = chatiment
+            restants.remove(chatiment)
+    for j in restants:
+        if None in places:
+            places[places.index(None)] = j
+    return places
+
+
+def vis_a_vis(donnees):
+    """[(adversaire, coéquipier)] par poste, de top à support."""
+    mon_equipe, adversaires, _ = equipes(donnees)
+    nous = [j for j in donnees.get("allPlayers") or [] if j.get("team") == mon_equipe]
+    return list(zip(ranger_par_poste(adversaires), ranger_par_poste(nous)))
+
+
+def couleurs_or(eux, nous, ecart_min=500):
+    """Couleurs des deux chiffres : le plus riche en vert, l'autre en rouge ; les deux en orange si l'écart est
+    sous 500 ; gris si l'un des deux manque."""
+    if eux is None or nous is None:
+        return "gris", "gris"
+    if abs(eux - nous) < ecart_min:
+        return "orange", "orange"
+    return ("vert", "rouge") if eux > nous else ("rouge", "vert")
 
 
 class Suivi:
@@ -183,7 +231,7 @@ class Suivi:
         return reste
 
 
-# --- Valeurs du patch et portraits ------------------------------------------------------------------------
+# --- Valeurs du patch et images ------------------------------------------------------------------------
 
 def charger_valeurs(dossier):
     """Valeurs du patch : téléchargées (et copiées dans le dossier), sinon la copie, sinon les valeurs par défaut."""
@@ -208,16 +256,19 @@ def charger_valeurs(dossier):
     return valeurs
 
 
-def portrait(dossier, version, champion):
-    """Chemin du portrait du champion (téléchargé une fois), ou None."""
-    if not version or not champion:
+def image_ddragon(dossier, version, genre, nom):
+    """Chemin d'une image de Data Dragon (téléchargée une fois) : genre « champion », « spell » (sort d'invocateur)
+    ou « item » (objet). None si elle est introuvable."""
+    if not nom:
         return None
-    cache = dossier / "surcouche_portraits"
-    chemin = cache / f"{champion}.png"
+    cache = dossier / "surcouche_images"
+    chemin = cache / f"{genre}_{nom}.png"
     if not chemin.exists():
+        if not version:
+            return None
         try:
             cache.mkdir(exist_ok=True)
-            with urllib.request.urlopen(f"{DDRAGON}/{version}/img/champion/{champion}.png", timeout=5) as r:
+            with urllib.request.urlopen(f"{DDRAGON}/{version}/img/{genre}/{nom}.png", timeout=5) as r:
                 chemin.write_bytes(r.read())
         except (urllib.error.URLError, OSError):
             return None
@@ -236,7 +287,10 @@ def lire_jeu():
 
 # --- La fenêtre -------------------------------------------------------------------------------------------
 
-FOND, TEXTE, GRIS, VERT, ORANGE, ROUGE, OR = "#14161a", "#e8e8e8", "#7d8590", "#4ade80", "#fb923c", "#f87171", "#facc15"
+FOND, TEXTE, GRIS = "#14161a", "#e8e8e8", "#7d8590"
+COULEURS = {"vert": "#4ade80", "rouge": "#f87171", "orange": "#fb923c", "gris": "#7d8590"}
+EUX, NOUS = "#ef4444", "#3b82f6"          # rouge : l'équipe adverse ; bleu : la tienne
+ICONE = 32                                  # côté des icônes de sorts et d'objets, en pixels
 
 
 def bip():
@@ -268,19 +322,16 @@ class Fenetre:
         except tk.TclError:
             pass
         self.racine.configure(bg=FOND)
-        police = ("Segoe UI", 9)
-        self.police, self.police_gras = police, ("Segoe UI", 9, "bold")
+        self.police, self.police_gras = ("Segoe UI", 9), ("Segoe UI", 9, "bold")
+        self.police_compte = ("Segoe UI", 10, "bold")
 
         self.bandeau = tk.Label(self.racine, text="", bg=FOND, fg=TEXTE, font=self.police_gras, anchor="w", padx=6, pady=3)
         self.bandeau.pack(fill="x")
-        self.ligne_or = tk.Label(self.racine, text="", bg=FOND, fg=GRIS, font=police, anchor="w", padx=6)
-        self.ligne_or.pack(fill="x")
+        self.bandeau.bind("<ButtonPress-1>", self._debut_glisser)
+        self.bandeau.bind("<B1-Motion>", self._glisser)
+        self.bandeau.bind("<ButtonRelease-1>", self._fin_glisser)
         self.cadre = tk.Frame(self.racine, bg=FOND, padx=4, pady=3)
         self.cadre.pack(fill="both")
-        for w in (self.bandeau, self.ligne_or):           # déplacer la fenêtre en tirant le haut
-            w.bind("<ButtonPress-1>", self._debut_glisser)
-            w.bind("<B1-Motion>", self._glisser)
-            w.bind("<ButtonRelease-1>", self._fin_glisser)
         self._placer()
         threading.Thread(target=self._lecture, daemon=True).start()
         self.racine.after(300, self._rafraichir)
@@ -290,7 +341,7 @@ class Fenetre:
         try:
             x, y = json.loads(self.position_fichier.read_text(encoding="utf-8"))
         except (OSError, ValueError, TypeError):
-            x, y = self.racine.winfo_screenwidth() - 190, int(self.racine.winfo_screenheight() * 0.30)
+            x, y = self.racine.winfo_screenwidth() - 290, int(self.racine.winfo_screenheight() * 0.30)
         self.racine.geometry(f"+{x}+{y}")
 
     def _debut_glisser(self, e):
@@ -318,37 +369,90 @@ class Fenetre:
         base = float((donnees.get("gameData") or {}).get("gameTime") or 0)
         return base + min(1.5, time.monotonic() - self.temps_lu)
 
-    def _image(self, champion):
-        if champion not in self.images:
-            chemin = portrait(self.dossier, self.valeurs.get("version_ddragon"), champion)
-            try:
-                self.images[champion] = self.tk.PhotoImage(file=str(chemin)).subsample(4) if chemin else None
-            except self.tk.TclError:
-                self.images[champion] = None
-        return self.images[champion]
+    # Images : portraits (30 px), icônes de Saut éclair et de Zhonya (32 px), et leur version grisée.
+    def _image(self, genre, nom, grise=False):
+        cle = (genre, nom, grise)
+        if cle not in self.images:
+            if grise:
+                normale = self._image(genre, nom)
+                self.images[cle] = self._griser(normale) if normale else None
+            else:
+                chemin = image_ddragon(self.dossier, self.valeurs.get("version_ddragon"), genre, nom)
+                try:
+                    img = self.tk.PhotoImage(file=str(chemin)) if chemin else None
+                    if img is not None:
+                        img = img.subsample(max(1, round(img.width() / (30 if genre == "champion" else ICONE))))
+                    self.images[cle] = img
+                except self.tk.TclError:
+                    self.images[cle] = None
+        return self.images[cle]
 
-    def _construire(self, adversaires):
+    def _griser(self, img):
+        """Copie en gris foncé (comme un sort en recharge dans le jeu)."""
+        l, h = img.width(), img.height()
+        grise = self.tk.PhotoImage(width=l, height=h)
+        lignes = []
+        for y in range(h):
+            pixels = []
+            for x in range(l):
+                r, g, b = img.get(x, y)[:3]
+                v = int((0.3 * r + 0.59 * g + 0.11 * b) * 0.4)
+                pixels.append(f"#{v:02x}{v:02x}{v:02x}")
+            lignes.append("{" + " ".join(pixels) + "}")
+        grise.put(" ".join(lignes))
+        return grise
+
+    def _portrait(self, ligne, colonne, joueur, couleur_equipe):
+        tk = self.tk
+        if joueur is None:
+            w = tk.Label(self.cadre, text="", bg=FOND, width=4)
+        else:
+            img = self._image("champion", id_champion(joueur))
+            if img:
+                w = tk.Label(self.cadre, image=img, bg=FOND, highlightthickness=2, highlightbackground=couleur_equipe)
+            else:
+                w = tk.Label(self.cadre, text=(joueur.get("championName") or "?")[:4], bg=FOND, fg=couleur_equipe,
+                             font=self.police_gras, width=4)
+        w.grid(row=ligne, column=colonne, pady=1, padx=2)
+
+    def _construire(self, paires):
         tk = self.tk
         for w in self.cadre.winfo_children():
             w.destroy()
+        for col, taille in ((2, ICONE + 4), (3, 10), (4, ICONE + 4)):
+            self.cadre.grid_columnconfigure(col, minsize=taille)
+        self.cadre.grid_columnconfigure(5, minsize=14)                  # espace entre les deux équipes
+        # En-têtes : l'équipe adverse à gauche (rouge), la tienne à droite (bleu).
+        tk.Label(self.cadre, text="EUX", bg=FOND, fg=EUX, font=self.police_gras).grid(row=0, column=0, columnspan=2, sticky="w", padx=2)
+        tk.Label(self.cadre, text="NOUS", bg=FOND, fg=NOUS, font=self.police_gras).grid(row=0, column=6, columnspan=2, sticky="e", padx=2)
         self.lignes = []
-        for i, j in enumerate(adversaires):
-            champ = id_champion(j)
-            img = self._image(champ)
-            if img:
-                tete = tk.Label(self.cadre, image=img, bg=FOND)
-            else:
-                tete = tk.Label(self.cadre, text=(j.get("championName") or "?")[:4], bg=FOND, fg=TEXTE, font=self.police, width=4)
-            tete.grid(row=i, column=0, padx=(0, 4), pady=1)
-            or_ = tk.Label(self.cadre, text="", bg=FOND, fg=OR, font=self.police, width=5, anchor="e")
-            or_.grid(row=i, column=1)
-            flash = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, cursor="hand2")
-            flash.grid(row=i, column=2, padx=2)
-            flash.bind("<Button-1>", lambda _e, c=champ: self._clic(c, "F"))
-            zho = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, cursor="hand2")
-            zho.grid(row=i, column=3)
-            zho.bind("<Button-1>", lambda _e, c=champ: self._clic(c, "Z"))
-            self.lignes.append({"champion": champ, "or": or_, "F": flash, "Z": zho})
+        for i, (eux, nous) in enumerate(paires, start=1):
+            self._portrait(i, 0, eux, EUX)
+            or_eux = tk.Label(self.cadre, text="", bg=FOND, font=self.police, width=5, anchor="e")
+            or_eux.grid(row=i, column=1)
+            champ = id_champion(eux) if eux else None
+            ligne = {"eux": eux, "nous": nous, "champion": champ, "or_eux": or_eux}
+            for sort, col in (("F", 2), ("Z", 4)):
+                w = tk.Label(self.cadre, text="", bg=FOND, fg=TEXTE, font=self.police_compte, cursor="hand2",
+                             compound="center", bd=0)
+                w.grid(row=i, column=col)
+                if champ:
+                    w.bind("<Button-1>", lambda _e, c=champ, s=sort: self._clic(c, s))
+                ligne[sort] = w
+            cosmic = tk.Label(self.cadre, text="", bg=FOND, fg=COULEURS["orange"], font=("Segoe UI", 7))
+            cosmic.grid(row=i, column=3, sticky="n")
+            ligne["cosmic"] = cosmic
+            or_nous = tk.Label(self.cadre, text="", bg=FOND, font=self.police, width=5, anchor="e")
+            or_nous.grid(row=i, column=6)
+            ligne["or_nous"] = or_nous
+            self._portrait(i, 7, nous, NOUS)
+            self.lignes.append(ligne)
+        # Les deux totaux, sous les colonnes d'or.
+        tk.Frame(self.cadre, bg="#2a2e35", height=1).grid(row=6, column=0, columnspan=8, sticky="ew", pady=(3, 1))
+        self.total_eux = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, anchor="e")
+        self.total_eux.grid(row=7, column=1)
+        self.total_nous = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, anchor="e")
+        self.total_nous.grid(row=7, column=6)
 
     def _durees(self, j):
         v = self.valeurs
@@ -368,6 +472,17 @@ class Fenetre:
         self.suivi.basculer(champion, sort, temps, self.suivi.restant(champion, sort, temps, duree))
         self._rafraichir(planifier=False)
 
+    def _icone(self, w, sort, present, reste):
+        """Icône en couleur : disponible ; grisée avec le compte à rebours par-dessus : en recharge."""
+        if not present:
+            w.configure(image="", text="")
+            return
+        genre, nom = ("spell", "SummonerFlash") if sort == "F" else ("item", self.valeurs["zhonya_ids"][0])
+        img = self._image(genre, nom, grise=reste is not None)
+        texte = format_temps(reste) if reste is not None else ("" if img else sort)
+        couleur = TEXTE if img else (COULEURS["vert"] if reste is None else COULEURS["rouge"])
+        w.configure(image=img or "", text=texte, fg=couleur)
+
     def _rafraichir(self, planifier=True):
         try:
             with self.verrou:
@@ -377,17 +492,18 @@ class Fenetre:
                     self.racine.withdraw()
                 return
             temps = self._temps(donnees)
-            mon_equipe, adversaires, noms = equipes(donnees)
+            _, _, noms = equipes(donnees)
+            paires = vis_a_vis(donnees)
             cle = tuple(sorted(id_champion(j) + (j.get("team") or "") for j in donnees.get("allPlayers") or []))
             if cle != self.suivi.partie:                       # nouvelle partie : tout repart de zéro
                 self.suivi.nouvelle_partie(cle)
                 self.alertes_faites = set()
-                self._construire(adversaires)
+                self._construire(paires)
             if self.racine.state() == "withdrawn":
                 self.racine.deiconify()
                 self.racine.attributes("-topmost", True)
 
-            # Objectifs
+            # Objectifs : dragon, puis Héraut (ou Nashor quand le Héraut n'est plus là).
             morceaux, alerte = [], False
             for nom, apparition, en_vie in objectifs(temps, (donnees.get("events") or {}).get("Events") or [], noms, self.valeurs):
                 if apparition is None:
@@ -402,32 +518,30 @@ class Fenetre:
                     if (nom, apparition) not in self.alertes_faites:
                         self.alertes_faites.add((nom, apparition))
                         threading.Thread(target=bip, daemon=True).start()
-            self.bandeau.configure(text="   ".join(morceaux) or "—", fg=ORANGE if alerte else TEXTE)
+            self.bandeau.configure(text="   ".join(morceaux) or "—", fg=COULEURS["orange"] if alerte else TEXTE)
 
-            # Or des objets des deux équipes
-            nous = sum(or_objets(j, self.valeurs) for j in donnees.get("allPlayers") or [] if j.get("team") == mon_equipe)
-            eux = sum(or_objets(j, self.valeurs) for j in adversaires)
-            self.ligne_or.configure(text=f"Objets  nous {format_or(nous)} · eux {format_or(eux)}")
-
-            # Chaque adversaire
-            par_champion = {id_champion(j): j for j in adversaires}
+            # Chaque vis-à-vis : or des objets (couleurs du plus riche), Saut éclair et Zhonya de l'adversaire.
+            actuels = {(j.get("team"), id_champion(j)): j for j in donnees.get("allPlayers") or []}
+            total_eux = total_nous = 0
             for ligne in self.lignes:
-                j = par_champion.get(ligne["champion"])
-                if j is None:
+                eux = actuels.get((ligne["eux"].get("team"), ligne["champion"])) if ligne["eux"] else None
+                nous = actuels.get((ligne["nous"].get("team"), id_champion(ligne["nous"]))) if ligne["nous"] else None
+                or_e = or_objets(eux, self.valeurs) if eux else None
+                or_n = or_objets(nous, self.valeurs) if nous else None
+                total_eux += or_e or 0
+                total_nous += or_n or 0
+                c_e, c_n = couleurs_or(or_e, or_n)
+                ligne["or_eux"].configure(text=format_or(or_e) if or_e is not None else "", fg=COULEURS[c_e])
+                ligne["or_nous"].configure(text=format_or(or_n) if or_n is not None else "", fg=COULEURS[c_n])
+                if eux is None:
                     continue
-                ligne["or"].configure(text=format_or(or_objets(j, self.valeurs)))
-                durees = self._durees(j)
-                cosmic = " ✦" if a_inspiration(j, self.valeurs) else ""
-                for sort, present in (("F", a_le_sort(j)), ("Z", a_zhonya(j, self.valeurs))):
-                    w = ligne[sort]
-                    if not present:
-                        w.configure(text="")
-                        continue
-                    reste = self.suivi.restant(ligne["champion"], sort, temps, durees[sort])
-                    if reste is None:
-                        w.configure(text=sort + (cosmic if sort == "F" else ""), fg=VERT if sort == "F" else OR)
-                    else:
-                        w.configure(text=format_temps(reste), fg=ROUGE if reste > 30 else ORANGE)
+                durees = self._durees(eux)
+                for sort, present in (("F", a_le_sort(eux)), ("Z", a_zhonya(eux, self.valeurs))):
+                    self._icone(ligne[sort], sort, present, self.suivi.restant(ligne["champion"], sort, temps, durees[sort]))
+                ligne["cosmic"].configure(text="✦" if a_inspiration(eux, self.valeurs) and a_le_sort(eux) else "")
+            c_e, c_n = couleurs_or(total_eux, total_nous)
+            self.total_eux.configure(text=format_or(total_eux), fg=COULEURS[c_e])
+            self.total_nous.configure(text=format_or(total_nous), fg=COULEURS[c_n])
         finally:
             if planifier:
                 self.racine.after(250, self._rafraichir)

@@ -66,19 +66,40 @@ class ObjectifsTest(unittest.TestCase):
     def test_dragon_tue(self):
         r = S.objectifs(700, [{"EventName": "DragonKill", "EventTime": 400.0, "KillerName": "Ahri#EUW", "DragonType": "Fire"},
                               {"EventName": "HeraldKill", "EventTime": 650.0}], self.noms, V)
-        self.assertEqual(r, [("Dragon", 700.0, True), ("Héraut", None, False)])
+        self.assertEqual(r, [("Dragon", 700.0, True), ("Nashor", 1200, False)])
 
     def test_ame_puis_ancien(self):
         ev = [{"EventName": "DragonKill", "EventTime": 300.0 * (i + 1), "KillerName": "Moi#EUW", "DragonType": "Earth"} for i in range(4)]
         self.assertEqual(S.objectifs(1300, ev, self.noms, V)[0], ("Ancien", 1560.0, False))
 
-    def test_heraut_disparu(self):
-        self.assertEqual(S.objectifs(1200, [], self.noms, V)[1], ("Héraut", None, False))
+    def test_nashor_apres_le_heraut(self):
+        self.assertEqual(S.objectifs(1190, [], self.noms, V)[1], ("Nashor", 1200, False))      # Héraut disparu à 19:45
+        ev = [{"EventName": "HeraldKill", "EventTime": 950.0}, {"EventName": "BaronKill", "EventTime": 1300.0}]
+        self.assertEqual(S.objectifs(1400, ev, self.noms, V)[1], ("Nashor", 1660.0, False))
 
     def test_equipes(self):
         mon, adv, _ = S.equipes({"allPlayers": self.joueurs, "activePlayer": {"riotId": "Moi#EUW"}})
         self.assertEqual(mon, "ORDER")
         self.assertEqual([S.id_champion(j) for j in adv], ["Ahri"])
+
+
+class VisAVisTest(unittest.TestCase):
+    def test_postes_du_jeu_puis_chatiment(self):
+        eux = [dict(joueur(c, "CHAOS"), position=p) for c, p in (("Jinx", "BOTTOM"), ("Ahri", "MIDDLE"), ("Aatrox", "TOP"),
+                                                                  ("Thresh", "UTILITY"), ("Kayn", "JUNGLE"))]
+        nous = [joueur("Lux", "ORDER", nom="Moi#EUW"), joueur("Darius", "ORDER")]
+        nous[1]["summonerSpells"]["summonerSpellTwo"]["rawDisplayName"] = "x"
+        nous[0]["summonerSpells"]["summonerSpellTwo"]["rawDisplayName"] = "GeneratedTip_SummonerSpell_SummonerSmite_DisplayName"
+        nous[1]["summonerSpells"]["summonerSpellOne"]["rawDisplayName"] = "x"
+        paires = S.vis_a_vis({"allPlayers": eux + nous, "activePlayer": {"riotId": "Moi#EUW"}})
+        self.assertEqual([S.id_champion(e) for e, _ in paires], ["Aatrox", "Kayn", "Ahri", "Jinx", "Thresh"])
+        self.assertEqual([S.id_champion(n) if n else None for _, n in paires], ["Darius", "Lux", None, None, None])
+
+    def test_couleurs(self):
+        self.assertEqual(S.couleurs_or(5000, 4600), ("orange", "orange"))
+        self.assertEqual(S.couleurs_or(5000, 4500), ("vert", "rouge"))
+        self.assertEqual(S.couleurs_or(3000, 4000), ("rouge", "vert"))
+        self.assertEqual(S.couleurs_or(3000, None), ("gris", "gris"))
 
 
 if __name__ == "__main__":
