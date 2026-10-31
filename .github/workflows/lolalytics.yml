@@ -1,6 +1,7 @@
 name: "2 · Lolalytics : stats du patch (force des champions, contres, synergies)"
 # À QUOI IL SERT : récupérer sur Lolalytics la force de chaque champion à chaque poste, les contres et les matchups du
-# patch en cours, et la synergie avec chaque allié (branche « scraping »). QUAND : à chaque nouveau patch (environ 40 min), avant le bouton 5.
+# patch en cours, et la synergie avec chaque allié (branche « scraping »), puis les valeurs et timers du patch pour la
+# surcouche en jeu du lien client (lolalytics/valeurs_jeu.json). QUAND : à chaque nouveau patch (environ 40 min), avant le bouton 5.
 
 # Bouton « Run workflow », une fois par patch (environ 20 minutes). Tier list de chaque poste, puis la page
 # de chaque champion à chaque poste (matchups, dégâts par type, victoires selon la durée), Platine et plus,
@@ -32,6 +33,13 @@ jobs:
 
       - name: Récupérer le patch
         run: python3 lolalytics/recuperer.py
+
+      # Valeurs et timers du patch pour la surcouche en jeu (flashs, Zhonya, dragons, Héraut, prix des objets).
+      # Refait à chaque passage, même si le scraper a échoué ; un échec ici n'empêche pas d'enregistrer le scraping.
+      - name: Valeurs et timers du patch (surcouche en jeu)
+        if: always()
+        continue-on-error: true
+        run: python3 lolalytics/valeurs_jeu.py
 
       - name: Enregistrer
         if: always()

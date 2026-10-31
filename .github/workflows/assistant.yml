@@ -9,7 +9,8 @@ name: "5 · Générer l'assistant Draft (la page et le lien client)"
 # par « Mettre à jour le catalogue (Data Dragon) »),
 # puis génère « Assistant Draft - DL - <date>.html », committé à la racine de la branche « assistant »
 # (l’ancienne version est retirée). Pour le télécharger : ouvrir le fichier sur GitHub, « Download raw file ».
-# Un second job, sous Windows, reconstruit « Assistant Draft - Lien client.exe » quand assistant/lien_client.py change.
+# Un second job, sous Windows, reconstruit « Assistant Draft - Lien client.exe » quand assistant/lien_client.py ou
+# assistant/surcouche.py (la surcouche en jeu) change.
 on:
   workflow_dispatch:
 
@@ -100,7 +101,8 @@ jobs:
       - name: Construire « Assistant Draft - Lien client.exe » si le code a changé
         run: |
           git pull -q origin assistant
-          empreinte="$(sha256sum assistant/lien_client.py | cut -d' ' -f1)"
+          # Empreinte du lien client et de sa surcouche en jeu : l'un ou l'autre change, le .exe est reconstruit.
+          empreinte="$(cat assistant/lien_client.py assistant/surcouche.py 2>/dev/null | sha256sum | cut -d' ' -f1)"
           if [ -f assistant/lien_client.sha256 ] && [ "$(cat assistant/lien_client.sha256)" = "$empreinte" ] && [ -f "Assistant Draft - Lien client.exe" ]; then
             echo "Lien client inchangé."; exit 0
           fi
