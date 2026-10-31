@@ -291,10 +291,11 @@ FOND, TEXTE, GRIS = "#010203", "#f2f2f2", "#9aa3ad"
 COULEURS = {"vert": "#4ade80", "rouge": "#f87171", "orange": "#fb923c", "gris": "#7d8590"}
 EUX, NOUS = "#ef4444", "#3b82f6"          # rouge : l'équipe adverse ; bleu : la tienne
 # Tailles pour un écran de 1080 pixels de haut, comme le tableau des scores du jeu ; proportionnelles au-delà.
-HAUTEUR_REF, PORTRAIT_REF, ICONE_REF, TEXTE_REF = 1080, 28, 24, 13
+HAUTEUR_REF, PORTRAIT_REF, ICONE_REF, TEXTE_REF = 1080, 18, 16, 10
 # Zones du jeu à ne jamais couvrir (fractions de la hauteur de l'écran) : en haut, le bandeau des scores et le chrono
-# de la partie ; en bas à droite, la minimap. La fenêtre reste entre les deux.
-HAUT_LIBRE, BAS_LIBRE = 0.07, 0.70
+# de la partie ; en bas à droite, la minimap. La fenêtre reste entre les deux. Par défaut, elle se cale en haut à
+# droite, juste sous le bandeau des scores et au-dessus du fil des kills (qui commence vers 17 % de la hauteur).
+HAUT_LIBRE, BAS_LIBRE, FIL_DES_KILLS = 0.045, 0.70, 0.175
 
 
 def borner(x, y, largeur, hauteur, ecran_l, ecran_h):
@@ -349,32 +350,43 @@ class Fenetre:
         self.portrait, self.icone = round(PORTRAIT_REF * echelle), round(ICONE_REF * echelle)
         taille = -round(TEXTE_REF * echelle)                           # négatif : en pixels, comme le jeu
         self.police, self.police_gras = ("Segoe UI", taille), ("Segoe UI", taille, "bold")
-        self.police_compte = ("Segoe UI", -round(11 * echelle), "bold")
+        self.police_compte = ("Segoe UI", -round(8 * echelle), "bold")
+        self.marge = max(1, round(2 * echelle))
 
         # Bandeau : le dragon à gauche, le Héraut (puis le Nashor) à droite.
-        self.bandeau = tk.Frame(self.racine, bg=FOND, padx=6, pady=3)
+        self.bandeau = tk.Frame(self.racine, bg=FOND, padx=4, pady=0)
         self.bandeau.pack(fill="x")
-        self.objectif_gauche = tk.Label(self.bandeau, text="", bg=FOND, fg=TEXTE, font=self.police_gras)
+        self.objectif_gauche = tk.Label(self.bandeau, text="", bg=FOND, fg=TEXTE, font=self.police_gras, pady=0)
         self.objectif_gauche.pack(side="left")
-        self.objectif_droite = tk.Label(self.bandeau, text="", bg=FOND, fg=TEXTE, font=self.police_gras)
+        self.objectif_droite = tk.Label(self.bandeau, text="", bg=FOND, fg=TEXTE, font=self.police_gras, pady=0)
         self.objectif_droite.pack(side="right")
         for w in (self.bandeau, self.objectif_gauche, self.objectif_droite):     # déplacer en tirant le bandeau
             w.bind("<ButtonPress-1>", self._debut_glisser)
             w.bind("<B1-Motion>", self._glisser)
             w.bind("<ButtonRelease-1>", self._fin_glisser)
-        self.cadre = tk.Frame(self.racine, bg=FOND, padx=4, pady=3)
+        self.cadre = tk.Frame(self.racine, bg=FOND, padx=2, pady=1)
         self.cadre.pack(fill="both")
         self._placer()
         threading.Thread(target=self._lecture, daemon=True).start()
         self.racine.after(300, self._rafraichir)
 
-    # Position : bord droit, au tiers de la hauteur, puis là où tu l'as laissée ; toujours entre le chrono et la minimap.
+    # Position : par défaut en haut à droite, entre le bandeau des scores et le fil des kills ; sinon là où tu l'as
+    # laissée ; toujours entre le chrono et la minimap.
     def _placer(self):
         try:
             x, y = json.loads(self.position_fichier.read_text(encoding="utf-8"))
+            self.position_choisie = True
         except (OSError, ValueError, TypeError):
-            x, y = self.racine.winfo_screenwidth() - round(12 * self.icone), int(self.racine.winfo_screenheight() * 0.30)
+            x, y = self.racine.winfo_screenwidth() - round(14 * self.icone), round(self.racine.winfo_screenheight() * HAUT_LIBRE)
+            self.position_choisie = False
         self.racine.geometry(f"+{x}+{y}")
+
+    def _caler_par_defaut(self):
+        """Collée au bord droit, juste sous le bandeau des scores (une fois sa largeur connue)."""
+        if not self.position_choisie:
+            self.racine.update_idletasks()
+            x = self.racine.winfo_screenwidth() - self.racine.winfo_width() - round(self.icone / 2)
+            self.racine.geometry(f"+{x}+{round(self.racine.winfo_screenheight() * HAUT_LIBRE)}")
 
     def _borner(self):
         self.racine.update_idletasks()
@@ -391,6 +403,7 @@ class Fenetre:
         self.racine.geometry(f"+{e.x_root - self._ecart[0]}+{e.y_root - self._ecart[1]}")
 
     def _fin_glisser(self, _e):
+        self.position_choisie = True
         self._borner()
         try:
             self.position_fichier.write_text(json.dumps([self.racine.winfo_x(), self.racine.winfo_y()]), encoding="utf-8")
@@ -452,50 +465,51 @@ class Fenetre:
         else:
             img = self._image("champion", id_champion(joueur))
             if img:
-                w = tk.Label(self.cadre, image=img, bg=FOND, highlightthickness=2, highlightbackground=couleur_equipe)
+                w = tk.Label(self.cadre, image=img, bg=FOND, highlightthickness=1, highlightbackground=couleur_equipe)
             else:
                 w = tk.Label(self.cadre, text=(joueur.get("championName") or "?")[:4], bg=FOND, fg=couleur_equipe,
                              font=self.police_gras, width=4)
-        w.grid(row=ligne, column=colonne, pady=1, padx=2)
+        w.grid(row=ligne, column=colonne, pady=0, padx=self.marge)
 
     def _construire(self, paires):
         tk = self.tk
         for w in self.cadre.winfo_children():
             w.destroy()
-        for col, taille in ((2, self.icone + 4), (3, 10), (4, self.icone + 4)):
+        for col, taille in ((2, self.icone + 2), (3, 8), (4, self.icone + 2)):
             self.cadre.grid_columnconfigure(col, minsize=taille)
-        self.cadre.grid_columnconfigure(5, minsize=14)                  # espace entre les deux équipes
-        # En-têtes : l'équipe adverse à gauche (rouge), la tienne à droite (bleu).
-        tk.Label(self.cadre, text="EUX", bg=FOND, fg=EUX, font=self.police_gras).grid(row=0, column=0, columnspan=2, sticky="w", padx=2)
-        tk.Label(self.cadre, text="NOUS", bg=FOND, fg=NOUS, font=self.police_gras).grid(row=0, column=6, columnspan=2, sticky="e", padx=2)
+        self.cadre.grid_columnconfigure(5, minsize=self.icone // 2)    # espace entre les deux équipes
         self.lignes = []
-        for i, (eux, nous) in enumerate(paires, start=1):
+        for i, (eux, nous) in enumerate(paires):
             self._portrait(i, 0, eux, EUX)
-            or_eux = tk.Label(self.cadre, text="", bg=FOND, font=self.police, width=5, anchor="e")
+            or_eux = tk.Label(self.cadre, text="", bg=FOND, font=self.police, width=5, anchor="e", pady=0)
             or_eux.grid(row=i, column=1)
             champ = id_champion(eux) if eux else None
             ligne = {"eux": eux, "nous": nous, "champion": champ, "or_eux": or_eux}
             for sort, col in (("F", 2), ("Z", 4)):
                 w = tk.Label(self.cadre, text="", bg=FOND, fg=TEXTE, font=self.police_compte, cursor="hand2",
                              compound="center", bd=0)
-                w.grid(row=i, column=col)
+                w.grid(row=i, column=col, pady=1)
                 if champ:
                     w.bind("<Button-1>", lambda _e, c=champ, s=sort: self._clic(c, s))
                 ligne[sort] = w
-            cosmic = tk.Label(self.cadre, text="", bg=FOND, fg=COULEURS["orange"], font=("Segoe UI", 7))
+            cosmic = tk.Label(self.cadre, text="", bg=FOND, fg=COULEURS["orange"], font=("Segoe UI", -max(7, self.icone // 2)), pady=0)
             cosmic.grid(row=i, column=3, sticky="n")
             ligne["cosmic"] = cosmic
-            or_nous = tk.Label(self.cadre, text="", bg=FOND, font=self.police, width=5, anchor="e")
+            or_nous = tk.Label(self.cadre, text="", bg=FOND, font=self.police, width=5, anchor="e", pady=0)
             or_nous.grid(row=i, column=6)
             ligne["or_nous"] = or_nous
             self._portrait(i, 7, nous, NOUS)
             self.lignes.append(ligne)
-        # Les deux totaux, sous les colonnes d'or.
-        tk.Frame(self.cadre, bg="#2a2e35", height=1).grid(row=6, column=0, columnspan=8, sticky="ew", pady=(3, 1))
-        self.total_eux = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, anchor="e")
-        self.total_eux.grid(row=7, column=1)
-        self.total_nous = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, anchor="e")
-        self.total_nous.grid(row=7, column=6)
+        # Dernière ligne : les deux totaux sous leurs colonnes d'or, avec le nom de chaque équipe à côté
+        # (EUX en rouge sous les portraits adverses, NOUS en bleu sous les tiens).
+        tk.Frame(self.cadre, bg="#3a3f47", height=1).grid(row=5, column=0, columnspan=8, sticky="ew", pady=(1, 0))
+        tk.Label(self.cadre, text="EUX", bg=FOND, fg=EUX, font=self.police_gras, pady=0).grid(row=6, column=0)
+        self.total_eux = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, anchor="e", pady=0)
+        self.total_eux.grid(row=6, column=1)
+        self.total_nous = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, anchor="e", pady=0)
+        self.total_nous.grid(row=6, column=6)
+        tk.Label(self.cadre, text="NOUS", bg=FOND, fg=NOUS, font=self.police_gras, pady=0).grid(row=6, column=7)
+        self._caler_par_defaut()
 
     def _durees(self, j):
         v = self.valeurs

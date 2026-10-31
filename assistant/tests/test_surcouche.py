@@ -104,8 +104,8 @@ class VisAVisTest(unittest.TestCase):
 
 class PlacementTest(unittest.TestCase):
     def test_jamais_sur_le_chrono_ni_la_minimap(self):
-        # Écran 1920 × 1080 : rien au-dessus de 76 px (chrono, scores), rien sous 756 px (minimap).
-        self.assertEqual(S.borner(1700, 0, 250, 300, 1920, 1080), (1670, 76))
+        # Écran 1920 × 1080 : rien au-dessus de 49 px (chrono, scores), rien sous 756 px (minimap).
+        self.assertEqual(S.borner(1700, 0, 250, 300, 1920, 1080), (1670, 49))
         self.assertEqual(S.borner(1700, 900, 250, 300, 1920, 1080), (1670, 456))
         self.assertEqual(S.borner(1600, 320, 250, 300, 1920, 1080), (1600, 320))
 
