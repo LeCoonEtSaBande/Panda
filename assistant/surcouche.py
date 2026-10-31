@@ -470,8 +470,8 @@ class Fenetre:
         temps = self._temps(donnees)
         _, adversaires, _ = equipes(donnees)
         j = next((a for a in adversaires if id_champion(a) == champion), None)
-        if j is None:
-            return
+        if j is None or not (a_le_sort(j) if sort == "F" else a_zhonya(j, self.valeurs)):
+            return                   # pas de Saut éclair (ou pas de Zhonya) : case vide, le clic ne fait rien
         duree = self._durees(j)[sort]
         self.suivi.basculer(champion, sort, temps, self.suivi.restant(champion, sort, temps, duree))
         self._rafraichir(planifier=False)
