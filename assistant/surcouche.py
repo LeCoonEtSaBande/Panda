@@ -253,7 +253,7 @@ def charger_valeurs(dossier):
 
 
 def charger_images(dossier, patch):
-    """Images de la surcouche ({« champion_Aatrox », « spell_SummonerFlash », « item_3157 »… : PNG en base64}),
+    """Images de la surcouche ({côté : {« champion_Aatrox », « spell_SummonerFlash », « item_3157 »… : PNG en base64}}),
     préparées par le bouton « 2 · Lolalytics » (branche scraping). Retéléchargées seulement au changement de patch ;
     sinon la copie gardée à côté du programme."""
     copie = dossier / "surcouche_images.json"
@@ -261,7 +261,8 @@ def charger_images(dossier, patch):
         gardees = json.loads(copie.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         gardees = {}
-    if gardees.get("images") and (not patch or gardees.get("patch") == patch):
+    bon_format = any(c.isdigit() for c in gardees.get("images", {}))       # {côté : {image : PNG}}
+    if bon_format and (not patch or gardees.get("patch") == patch):
         return gardees["images"]
     try:
         with urllib.request.urlopen(URL_IMAGES, timeout=15) as r:
@@ -284,10 +285,29 @@ def lire_jeu():
 
 # --- La fenêtre -------------------------------------------------------------------------------------------
 
-FOND, TEXTE, GRIS = "#14161a", "#e8e8e8", "#7d8590"
+# FOND est la couleur « clé » : sous Windows, tout ce qui est de cette couleur devient transparent (et laisse passer
+# les clics vers le jeu). Seuls les textes, icônes et portraits restent visibles.
+FOND, TEXTE, GRIS = "#010203", "#f2f2f2", "#9aa3ad"
 COULEURS = {"vert": "#4ade80", "rouge": "#f87171", "orange": "#fb923c", "gris": "#7d8590"}
 EUX, NOUS = "#ef4444", "#3b82f6"          # rouge : l'équipe adverse ; bleu : la tienne
-ICONE = 32                                  # côté des icônes de sorts et d'objets, en pixels
+# Tailles pour un écran de 1080 pixels de haut, comme le tableau des scores du jeu ; proportionnelles au-delà.
+HAUTEUR_REF, PORTRAIT_REF, ICONE_REF, TEXTE_REF = 1080, 28, 24, 13
+# Zones du jeu à ne jamais couvrir (fractions de la hauteur de l'écran) : en haut, le bandeau des scores et le chrono
+# de la partie ; en bas à droite, la minimap. La fenêtre reste entre les deux.
+HAUT_LIBRE, BAS_LIBRE = 0.07, 0.70
+
+
+def borner(x, y, largeur, hauteur, ecran_l, ecran_h):
+    """Position gardée dans l'écran, sous le chrono et au-dessus de la minimap."""
+    x = min(max(0, x), max(0, ecran_l - largeur))
+    haut, bas = round(ecran_h * HAUT_LIBRE), round(ecran_h * BAS_LIBRE) - hauteur
+    return x, max(haut, min(y, bas))
+
+
+def cote_proche(voulu, disponibles):
+    """Le côté préparé le plus proche de celui voulu (« 0 » : image d'origine, à réduire)."""
+    tailles = [int(c) for c in disponibles if c.isdigit() and int(c) > 0]
+    return str(min(tailles, key=lambda c: abs(c - voulu))) if tailles else ("0" if "0" in disponibles else None)
 
 
 def bip():
@@ -310,18 +330,26 @@ class Fenetre:
         self.alertes_faites, self.lignes, self.images = set(), [], {}
         self.position_fichier = dossier / "surcouche_position.json"
 
+        try:                       # vrais pixels de l'écran (sinon Windows agrandit la fenêtre et la rend floue)
+            import ctypes
+            ctypes.windll.shcore.SetProcessDpiAwareness(1)
+        except (ImportError, AttributeError, OSError):
+            pass
         self.racine = tk.Tk()
         self.racine.withdraw()
         self.racine.title("Panda")
         self.racine.overrideredirect(True)
         self.racine.attributes("-topmost", True)
+        self.racine.configure(bg=FOND)
         try:
-            self.racine.attributes("-alpha", 0.88)
+            self.racine.attributes("-transparentcolor", FOND)          # fond transparent (Windows)
         except tk.TclError:
             pass
-        self.racine.configure(bg=FOND)
-        self.police, self.police_gras = ("Segoe UI", 9), ("Segoe UI", 9, "bold")
-        self.police_compte = ("Segoe UI", 10, "bold")
+        echelle = self.racine.winfo_screenheight() / HAUTEUR_REF
+        self.portrait, self.icone = round(PORTRAIT_REF * echelle), round(ICONE_REF * echelle)
+        taille = -round(TEXTE_REF * echelle)                           # négatif : en pixels, comme le jeu
+        self.police, self.police_gras = ("Segoe UI", taille), ("Segoe UI", taille, "bold")
+        self.police_compte = ("Segoe UI", -round(11 * echelle), "bold")
 
         # Bandeau : le dragon à gauche, le Héraut (puis le Nashor) à droite.
         self.bandeau = tk.Frame(self.racine, bg=FOND, padx=6, pady=3)
@@ -340,13 +368,21 @@ class Fenetre:
         threading.Thread(target=self._lecture, daemon=True).start()
         self.racine.after(300, self._rafraichir)
 
-    # Position : bord droit, au tiers de la hauteur, puis là où tu l'as laissée.
+    # Position : bord droit, au tiers de la hauteur, puis là où tu l'as laissée ; toujours entre le chrono et la minimap.
     def _placer(self):
         try:
             x, y = json.loads(self.position_fichier.read_text(encoding="utf-8"))
         except (OSError, ValueError, TypeError):
-            x, y = self.racine.winfo_screenwidth() - 290, int(self.racine.winfo_screenheight() * 0.30)
+            x, y = self.racine.winfo_screenwidth() - round(12 * self.icone), int(self.racine.winfo_screenheight() * 0.30)
         self.racine.geometry(f"+{x}+{y}")
+
+    def _borner(self):
+        self.racine.update_idletasks()
+        x, y = self.racine.winfo_x(), self.racine.winfo_y()
+        bx, by = borner(x, y, self.racine.winfo_width(), self.racine.winfo_height(),
+                        self.racine.winfo_screenwidth(), self.racine.winfo_screenheight())
+        if (bx, by) != (x, y):
+            self.racine.geometry(f"+{bx}+{by}")
 
     def _debut_glisser(self, e):
         self._ecart = (e.x_root - self.racine.winfo_x(), e.y_root - self.racine.winfo_y())
@@ -355,6 +391,7 @@ class Fenetre:
         self.racine.geometry(f"+{e.x_root - self._ecart[0]}+{e.y_root - self._ecart[1]}")
 
     def _fin_glisser(self, _e):
+        self._borner()
         try:
             self.position_fichier.write_text(json.dumps([self.racine.winfo_x(), self.racine.winfo_y()]), encoding="utf-8")
         except OSError:
@@ -373,7 +410,7 @@ class Fenetre:
         base = float((donnees.get("gameData") or {}).get("gameTime") or 0)
         return base + min(1.5, time.monotonic() - self.temps_lu)
 
-    # Images : portraits (30 px), icônes de Saut éclair et de Zhonya (32 px), et leur version grisée.
+    # Images : portraits et icônes de Saut éclair et de Zhonya, à la taille de l'écran, et leur version grisée.
     def _image(self, genre, nom, grise=False):
         cle = (genre, nom, grise)
         if cle not in self.images:
@@ -381,11 +418,13 @@ class Fenetre:
                 normale = self._image(genre, nom)
                 self.images[cle] = self._griser(normale) if normale else None
             else:
-                donnees = self.donnees_images.get(f"{genre}_{nom}")
+                voulu = self.portrait if genre == "champion" else self.icone
+                cote = cote_proche(voulu, self.donnees_images)
+                donnees = (self.donnees_images.get(cote) or {}).get(f"{genre}_{nom}") if cote else None
                 try:
                     img = self.tk.PhotoImage(data=donnees) if donnees else None
-                    if img is not None:
-                        img = img.subsample(max(1, round(img.width() / (30 if genre == "champion" else ICONE))))
+                    if img is not None and img.width() > voulu * 1.5:      # image d'origine : réduite
+                        img = img.subsample(max(1, round(img.width() / voulu)))
                     self.images[cle] = img
                 except self.tk.TclError:
                     self.images[cle] = None
@@ -423,7 +462,7 @@ class Fenetre:
         tk = self.tk
         for w in self.cadre.winfo_children():
             w.destroy()
-        for col, taille in ((2, ICONE + 4), (3, 10), (4, ICONE + 4)):
+        for col, taille in ((2, self.icone + 4), (3, 10), (4, self.icone + 4)):
             self.cadre.grid_columnconfigure(col, minsize=taille)
         self.cadre.grid_columnconfigure(5, minsize=14)                  # espace entre les deux équipes
         # En-têtes : l'équipe adverse à gauche (rouge), la tienne à droite (bleu).
@@ -506,6 +545,7 @@ class Fenetre:
             if self.racine.state() == "withdrawn":
                 self.racine.deiconify()
                 self.racine.attributes("-topmost", True)
+                self._borner()
 
             # Objectifs : dragon, puis Héraut (ou Nashor quand le Héraut n'est plus là).
             for w, (nom, apparition, en_vie) in zip((self.objectif_gauche, self.objectif_droite),

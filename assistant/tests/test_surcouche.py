@@ -102,5 +102,20 @@ class VisAVisTest(unittest.TestCase):
         self.assertEqual(S.couleurs_or(3000, None), ("gris", "gris"))
 
 
+class PlacementTest(unittest.TestCase):
+    def test_jamais_sur_le_chrono_ni_la_minimap(self):
+        # Écran 1920 × 1080 : rien au-dessus de 76 px (chrono, scores), rien sous 756 px (minimap).
+        self.assertEqual(S.borner(1700, 0, 250, 300, 1920, 1080), (1670, 76))
+        self.assertEqual(S.borner(1700, 900, 250, 300, 1920, 1080), (1670, 456))
+        self.assertEqual(S.borner(1600, 320, 250, 300, 1920, 1080), (1600, 320))
+
+    def test_taille_des_images(self):
+        dispo = {"16": {}, "24": {}, "28": {}, "32": {}, "48": {}}
+        self.assertEqual(S.cote_proche(24, dispo), "24")      # 1080p : comme le tableau des scores
+        self.assertEqual(S.cote_proche(37, dispo), "32")      # 1440p (portrait 37 px)
+        self.assertEqual(S.cote_proche(24, {"0": {}}), "0")
+        self.assertIsNone(S.cote_proche(24, {}))
+
+
 if __name__ == "__main__":
     unittest.main()
