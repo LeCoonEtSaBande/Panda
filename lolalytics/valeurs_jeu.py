@@ -6,7 +6,9 @@ que la surcouche du lien client télécharge au lancement (et garde en copie pou
 D'où viennent les valeurs, dans l'ordre :
 1. Data Dragon (les fichiers officiels de Riot) : version du patch, recharge de Saut éclair, hâte des invocateurs
    des objets (Bottes de lucidité ioniennes, Lucidité pourpre, et tout nouvel objet qui en donne), hâte de la
-   rune Perspicacité cosmique, prix total de chaque objet, identifiant du Sablier de Zhonya.
+   rune Perspicacité cosmique, prix total de chaque objet, identifiant du Sablier de Zhonya, et les images de la
+   surcouche (portrait de chaque champion, icônes de Saut éclair et du Zhonya), réduites et rangées dans
+   lolalytics/images_surcouche.json. La surcouche ne va plus elle-même sur Data Dragon : tout passe par ce bouton.
 2. Le wiki League of Legends : recharge du Sablier de Zhonya, apparition des dragons, du Héraut et du Nashor (Data Dragon ne
    les donne pas). Une valeur lue n'est gardée que si elle reste dans une fourchette plausible.
 3. Sinon, la valeur du fichier précédent, et en dernier recours la valeur par défaut (vérifiée le 31/10/2026).
@@ -61,11 +63,12 @@ FOURCHETTES = {
 }
 
 
-def telecharger(url, essais=3):
+def telecharger(url, essais=3, octets=False):
     for essai in range(essais):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=ENTETES), timeout=30) as r:
-                return r.read().decode("utf-8")
+                contenu = r.read()
+                return contenu if octets else contenu.decode("utf-8")
         except (urllib.error.URLError, OSError, TimeoutError) as e:
             if essai == essais - 1:
                 print(f"  échec : {url} ({e})", flush=True)
@@ -130,6 +133,46 @@ def lire_cosmic(runes):
 def lire_flash(sorts):
     cd = sorts.get("data", {}).get("SummonerFlash", {}).get("cooldown") or []
     return int(cd[0]) if cd else None
+
+
+# --- Images de la surcouche (portraits, icônes de Saut éclair et du Zhonya) --------------------------------
+
+TAILLES = {"champion": 30, "spell": 32, "item": 32}      # côté en pixels dans la surcouche
+
+
+def reduire_png(contenu, cote):
+    """PNG réduit à cote × cote (Pillow, installé par le workflow) ; l'original si Pillow manque."""
+    try:
+        from io import BytesIO
+        from PIL import Image
+    except ImportError:
+        return contenu
+    try:
+        img = Image.open(BytesIO(contenu)).convert("RGBA").resize((cote, cote), Image.LANCZOS)
+        sortie = BytesIO()
+        img.save(sortie, format="PNG", optimize=True)
+        return sortie.getvalue()
+    except OSError:
+        return contenu
+
+
+def images_surcouche(version, champions, zhonya_ids, precedentes, telecharge=None):
+    """{« champion_Aatrox », « spell_SummonerFlash », « item_3157 »… : PNG en base64}. Une image introuvable garde
+    sa version précédente."""
+    import base64
+    telecharge = telecharge or (lambda url: telecharger(url, essais=2, octets=True))
+    voulues = [("champion", c) for c in champions] + [("spell", "SummonerFlash")] + [("item", z) for z in zhonya_ids]
+    images, echecs = {}, 0
+    for genre, nom in voulues:
+        cle = f"{genre}_{nom}"
+        contenu = telecharge(f"{DDRAGON}/cdn/{version}/img/{genre}/{nom}.png")
+        if contenu:
+            images[cle] = base64.b64encode(reduire_png(contenu, TAILLES[genre])).decode("ascii")
+        else:
+            echecs += 1
+            if cle in precedentes:
+                images[cle] = precedentes[cle]
+    return images, echecs
 
 
 # --- Wiki --------------------------------------------------------------------------------------------
@@ -228,6 +271,7 @@ def main():
         precedent = {}
 
     lus, prix, version = {}, precedent.get("prix_objets", {}), precedent.get("version_ddragon", "")
+    champions, zhonya_lus = [], []
     versions = telecharger(f"{DDRAGON}/api/versions.json")
     if versions:
         version = json.loads(versions)[0]
@@ -238,9 +282,13 @@ def main():
         brut = telecharger(f"{dd}/item.json")
         if brut:
             prix_lus, hate, zhonya = lire_objets(json.loads(brut))
+            zhonya_lus = zhonya
             prix = prix_lus or prix
             lus["hate_invocateur_objets"] = (hate, "Data Dragon")
             lus["zhonya_ids"] = (zhonya, "Data Dragon")
+        brut = telecharger(f"{dd}/champion.json")
+        if brut:
+            champions = sorted(json.loads(brut).get("data", {}))
         brut = telecharger(f"{dd}/runesReforged.json")
         if brut:
             for cle, val in lire_cosmic(json.loads(brut)).items():
@@ -259,6 +307,19 @@ def main():
     resultat = {"patch": patch, "version_ddragon": version, "date": time.strftime("%Y-%m-%d"), **valeurs,
                 "sources": sources, "prix_objets": prix}
     sortie.write_text(json.dumps(resultat, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    # Images de la surcouche, dans un fichier à part (la surcouche ne le retélécharge qu'au changement de patch).
+    fichier_images = sortie.with_name("images_surcouche.json")
+    try:
+        anciennes = json.loads(fichier_images.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        anciennes = {}
+    nb_images, echecs_images = len(anciennes.get("images", {})), 0
+    if version and champions:
+        images, echecs_images = images_surcouche(version, champions, zhonya_lus or valeurs["zhonya_ids"], anciennes.get("images", {}))
+        if images:
+            fichier_images.write_text(json.dumps({"patch": patch, "version_ddragon": version, "images": images},
+                                                 sort_keys=True) + "\n", encoding="utf-8")
+            nb_images = len(images)
     if patch and (ICI / patch).is_dir():
         (ICI / patch / "valeurs_jeu.json").write_text(sortie.read_text(encoding="utf-8"), encoding="utf-8")
 
@@ -266,7 +327,8 @@ def main():
               "| Valeur | Retenue | Source |", "|---|---|---|"]
     for cle in DEFAUTS:
         lignes.append(f"| `{cle}` | {json.dumps(valeurs[cle], ensure_ascii=False)} | {sources[cle]} |")
-    lignes += ["", f"Prix de {len(prix)} objets."]
+    lignes += ["", f"Prix de {len(prix)} objets ; {nb_images} images pour la surcouche (portraits, icônes)"
+               + (f", dont {echecs_images} non téléchargées." if echecs_images else ".")]
     lignes += ["", "**Changements depuis le dernier passage :** " + ("; ".join(changements) if changements else "aucun.")]
     texte = "\n".join(lignes) + "\n"
     print(texte)

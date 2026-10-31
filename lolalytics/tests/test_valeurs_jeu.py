@@ -35,6 +35,23 @@ class DataDragonTest(unittest.TestCase):
         self.assertIsNone(v.lire_flash({"data": {}}))
 
 
+class ImagesTest(unittest.TestCase):
+    def test_images_et_repli(self):
+        import base64
+        vues = []
+
+        def faux(url):
+            vues.append(url)
+            return None if "Ahri" in url else b"png"
+        images, echecs = v.images_surcouche("16.21.1", ["Aatrox", "Ahri"], ["3157"], {"champion_Ahri": "ancienne"}, faux)
+        self.assertEqual(echecs, 1)
+        self.assertEqual(images["champion_Ahri"], "ancienne")          # introuvable : la version précédente
+        self.assertIn("item_3157", images)
+        self.assertIn("spell_SummonerFlash", images)
+        self.assertIn("https://ddragon.leagueoflegends.com/cdn/16.21.1/img/champion/Aatrox.png", vues)
+        self.assertTrue(base64.b64decode(images["champion_Aatrox"]))
+
+
 class WikiTest(unittest.TestCase):
     def test_heraut(self):
         t = "The Rift Herald spawns at 15:00 in the Baron pit. She despawns at 19:45 if not killed."
