@@ -137,28 +137,30 @@ def lire_flash(sorts):
 
 # --- Images de la surcouche (portraits, icônes de Saut éclair et du Zhonya) --------------------------------
 
-TAILLES = {"champion": 30, "spell": 32, "item": 32}      # côté en pixels dans la surcouche
+# Côtés préparés, en pixels : la surcouche prend celui qui correspond à la taille de l'écran (icônes comme dans le
+# tableau des scores). « 0 » : l'image d'origine, gardée seulement si Pillow manque.
+COTES = (16, 18, 20, 22, 24, 26, 28, 30, 32, 36, 40, 44, 48)
 
 
 def reduire_png(contenu, cote):
-    """PNG réduit à cote × cote (Pillow, installé par le workflow) ; l'original si Pillow manque."""
+    """PNG réduit à cote × cote (Pillow, installé par le workflow) ; None si Pillow manque ou si l'image est illisible."""
     try:
         from io import BytesIO
         from PIL import Image
     except ImportError:
-        return contenu
+        return None
     try:
         img = Image.open(BytesIO(contenu)).convert("RGBA").resize((cote, cote), Image.LANCZOS)
         sortie = BytesIO()
         img.save(sortie, format="PNG", optimize=True)
         return sortie.getvalue()
     except OSError:
-        return contenu
+        return None
 
 
 def images_surcouche(version, champions, zhonya_ids, precedentes, telecharge=None):
-    """{« champion_Aatrox », « spell_SummonerFlash », « item_3157 »… : PNG en base64}. Une image introuvable garde
-    sa version précédente."""
+    """{côté en texte : {« champion_Aatrox », « spell_SummonerFlash », « item_3157 »… : PNG en base64}}.
+    Une image introuvable garde ses versions précédentes."""
     import base64
     telecharge = telecharge or (lambda url: telecharger(url, essais=2, octets=True))
     voulues = [("champion", c) for c in champions] + [("spell", "SummonerFlash")] + [("item", z) for z in zhonya_ids]
@@ -166,12 +168,18 @@ def images_surcouche(version, champions, zhonya_ids, precedentes, telecharge=Non
     for genre, nom in voulues:
         cle = f"{genre}_{nom}"
         contenu = telecharge(f"{DDRAGON}/cdn/{version}/img/{genre}/{nom}.png")
-        if contenu:
-            images[cle] = base64.b64encode(reduire_png(contenu, TAILLES[genre])).decode("ascii")
-        else:
+        if not contenu:
             echecs += 1
-            if cle in precedentes:
-                images[cle] = precedentes[cle]
+            for cote, lot in precedentes.items():
+                if cle in lot:
+                    images.setdefault(cote, {})[cle] = lot[cle]
+            continue
+        for cote in COTES:
+            reduite = reduire_png(contenu, cote)
+            if reduite:
+                images.setdefault(str(cote), {})[cle] = base64.b64encode(reduite).decode("ascii")
+        if not any(cle in lot for lot in images.values()):          # sans Pillow : l'original
+            images.setdefault("0", {})[cle] = base64.b64encode(contenu).decode("ascii")
     return images, echecs
 
 
@@ -313,13 +321,13 @@ def main():
         anciennes = json.loads(fichier_images.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         anciennes = {}
-    nb_images, echecs_images = len(anciennes.get("images", {})), 0
+    nb_images, echecs_images = max((len(l) for l in anciennes.get("images", {}).values()), default=0), 0
     if version and champions:
         images, echecs_images = images_surcouche(version, champions, zhonya_lus or valeurs["zhonya_ids"], anciennes.get("images", {}))
         if images:
             fichier_images.write_text(json.dumps({"patch": patch, "version_ddragon": version, "images": images},
                                                  sort_keys=True) + "\n", encoding="utf-8")
-            nb_images = len(images)
+            nb_images = max(len(l) for l in images.values())
     if patch and (ICI / patch).is_dir():
         (ICI / patch / "valeurs_jeu.json").write_text(sortie.read_text(encoding="utf-8"), encoding="utf-8")
 
@@ -327,7 +335,7 @@ def main():
               "| Valeur | Retenue | Source |", "|---|---|---|"]
     for cle in DEFAUTS:
         lignes.append(f"| `{cle}` | {json.dumps(valeurs[cle], ensure_ascii=False)} | {sources[cle]} |")
-    lignes += ["", f"Prix de {len(prix)} objets ; {nb_images} images pour la surcouche (portraits, icônes)"
+    lignes += ["", f"Prix de {len(prix)} objets ; {nb_images} images pour la surcouche (portraits, icônes, en {len(COTES)} tailles)"
                + (f", dont {echecs_images} non téléchargées." if echecs_images else ".")]
     lignes += ["", "**Changements depuis le dernier passage :** " + ("; ".join(changements) if changements else "aucun.")]
     texte = "\n".join(lignes) + "\n"

@@ -36,20 +36,30 @@ class DataDragonTest(unittest.TestCase):
 
 
 class ImagesTest(unittest.TestCase):
+    def png(self):
+        from io import BytesIO
+        from PIL import Image
+        sortie = BytesIO()
+        Image.new("RGB", (64, 64), (200, 50, 50)).save(sortie, format="PNG")
+        return sortie.getvalue()
+
     def test_images_et_repli(self):
-        import base64
+        try:
+            contenu = self.png()
+        except ImportError:
+            self.skipTest("Pillow absent")
         vues = []
 
         def faux(url):
             vues.append(url)
-            return None if "Ahri" in url else b"png"
-        images, echecs = v.images_surcouche("16.21.1", ["Aatrox", "Ahri"], ["3157"], {"champion_Ahri": "ancienne"}, faux)
+            return None if "Ahri" in url else contenu
+        images, echecs = v.images_surcouche("16.21.1", ["Aatrox", "Ahri"], ["3157"], {"24": {"champion_Ahri": "ancienne"}}, faux)
         self.assertEqual(echecs, 1)
-        self.assertEqual(images["champion_Ahri"], "ancienne")          # introuvable : la version précédente
-        self.assertIn("item_3157", images)
-        self.assertIn("spell_SummonerFlash", images)
+        self.assertEqual(images["24"]["champion_Ahri"], "ancienne")          # introuvable : la version précédente
+        self.assertEqual(set(images), {str(c) for c in v.COTES})
+        self.assertIn("item_3157", images["16"])
+        self.assertIn("spell_SummonerFlash", images["48"])
         self.assertIn("https://ddragon.leagueoflegends.com/cdn/16.21.1/img/champion/Aatrox.png", vues)
-        self.assertTrue(base64.b64decode(images["champion_Aatrox"]))
 
 
 class WikiTest(unittest.TestCase):
