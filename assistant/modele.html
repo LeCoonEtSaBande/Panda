@@ -147,6 +147,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .rub{font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--doux);margin-top:3px}
 .sorts{display:flex;flex-direction:column;gap:2px;font-size:.76rem}
 .sort{display:inline}
+.ch .comps{display:flex;flex-direction:column;gap:3px;border-top:1px solid var(--ligne);padding-top:5px;margin-top:2px;font-size:.78rem;line-height:1.5}
+.ch .comps b{display:block;font-size:.7rem;color:var(--doux);font-weight:600}
+.ch .comps .sort{display:inline-block;margin-right:6px}
 .touche{display:inline-grid;place-items:center;min-width:17px;height:17px;border-radius:4px;background:var(--carte);border:1px solid var(--ligne);
   font-family:var(--chiffres);font-size:.68rem;margin-right:3px}
 .blocs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -305,7 +308,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
           <div id="carte-bas" style="display:flex;flex-direction:column;gap:6px"></div>
         </section>
       </div>
-      <div class="blocs" id="blocs"></div>
       <section class="panneau"><h2>Les rôles</h2><div id="qui-est-qui"></div></section>
     </div>
   </div>
@@ -796,13 +798,24 @@ function sortsDe(c, cat) { const S = D.sorts || {}; return (S[c] || S[lola(c)] |
 const unSort = ([k, nom, , det], qui) => `<span class="sort"><span class="touche">${k}</span>${esc(nom)}${qui ? ` <span class="petit">(${esc(qui)})</span>` : ""}${det ? ` <span class="petit">— ${esc(det)}</span>` : ""}</span>`;
 const listeSorts = (L, vide) => L.length ? L.map(s => unSort(s)).join(" ") : `<span class="petit">${vide}</span>`;
 
-// « Les rôles » : l'étiquette, le nom et ses rôles (émoticône et nom).
+// Les compétences mises en avant pour chaque champion (Data Dragon, rangées à la main) : fuite, protection, contrôles.
+// Touche et nom du sort ; son effet au survol.
+const sortCourt = ([k, nom, , det]) => `<span class="sort" title="${esc(det || "")}"><span class="touche">${k}</span>${esc(nom)}</span>`;
+function competences(c) {
+  if (!c) return "";
+  const ligne = (titre, L) => L.length ? `<div class="comp"><b>${titre}</b> ${L.map(sortCourt).join(" ")}</div>` : "";
+  const html = ligne("Fuite", sortsDe(c, "deplacement")) + ligne("Protection", sortsDe(c, "protection")) + ligne("Contrôles", sortsDe(c, "controle"));
+  return html ? `<div class="comps">${html}</div>` : "";
+}
+
+// « Les rôles » : l'étiquette, le nom, ses rôles (émoticône et nom) et ses compétences mises en avant.
 function colonneChampion(c, p, cote) {
   const f = familles(c);
   return `<div class="ch ${cote}" style="--fam:var(--fam-${(f[0] || ["autre"])[0]})" title="${esc(c)} : ${esc(nomsTypes(c) || "aucun style net")}">
     <div class="eti">${f.length ? f.slice(0, 2).map(x => `<span class="f-${x[0]}">${x[1]} ${x[2]}</span>`).join("") : `<span class="petit">—</span>`}</div>
     <div class="ch-nom">${esc(c)} <span class="petit">${NOM_POSTE[p]}</span></div>
     <div class="roles">${typesDe(c).map(t => `<span>${TYPE[t][0]} ${TYPE[t][1]}</span>`).join("") || '<span class="petit">aucun rôle net</span>'}</div>
+    ${competences(c)}
   </div>`;
 }
 function quiEstQui(nous, eux) {
@@ -810,25 +823,6 @@ function quiEstQui(nous, eux) {
     <div class="cote eux">Leur équipe</div>${POSTES.map(p => colonneChampion(eux[p], p, "eux")).join("")}
     <div class="cote nous">Ton équipe</div>${POSTES.map(p => colonneChampion(nous[p], p, "nous")).join("")}
   </div></div>`;
-}
-
-// Pour chaque équipe : ses cibles (carrys, enchanteurs, champions fragiles), avec ce qui leur permet de survivre (fuite,
-// protection d'elles-mêmes), et ses protecteurs (bloqueurs, enchanteurs), avec leurs protections et leurs contrôles.
-// Juste ces informations, sans consigne ni analyse (choix du propriétaire, 02/11/2026).
-function blocCiblesProtecteurs(eq, cote, moi) {
-  const cl = cote === "eux" ? "e" : "n", toi = c => cote === "nous" && c === moi ? " <b>(toi)</b>" : "";
-  const tete = (p, c, pourquoi) => `<div class="qui-c"><span class="${cl}">${esc(c)}</span>${toi(c)}<small>${NOM_POSTE[p]} · ${esc(pourquoi)}</small></div>`;
-  const cibles = POSTES.filter(p => estCible(eq[p])).map(p => { const c = eq[p];
-    return `<div class="b-ligne">${tete(p, c, pourquoiCible(c))}<div class="obst">
-      <span><b>Fuite</b> : ${listeSorts(sortsDe(c, "deplacement"), "aucune")}</span>
-      <span><b>Se protège</b> : ${listeSorts(sortsDe(c, "protection"), "rien")}</span></div></div>`; });
-  const prot = POSTES.filter(p => eq[p] && estProtecteur(eq[p])).map(p => { const c = eq[p];
-    const pourquoi = tousDe(c).filter(t => t === "bloqueur" || t === "enchanteur").map(t => TYPE[t][1]).join(", ");
-    return `<div class="b-ligne">${tete(p, c, pourquoi)}<div class="obst">
-      <span><b>Protections</b> : ${listeSorts(sortsDe(c, "protection"), "aucune")}</span>
-      <span><b>Contrôles</b> : ${listeSorts(sortsDe(c, "controle"), "aucun")}</span></div></div>`; });
-  return `<div class="b-titre">🎯 Cibles</div>${cibles.join("") || `<p class="petit" style="margin:0">Aucune.</p>`}
-    <div class="b-titre">🛡️ Protecteurs</div>${prot.join("") || `<p class="petit" style="margin:0">Aucun.</p>`}`;
 }
 
 // La carte : chaque lane est une jauge (bleu = ton équipe, toujours) qui part de ta base ; la carte ne tourne jamais,
@@ -923,9 +917,6 @@ function dessinerRecap() {
   dessinerCarte(nous, eux, infos, R);
   dessinerPlan(R, nous, eux, moi);
   document.getElementById("qui-est-qui").innerHTML = quiEstQui(nous, eux);
-  // Cibles et protecteurs de chaque équipe, sans analyse.
-  const blocs = [["Leur équipe", blocCiblesProtecteurs(eux, "eux", moi), "eux"], ["Ton équipe", blocCiblesProtecteurs(nous, "nous", moi), "nous"]];
-  document.getElementById("blocs").innerHTML = blocs.map(([t, h, c]) => `<section class="bloc ${c}"><h2>${t}</h2>${h}</section>`).join("");
 }
 
 // --- Affichage : profils ------------------------------------------------------------------------------
