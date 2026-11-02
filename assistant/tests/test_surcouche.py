@@ -152,5 +152,32 @@ class DuelTest(unittest.TestCase):
         self.assertEqual([S.couleur_duel(x) for x in (0.6, 0.5, 0.4, None)], ["vert", "orange", "rouge", None])
 
 
+class MessageObjectifTest(unittest.TestCase):
+    def paires(self, eux_bot, nous_bot, niveau_nous=6):
+        def j(c, equipe, objets, niveau):
+            x = joueur(c, equipe, objets)
+            x["level"] = niveau
+            return x
+        # top, jungle, mid, ADC, support ; seuls l'ADC et le support changent d'un test à l'autre.
+        return [(j("Aatrox", "CHAOS", [3158], 6), j("Darius", "ORDER", [3158], 6)),
+                (j("Kayn", "CHAOS", [3158], 6), j("LeeSin", "ORDER", [3158], 6)),
+                (j("Ahri", "CHAOS", [], 6), j("Lux", "ORDER", [], 6)),
+                (j("Jinx", "CHAOS", eux_bot, 6), j("Ezreal", "ORDER", nous_bot, niveau_nous)),
+                (j("Thresh", "CHAOS", [], 6), j("Nami", "ORDER", [], 6))]
+
+    def test_message_habituel(self):
+        self.assertEqual(S.message_objectif("Dragon", self.paires([3157], [3157]), V), S.MESSAGE_OBJECTIF)
+
+    def test_crossmap_si_le_bot_et_la_jungle_sont_trop_en_retard(self):
+        # Eux : 900 + 3250 + 6 × 3 × 750 = 17 650 ; nous : 900 + 3 × 6 × 750 − 3 niveaux = 900 + 15 × 750 = 12 150 → 31 % de retard.
+        self.assertEqual(S.message_objectif("Dragon", self.paires([3157], [], niveau_nous=3), V), S.MESSAGE_RETARD)
+        # Le Héraut ne regarde que le top et la jungle, à égalité ici.
+        self.assertEqual(S.message_objectif("Héraut", self.paires([3157], [], niveau_nous=3), V), S.MESSAGE_OBJECTIF)
+
+    def test_retard_juste_sous_25_pourcent(self):
+        # Eux : 900 + 3250 + 13 500 = 17 650 ; nous : 900 + 13 500 = 14 400 → 18 % de retard : pas de crossmap.
+        self.assertEqual(S.message_objectif("Dragon", self.paires([3157], []), V), S.MESSAGE_OBJECTIF)
+
+
 if __name__ == "__main__":
     unittest.main()

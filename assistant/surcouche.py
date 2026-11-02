@@ -244,6 +244,26 @@ def chance_duel(moi, lui, poste_moi, poste_lui, minute, modele, valeurs):
     return 1 / (1 + math.exp(-logit))
 
 
+# Message affiché 5 secondes à la place de la surcouche, au moment du bip (1 min 30 avant un objectif).
+MESSAGE_OBJECTIF = "Items\n\nPriorité\nVision\nContrôle de la rivière\nObjectif"
+MESSAGE_RETARD = "Crossmap!"
+DUREE_MESSAGE_S = 5
+RETARD_CROSSMAP = 0.25          # 25 % de retard ou plus chez les joueurs concernés : « Crossmap! »
+OR_PAR_NIVEAU = 750             # un niveau de retard compte comme 750 d'or
+# Les joueurs concernés par chaque objectif (index des postes : top, jungle, mid, ADC, support).
+CONCERNES = {"Dragon": (1, 3, 4), "Ancien": (1, 3, 4), "Héraut": (0, 1), "Nashor": (0, 1, 2, 3, 4)}
+
+
+def message_objectif(nom, paires, valeurs):
+    """« Crossmap! » si les joueurs concernés de mon équipe (bot et jungle pour un dragon, top et jungle pour le Héraut,
+    toute l'équipe pour le Nashor) ont 25 % de retard ou plus sur les leurs, en comptant l'or de leurs objets plus 750
+    par niveau ; sinon le message habituel. paires : [(adversaire, coéquipier)] de top à support."""
+    poids = lambda j: or_objets(j, valeurs) + OR_PAR_NIVEAU * (j.get("level") or 1) if j else 0
+    eux = sum(poids(paires[i][0]) for i in CONCERNES.get(nom, range(5)) if i < len(paires))
+    nous = sum(poids(paires[i][1]) for i in CONCERNES.get(nom, range(5)) if i < len(paires))
+    return MESSAGE_RETARD if eux > 0 and (eux - nous) / eux >= RETARD_CROSSMAP else MESSAGE_OBJECTIF
+
+
 def couleur_duel(p):
     return None if p is None else ("vert" if p >= 0.55 else ("rouge" if p <= 0.45 else "orange"))
 
@@ -438,6 +458,10 @@ class Fenetre:
             w.bind("<ButtonRelease-1>", self._fin_glisser)
         self.cadre = tk.Frame(self.racine, bg=FOND, padx=2, pady=1)
         self.cadre.pack(fill="both")
+        # Le message d'objectif : à la place de tout le reste, centré, orange et gras, pendant 5 secondes.
+        self.message = tk.Label(self.racine, text="", bg=FOND, fg=COULEURS["orange"], justify="center",
+                                font=("Segoe UI", self.police_gras[1] - 3, "bold"))
+        self.fin_message = 0.0
         self._placer()
         threading.Thread(target=self._lecture, daemon=True).start()
         self.racine.after(300, self._rafraichir)
@@ -611,6 +635,30 @@ class Fenetre:
         tk.Label(self.cadre, text="NOUS", bg=FOND, fg=NOUS, font=self.police_gras, pady=0).grid(row=6, column=8)
         self._caler_par_defaut()
 
+    def _paires_actuelles(self, donnees):
+        """[(adversaire, coéquipier)] de top à support, avec les données de cette seconde."""
+        actuels = {(j.get("team"), id_champion(j)): j for j in donnees.get("allPlayers") or []}
+        cherche = lambda j: actuels.get((j.get("team"), id_champion(j))) if j else None
+        return [(cherche(l["eux"]), cherche(l["nous"])) for l in self.lignes]
+
+    def _montrer_message(self, texte):
+        """Le message prend la place de la surcouche (même taille, même endroit) pendant 5 secondes."""
+        self.racine.update_idletasks()
+        largeur, hauteur = self.racine.winfo_width(), self.racine.winfo_height()
+        self.bandeau.pack_forget()
+        self.cadre.pack_forget()
+        self.message.configure(text=texte)
+        self.message.place(relx=0.5, rely=0.5, anchor="center")
+        self.racine.geometry(f"{largeur}x{hauteur}")
+        self.fin_message = time.monotonic() + DUREE_MESSAGE_S
+
+    def _cacher_message(self):
+        self.message.place_forget()
+        self.bandeau.pack(fill="x")
+        self.cadre.pack(fill="both")
+        self.racine.geometry("")            # la fenêtre reprend sa taille naturelle
+        self.fin_message = 0.0
+
     def _durees(self, j):
         v = self.valeurs
         return {"F": recharge(v["flash_s"], hate_invocateur(j, v)), "Z": recharge(v["zhonya_s"], hate_objets(j, v))}
@@ -676,6 +724,9 @@ class Fenetre:
                     if reste <= ALERTE_AVANT_S and (nom, apparition) not in self.alertes_faites:
                         self.alertes_faites.add((nom, apparition))
                         threading.Thread(target=bip, daemon=True).start()
+                        self._montrer_message(message_objectif(nom, self._paires_actuelles(donnees), self.valeurs))
+            if self.fin_message and time.monotonic() >= self.fin_message:
+                self._cacher_message()
 
             # Chaque vis-à-vis : or des objets (couleurs du plus riche), Saut éclair et Zhonya de l'adversaire.
             actuels = {(j.get("team"), id_champion(j)): j for j in donnees.get("allPlayers") or []}
