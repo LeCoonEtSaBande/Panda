@@ -528,10 +528,14 @@ function tempoEquipe(eq) {
 // --- Ce qui est vérifié (sur B pour nos parties ; le reste n'est pas affiché) ----------------------------
 const CONF = D.conf || {};
 
-// --- Duels : chacun avec l'or et le niveau habituels de son poste (forces vérifiées sur B) ---------------
+// --- Duels : chacun avec l'or et le niveau habituels de son poste ------------------------------------------
+// Un champion est « connu » à une minute si sa chance contre un champion moyen est connue à ±5 points près sur B et
+// que B confirme A (liste de minutes, 4e case). Si l'un des deux n'est pas connu : null, l'assistant écrit
+// « approximatif » sans pourcentage, et le duel ne compte pas dans le score.
+const connuDuel = (c, minute) => !!(D.duel && ((D.duel.champions[c] || [])[3] || []).includes(minute));
 function duel(a, pa, b, pb, minute) {     // chance que a (au poste pa) gagne contre b (au poste pb) s'ils se croisent seuls
-  const M = D.duel; if (!M || !a || !b) return null;
-  const fa = M.champions[a] || [0, 0], fb = M.champions[b] || [0, 0], t = (minute - M.minute_ref) / 10;
+  const M = D.duel; if (!M || !a || !b || !connuDuel(a, minute) || !connuDuel(b, minute)) return null;
+  const fa = M.champions[a], fb = M.champions[b], t = (minute - M.minute_ref) / 10;
   const P = M.postes || {}, ra = P[pa] || [0, 0], rb = P[pb] || [0, 0];
   return sig(fa[0] - fb[0] + ra[0] - rb[0] + (fa[1] - fb[1] + ra[1] - rb[1]) * t);
 }
@@ -542,18 +546,22 @@ function blocDuels(moi, R, eux) {
   const titre = t => `<h2 style="margin:0">${t} <span class="petit" style="font-family:var(--corps)">— 1 contre 1, chacun avec l'or et le niveau habituels de son poste</span></h2>`;
   if (!moi) return titre("Tes duels") + `<p class="petit" style="margin:0">Choisis ton champion pour voir tes 1 contre 1.</p>`;
   const nb = c => ((D.duel.champions[c] || [])[2] || 0).toLocaleString("fr-FR");
-  const conf = new Set(D.duel.confirmes || []), pc = x => `${(100 * x).toFixed(0)} %`, k = x => x >= 0.55 ? "pos" : (x <= 0.45 ? "neg" : "nul");
+  const k = x => x === null ? "nul" : (x >= 0.55 ? "pos" : (x <= 0.45 ? "neg" : "nul"));
+  const pc = x => x === null ? `<span class="tag">approximatif</span>` : `<b class="${k(x)}">${(100 * x).toFixed(0)} %</b>`;
+  const qui = (e, m) => [moi, e].filter(x => !connuDuel(x, m)).join(" et ");
   const cartes = POSTES.filter(p => eux[p]).map(p => {
     const e = eux[p], p8 = duel(moi, R, e, p, 8), p25 = duel(moi, R, e, p, 25);
-    const approx = !conf.has(moi) || !conf.has(e);
-    const [sens, ks] = p25 - p8 >= 0.04 ? ["↗ mieux en mieux", "pos"] : (p25 - p8 <= -0.04 ? ["↘ moins en moins", "neg"] : ["→ stable", "nul"]);
-    return `<div class="duel ${k((p8 + p25) / 2)}" title="Chance de gagner le duel si vous vous croisez seuls, chacun avec l'or et le niveau habituels de son poste">
-      <span class="d-tete"><span class="petit">${NOM_POSTE[p]}</span> ${esc(e)}${approx ? ` <span class="tag" title="${esc([moi, e].filter(x => !conf.has(x)).join(" et "))} : force en duel non vérifiée, compté comme un champion moyen de son poste">approximatif</span>` : ""}</span>
-      <span><b>8 min</b> <b class="${k(p8)}">${pc(p8)}</b></span><span><b>25 min</b> <b class="${k(p25)}">${pc(p25)}</b></span>
+    const [sens, ks] = p8 === null || p25 === null ? ["", "nul"] :
+      (p25 - p8 >= 0.04 ? ["↗ mieux en mieux", "pos"] : (p25 - p8 <= -0.04 ? ["↘ moins en moins", "neg"] : ["→ stable", "nul"]));
+    const titre = m => p8 === null && m === 8 || p25 === null && m === 25 ? ` title="${esc(qui(e, m))} : pas assez sûr à ${m} min pour donner un pourcentage"` : "";
+    return `<div class="duel ${k(p8 !== null && p25 !== null ? (p8 + p25) / 2 : (p8 ?? p25))}" title="Chance de gagner le duel si vous vous croisez seuls, chacun avec l'or et le niveau habituels de son poste">
+      <span class="d-tete"><span class="petit">${NOM_POSTE[p]}</span> ${esc(e)}</span>
+      <span${titre(8)}><b>8 min</b> ${pc(p8)}</span><span${titre(25)}><b>25 min</b> ${pc(p25)}</span>
       <span class="d-bas"><b class="${ks}">${sens}</b><span class="petit" title="Duels de ${esc(e)} mesurés dans nos parties (ceux de ${esc(moi)} : ${nb(moi)})">${nb(e)} duels</span></span></div>`;
   });
   if (!cartes.length) return titre(`Tes duels avec ${esc(moi)}`) + `<p class="petit" style="margin:0">Entre des champions adverses pour voir tes 1 contre 1.</p>`;
-  return titre(`Tes duels avec ${esc(moi)}`) + `<div class="duels">${cartes.join("")}</div><p class="note" style="margin:0">${esc(moi)} : ${nb(moi)} duels mesurés dans nos parties ; en bas de chaque carte, ceux de l'adversaire.</p>`;
+  const J = D.duel.justesse && D.duel.justesse.connus;
+  return titre(`Tes duels avec ${esc(moi)}`) + `<div class="duels">${cartes.join("")}</div><p class="note" style="margin:0">${esc(moi)} : ${nb(moi)} duels mesurés dans nos parties ; en bas de chaque carte, ceux de l'adversaire. « Approximatif » : pas assez sûr pour donner un pourcentage (chance contre un champion moyen pas connue à ±5 points près, ou pas confirmée sur des parties jamais vues).${J && J[1] ? ` Quand il y a un pourcentage, le favori a gagné ${J[0].toFixed(0).replace(".", ",")} % des duels jamais vus.` : ""}</p>`;
 }
 
 // --- Recommandations, pour n'importe quel poste -------------------------------------------------------
@@ -616,9 +624,11 @@ function evaluer(c, R, nous, eux) {
   for (const e of effets) puces.push({t: `${e.sens > 0 ? "" : "(eux) "}${e.nom} : ${(100 * e.taux).toFixed(1)} %`, v: (e.sens > 0 ? e.taux : 1 - e.taux) - 0.5, detail: true});
   if (mx) puces.push({t: `${mx.titre} ${pts(points(mx.coef))}`, v: points(mx.coef), detail: effets.length > 0});
   if (eux[R] && D.duel) {
-    const p8 = duel(c, R, eux[R], R, 8), p25 = duel(c, R, eux[R], R, 25);
-    const sur = [c, eux[R]].every(x => (D.duel.confirmes || []).includes(x));
-    puces.push({t: `1 contre 1 vs ${eux[R]} : ${(100 * p8).toFixed(0)} % à 8 min, ${(100 * p25).toFixed(0)} % à 25 min${sur ? "" : " — approximatif"}`, v: sur ? (p8 + p25) / 2 - 0.5 : 0});
+    // Seulement ce qui est connu : sinon « approximatif », et rien dans le score.
+    const p8 = duel(c, R, eux[R], R, 8), p25 = duel(c, R, eux[R], R, 25), connus = [p8, p25].filter(x => x !== null);
+    const txt = x => x === null ? "approximatif" : `${(100 * x).toFixed(0)} %`;
+    puces.push({t: `1 contre 1 vs ${eux[R]} : ${txt(p8)} à 8 min, ${txt(p25)} à 25 min`,
+                v: connus.length ? connus.reduce((s, x) => s + x, 0) / connus.length - 0.5 : 0});
   }
   const s = DD && (DD.late[R] || {})[c];
   if (s !== undefined && s !== null && Math.abs(100 * s) >= 2) puces.push({t: `${s > 0 ? "late" : "early"} (${pts(100 * s)} pts / 10 min)`, v: 0});
@@ -755,7 +765,6 @@ function dessinerPlan(R, nous, eux, c) {
 const LANE_NOM = {top: "Top", jgl: "Jungle", mid: "Mid", bot: "Bot"};
 const FORTS = ["neutralise", "projette", "étourdit", "charme", "terrifie", "provoque", "endort", "attire", "transforme", "stase", "enferme", "isole", "rend fou", "immobilise"];
 // Le contrôle à garder contre une menace : un sort de base (Q, W, E) avant l'ultime, puis le plus fort.
-const rangCtrl = s => (s[0] === "R" ? 100 : 0) + Math.min(...FORTS.map((f, i) => s[3].includes(f) ? i : 99));
 function compoComplete() { const n = equipe("nous"), e = equipe("eux"); return POSTES.filter(p => n[p]).length + POSTES.filter(p => e[p]).length; }
 function majValider() {
   const nb = compoComplete(), b = document.getElementById("valider");
@@ -786,7 +795,6 @@ const pourquoiCible = c => tousDe(c).filter(t => t === "carry" || t === "enchant
 function sortsDe(c, cat) { const S = D.sorts || {}; return (S[c] || S[lola(c)] || []).filter(s => !cat || s[2] === cat); }
 const unSort = ([k, nom, , det], qui) => `<span class="sort"><span class="touche">${k}</span>${esc(nom)}${qui ? ` <span class="petit">(${esc(qui)})</span>` : ""}${det ? ` <span class="petit">— ${esc(det)}</span>` : ""}</span>`;
 const listeSorts = (L, vide) => L.length ? L.map(s => unSort(s)).join(" ") : `<span class="petit">${vide}</span>`;
-function poidsSorts(c) { return sortsDe(c, "deplacement").length + sortsDe(c, "protection").length; }
 
 // « Les rôles » : l'étiquette, le nom et ses rôles (émoticône et nom).
 function colonneChampion(c, p, cote) {
@@ -804,87 +812,15 @@ function quiEstQui(nous, eux) {
   </div></div>`;
 }
 
-// Les cibles d'une équipe, en haut : chacune avec sa fuite et sa propre protection.
-function cartesCibles(eq, cote, moi) {
-  const cl = cote === "eux" ? "e" : "n";
-  return `<div class="cibles">${eq.map(({p, c}) => `<div class="cible"><div class="qui-c">🎯 <span class="${cl}">${esc(c)}</span>${cote === "nous" && c === moi ? " <b>(toi)</b>" : ""} <span class="petit">${NOM_POSTE[p]} · ${esc(pourquoiCible(c))}</span></div>
-    <span><b>Fuite</b> : ${listeSorts(sortsDe(c, "deplacement"), "aucune")}</span>
-    <span><b>Se protège</b> : ${listeSorts(sortsDe(c, "protection"), "rien")}</span>
-    <span><b>Contrôles</b> : ${listeSorts(sortsDe(c, "controle"), "aucun")}</span></div>`).join("")}</div>`;
-}
-// En dessous : qui les protège, avec ses contrôles et ses protections (le support compte comme « à côté » de son ADC).
-function protecteursDe(eq, cibles, cote) {
-  const cl = cote === "eux" ? "e" : "n", lignes = [];
-  for (const p of POSTES) { const c = eq[p]; if (!c) continue;
-    const prot = sortsDe(c, "protection").filter(s => estProtecteur(c) || /allié/.test(s[3]));
-    const ctrl = estProtecteur(c) ? sortsDe(c, "controle") : [];
-    if (!prot.length && !ctrl.length) continue;
-    const proche = cibles.filter(x => x.p !== p && ((x.p === "adc" && p === "sup") || (x.p === "sup" && p === "adc"))).map(x => x.c);
-    lignes.push({p, c, n: ctrl.length + prot.length, html: `<div class="b-ligne"><div class="qui-c">🛡️ <span class="${cl}">${esc(c)}</span><small>${NOM_POSTE[p]}${proche.length ? ` · à côté de ${esc(proche.join(", "))}` : ""}</small></div><div class="obst">
-      ${ctrl.length ? `<span><b>Contrôles</b> : ${listeSorts(ctrl, "")}</span>` : ""}
-      ${prot.length ? `<span><b>Protections</b> : ${listeSorts(prot, "")}</span>` : ""}</div></div>`});
-  }
-  return lignes;
-}
-
-// Atteindre leurs cibles : en haut leurs cibles et leurs fuites ; en dessous qui les protège ; puis la lecture.
-function blocAtteindre(nous, eux, moi) {
-  const cibles = POSTES.filter(p => estCible(eux[p])).map(p => ({p, c: eux[p]}));
-  if (!cibles.length) return `<p class="petit">Pas de cible nette en face : ni carry, ni enchanteur, ni champion fragile.</p>`;
-  const gardes = protecteursDe(eux, cibles, "eux");
-  const garde = x => gardes.filter(g => g.p !== x.p).reduce((s, g) => s + (((x.p === "adc" && g.p === "sup") || (x.p === "sup" && g.p === "adc")) ? 2 : 0.5), 0);
-  const notees = cibles.map(x => ({...x, fuite: sortsDe(x.c, "deplacement"), prot: sortsDe(x.c, "protection")}))
-    .map(x => ({...x, ctrl: sortsDe(x.c, "controle")})).map(x => ({...x, obstacle: x.fuite.length + x.prot.length + x.ctrl.length + garde(x)})).sort((a, b) => a.obstacle - b.obstacle);
-  // La lecture, en deux consignes : sur qui aller, et qui éviter tant que ses protecteurs ont leurs sorts.
-  const noms = (L, mot = ", ") => L.map(x => `${x[0]} ${esc(x[1])}`).join(mot);
-  const avecEffet = L => L.map(x => `${x[0]} ${esc(x[1])}${x[3] ? ` (${esc(x[3])})` : ""}`).join(", ");
-  const m = notees[0];
-  const quoi = [m.fuite.length ? `elle fuit avec ${noms(m.fuite)}` : "", m.prot.length ? `elle se protège avec ${noms(m.prot)}` : "",
-                m.ctrl.length ? `attention à ${avecEffet(m.ctrl)}` : ""].filter(Boolean);
-  let lecture = `🎯 <b>Va sur <span class="e">${esc(m.c)}</span></b> : ${m.fuite.length || m.prot.length ? "c'est la moins protégée" : "rien pour fuir ni se protéger"}${quoi.length ? " ; " + quoi.join(" ; ") : ""}.`;
-  if (notees.length > 1) {
-    const d = notees[notees.length - 1];
-    const aCote = g => (d.p === "adc" && g.p === "sup") || (d.p === "sup" && g.p === "adc");
-    // Ceux qui peuvent vraiment la sauver : son support (à côté en bot) et ceux qui ont un sort pour protéger un allié.
-    const sauveurs = gardes.filter(g => g.p !== d.p).map(g => ({...g, sorts: sortsDe(g.c, "protection").filter(s => aCote(g) || /allié/.test(s[3]))}))
-      .filter(g => g.sorts.length).sort((a, b) => aCote(b) - aCote(a));
-    if (sauveurs.length) lecture += `<br>🛡️ <b>Évite <span class="e">${esc(d.c)}</span></b> tant que ${sauveurs.map(g => `<span class="e">${esc(g.c)}</span>${aCote(g) ? ` (son ${g.p === "sup" ? "support" : "ADC"})` : ""} a encore ${noms(g.sorts, " ou ")}`).join(", et que ")} : ${sauveurs.length > 1 ? "ils peuvent" : "il peut"} la sauver. Attends que ces sorts soient utilisés.`;
-  }
-  return `<div class="b-titre">Leurs cibles</div>${cartesCibles(notees, "eux")}
-    <div class="b-titre">Qui les protège</div>${gardes.length ? gardes.map(g => g.html).join("") : `<p class="petit" style="margin:0">Personne : pas de bloqueur ni d'enchanteur en face.</p>`}
-    <div class="lecture">${lecture}</div>`;
-}
-
-// Protéger vos cibles : en haut vos cibles et leurs fuites ; en dessous qui les protège ; puis leurs menaces et la lecture.
-function blocProteger(nous, eux, moi) {
-  const nosCibles = POSTES.filter(p => estCible(nous[p])).map(p => ({p, c: nous[p], poids: poidsSorts(nous[p])})).sort((a, b) => a.poids - b.poids || (b.p === "adc") - (a.p === "adc"));
-  const ordre = c => aType(c, "assassin") ? 0 : (aType(c, "plongeur") ? 1 : 2);
-  const menaces = POSTES.filter(p => estMenace(eux[p])).map(p => ({p, c: eux[p]})).sort((a, b) => ordre(a.c) - ordre(b.c) || sortsDe(b.c, "deplacement").length - sortsDe(a.c, "deplacement").length);
-  if (!menaces.length && !nosCibles.length) return `<p class="petit">Ni menace nette en face, ni cible chez vous.</p>`;
-  const fragile = nosCibles[0], gardes = protecteursDe(nous, nosCibles, "nous");
-  const lignesMenaces = menaces.map(({p, c}) => {
-    const genre = ["assassin", "plongeur", "attrapeur"].filter(t => aType(c, t)).map(t => TYPE[t][1]).join(", ");
-    const arrive = sortsDe(c, "deplacement"), attrape = aType(c, "attrapeur") ? sortsDe(c, "controle") : [];
-    return `<div class="b-ligne"><div class="qui-c">💀 <span class="e">${esc(c)}</span><small>${NOM_POSTE[p]} · ${genre}</small></div><div class="obst">
-      ${aType(c, "assassin") || aType(c, "plongeur") ? `<span><b>Comment il arrive</b> : ${listeSorts(arrive, "sans sort de mobilité")}</span>` : ""}
-      ${attrape.length ? `<span><b>Comment il attrape</b> : ${listeSorts(attrape, "")}</span>` : ""}</div></div>`;
-  });
-  const sauver = c => poidsSorts(c) ? `${poidsSorts(c)} sort${poidsSorts(c) > 1 ? "s" : ""} pour se sauver` : "aucune fuite ni protection";
-  // La cible à protéger : la plus fragile qui n'est pas toi (un carry d'abord à fragilité égale).
-  const aProteger = nosCibles.filter(x => x.c !== moi).sort((a, b) => a.poids - b.poids || aType(b.c, "carry") - aType(a.c, "carry"))[0];
-  let lecture = "";
-  if (fragile && fragile.c === moi) lecture += `⚠️ <b>Attention, c'est toi la cible la plus fragile de ton équipe</b> (${sauver(moi)}) : ne te mets pas en avant, reste avec ton équipe. `;
-  if (aProteger) lecture += `🎯 <b>${estProtecteur(moi) ? "Ton rôle : protège" : "Reste près de"} <span class="n">${esc(aProteger.c)}</span></b> (${sauver(aProteger.c)}).`;
-  if (menaces.length) {
-    const m = menaces[0], mienCtrl = moi ? sortsDe(moi, "controle").slice().sort((a, b) => rangCtrl(a) - rangCtrl(b)) : [];
-    const arrive = sortsDe(m.c, "deplacement")[0], g0 = gardes[0];
-    const garde = mienCtrl.length ? `<b>${mienCtrl[0][0]} ${esc(mienCtrl[0][1])}</b>` : (g0 ? `les sorts de <b>${esc(g0.c)}</b>` : "");
-    if (garde) lecture += ` Garde ${garde} pour <span class="e">${esc(m.c)}</span>${arrive ? ` : il arrive avec ${arrive[0]} ${esc(arrive[1])}${arrive[3] ? " (" + esc(arrive[3]) + ")" : ""}` : ""}.`;
-  }
-  return `${nosCibles.length ? `<div class="b-titre">Vos cibles</div>${cartesCibles(nosCibles, "nous", moi)}` : ""}
-    <div class="b-titre">Qui les protège</div>${gardes.length ? gardes.map(g => g.html).join("") : `<p class="petit" style="margin:0">Aucun sort pour protéger vos cibles.</p>`}
-    ${lignesMenaces.length ? `<div class="b-titre">Leurs menaces</div>${lignesMenaces.join("")}` : ""}
-    ${lecture ? `<div class="lecture">${lecture}</div>` : ""}`;
+// Pour chaque équipe : ses cibles (carrys, enchanteurs, champions fragiles) et ses protecteurs (bloqueurs, enchanteurs).
+// Juste la liste, sans analyse (choix du propriétaire, 02/11/2026).
+function blocCiblesProtecteurs(eq, cote, moi) {
+  const cl = cote === "eux" ? "e" : "n", toi = c => cote === "nous" && c === moi ? " <b>(toi)</b>" : "";
+  const ligne = (p, c, pourquoi) => `<div class="b-ligne"><div class="qui-c"><span class="${cl}">${esc(c)}</span>${toi(c)}<small>${NOM_POSTE[p]} · ${esc(pourquoi)}</small></div></div>`;
+  const cibles = POSTES.filter(p => estCible(eq[p])).map(p => ligne(p, eq[p], pourquoiCible(eq[p])));
+  const prot = POSTES.filter(p => eq[p] && estProtecteur(eq[p])).map(p => ligne(p, eq[p], tousDe(eq[p]).filter(t => t === "bloqueur" || t === "enchanteur").map(t => TYPE[t][1]).join(", ")));
+  return `<div class="b-titre">🎯 Cibles</div>${cibles.join("") || `<p class="petit" style="margin:0">Aucune.</p>`}
+    <div class="b-titre">🛡️ Protecteurs</div>${prot.join("") || `<p class="petit" style="margin:0">Aucun.</p>`}`;
 }
 
 // La carte : chaque lane est une jauge (bleu = ton équipe, toujours) qui part de ta base ; la carte ne tourne jamais,
@@ -979,11 +915,8 @@ function dessinerRecap() {
   dessinerCarte(nous, eux, infos, R);
   dessinerPlan(R, nous, eux, moi);
   document.getElementById("qui-est-qui").innerHTML = quiEstQui(nous, eux);
-  // Les deux blocs ; celui qui correspond à ton rôle d'abord (un protecteur protège, les autres vont chercher les cibles).
-  const proteger = estProtecteur(moi) && !aType(moi, "assassin");
-  const blocs = [[`Atteindre leurs cibles <span class="petit">— vu de ${esc(moi)}</span>`, blocAtteindre(nous, eux, moi), "eux"],
-                 [`Protéger vos cibles <span class="petit">— vu de ${esc(moi)}</span>`, blocProteger(nous, eux, moi), "nous"]];
-  if (proteger) blocs.reverse();
+  // Cibles et protecteurs de chaque équipe, sans analyse.
+  const blocs = [["Leur équipe", blocCiblesProtecteurs(eux, "eux", moi), "eux"], ["Ton équipe", blocCiblesProtecteurs(nous, "nous", moi), "nous"]];
   document.getElementById("blocs").innerHTML = blocs.map(([t, h, c]) => `<section class="bloc ${c}"><h2>${t}</h2>${h}</section>`).join("");
 }
 

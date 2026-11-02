@@ -115,6 +115,14 @@ def construire(dossier_lola, export, sortie):
         # Duels : chacun avec l'or habituel de son poste ; forces vérifiées sur B seulement (None si le modèle ne tient pas).
         "duel": ex.get("duels"),
     }
+    # Le modèle des duels, aussi pour la surcouche en jeu (« duels_surcouche.json », à côté de la page, téléchargé par
+    # le lien client au lancement) : forces, minutes où chaque champion est connu, normale d'or et de niveau des postes,
+    # et le nom de chaque champion d'après son identifiant Riot (Kayn n'en a qu'un pour ses deux formes : sans duel).
+    if ex.get("duels"):
+        surcouche = {"patch": patch, "date": ex["date"], "duel": ex["duels"],
+                     "ids": {v["id"]: c for c, v in ex["catalogue"].items() if v.get("id") and not c.startswith("Kayn ")}}
+        (Path(sortie).parent / "duels_surcouche.json").write_text(json.dumps(surcouche, ensure_ascii=False, separators=(",", ":")) + "\n",
+                                                                  encoding="utf-8")
     modele = (ICI / "modele.html").read_text(encoding="utf-8")
     page = modele.replace("__DONNEES__", json.dumps(donnees, ensure_ascii=False, separators=(",", ":")))
     Path(sortie).write_text(page, encoding="utf-8")

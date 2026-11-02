@@ -117,5 +117,40 @@ class PlacementTest(unittest.TestCase):
         self.assertIsNone(S.cote_proche(24, {}))
 
 
+class DuelTest(unittest.TestCase):
+    MODELE = {"ids": {"1": "Viego", "2": "Lee Sin", "3": "Lux"},
+              "duel": {"minute_ref": 13.0, "or_1000": 0.5, "niveau": 0.9,
+                       "postes": {"jgl": [0.4, 0.2], "sup": [-1.0, -0.5], "top": [0, 0], "mid": [0, 0], "adc": [0, 0]},
+                       "normale": {p: {"or": {"0": 500, "5": 2000, "10": 4000, "30": 14000}, "niveau": {"0": 1, "5": 5, "10": 8, "30": 18}}
+                                   for p in ("top", "jgl", "mid", "adc", "sup")},
+                       "champions": {"Viego": [0.3, 0.1, 9000, list(range(2, 31))], "Lee Sin": [0.4, 0.0, 9000, list(range(2, 20))],
+                                     "Lux": [-0.2, 0.0, 9000, []]}}}
+    VAL = dict(V, cles_champions={"Viego": "1", "LeeSin": "2", "Lux": "3"})
+
+    def j(self, champion, objets=(), niveau=6):
+        x = joueur(champion, "ORDER", objets)
+        x["level"] = niveau
+        return x
+
+    def test_a_or_et_niveau_egaux(self):
+        p = S.chance_duel(self.j("Viego"), self.j("LeeSin"), "jgl", "jgl", 8.0, self.MODELE, self.VAL)
+        self.assertAlmostEqual(p, 1 / (1 + __import__("math").exp(-(0.3 - 0.4 + (8 - 13) / 10 * 0.1))))
+
+    def test_or_et_niveau_comptent(self):
+        egal = S.chance_duel(self.j("Viego"), self.j("LeeSin"), "jgl", "jgl", 8.0, self.MODELE, self.VAL)
+        riche = S.chance_duel(self.j("Viego", [3157], 7), self.j("LeeSin"), "jgl", "jgl", 8.0, self.MODELE, self.VAL)
+        self.assertGreater(riche, egal)
+
+    def test_pas_de_pourcentage_devine(self):
+        self.assertIsNone(S.chance_duel(self.j("Viego"), self.j("Lux"), "jgl", "sup", 8.0, self.MODELE, self.VAL))     # Lux jamais connu
+        self.assertIsNone(S.chance_duel(self.j("Viego"), self.j("LeeSin"), "jgl", "jgl", 25.0, self.MODELE, self.VAL))  # Lee Sin pas connu à 25
+        self.assertIsNone(S.chance_duel(self.j("Viego"), self.j("LeeSin"), "jgl", "jgl", 31.0, self.MODELE, self.VAL))  # pas mesuré après 30
+        self.assertIsNone(S.chance_duel(self.j("Viego"), self.j("Kayn"), "jgl", "jgl", 8.0, self.MODELE, self.VAL))     # Kayn : forme inconnue
+        self.assertIsNone(S.chance_duel(self.j("Viego"), self.j("LeeSin"), "jgl", "jgl", 8.0, {}, self.VAL))           # pas de modèle
+
+    def test_couleurs(self):
+        self.assertEqual([S.couleur_duel(x) for x in (0.6, 0.5, 0.4, None)], ["vert", "orange", "rouge", None])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -26,6 +26,7 @@ Le jeu doit être en « Fenêtré sans bordure » : une fenêtre ne peut pas s'a
 """
 
 import json
+import math
 import ssl
 import sys
 import threading
@@ -36,6 +37,7 @@ from pathlib import Path
 
 API_JEU = "https://127.0.0.1:2999/liveclientdata/allgamedata"
 URL_VALEURS = "https://raw.githubusercontent.com/LeCoonEtSaBande/panda/scraping/lolalytics/valeurs_jeu.json"
+URL_DUELS = "https://raw.githubusercontent.com/LeCoonEtSaBande/panda/assistant/duels_surcouche.json"
 URL_IMAGES = "https://raw.githubusercontent.com/LeCoonEtSaBande/panda/scraping/lolalytics/images_surcouche.json"
 MARGE_S = 10            # retirée des recharges : le temps de voir le sort et de cliquer
 ALERTE_AVANT_S = 90     # bip et surlignage 1 min 30 avant un objectif
@@ -46,7 +48,7 @@ VALEURS_DEFAUT = {
     "cosmic_hate_invocateur": 18, "cosmic_hate_objets": 10, "cosmic_id": 8347, "inspiration_id": 8300,
     "dragon_premier_s": 300, "dragon_reapparition_s": 300, "ancien_reapparition_s": 360,
     "heraut_apparition_s": 900, "heraut_disparition_s": 1185,
-    "baron_apparition_s": 1200, "baron_reapparition_s": 360, "prix_objets": {}, "version_ddragon": "", "patch": "",
+    "baron_apparition_s": 1200, "baron_reapparition_s": 360, "prix_objets": {}, "cles_champions": {}, "version_ddragon": "", "patch": "",
 }
 
 CONTEXTE_LOCAL = ssl.create_default_context()
@@ -131,6 +133,13 @@ def equipes(donnees):
     return mon_equipe, [j for j in joueurs if j.get("team") != mon_equipe], noms
 
 
+def joueur_actif(donnees):
+    """Mon champion dans allPlayers, ou None."""
+    actif = donnees.get("activePlayer") or {}
+    moi = {actif.get("riotId"), actif.get("summonerName"), actif.get("riotIdGameName")} - {None, ""}
+    return next((j for j in donnees.get("allPlayers") or [] if moi & {j.get("riotId"), j.get("summonerName"), j.get("riotIdGameName")}), None)
+
+
 def objectifs(temps, evenements, noms_equipes, valeurs):
     """[(nom, apparition en secondes de jeu ou None si fini, en vie ?)] pour le dragon et le Héraut."""
     dragons = [e for e in evenements if e.get("EventName") == "DragonKill"]
@@ -192,6 +201,53 @@ def vis_a_vis(donnees):
     return list(zip(ranger_par_poste(adversaires), ranger_par_poste(nous)))
 
 
+POSTE_MODELE = {"TOP": "top", "JUNGLE": "jgl", "MIDDLE": "mid", "BOTTOM": "adc", "UTILITY": "sup"}
+
+
+def interpoler_releves(releves, minute):
+    """Valeur à la minute donnée entre les relevés {« 0 »: …, « 5 »: …, …, « 30 »: …} ; None au-delà."""
+    points = sorted((float(m), v) for m, v in releves.items())
+    if not points or minute > points[-1][0]:
+        return None
+    for (m1, v1), (m2, v2) in zip(points, points[1:]):
+        if m1 <= minute <= m2:
+            return v1 + (v2 - v1) * (minute - m1) / (m2 - m1)
+    return points[0][1]
+
+
+def chance_duel(moi, lui, poste_moi, poste_lui, minute, modele, valeurs):
+    """Chance que je batte cet adversaire si on se croise seuls maintenant, avec l'or de nos objets et nos niveaux
+    réels (modèle des duels du bouton 5). None si l'un des deux n'est pas « connu » à cette minute (sa chance contre
+    un champion moyen n'est pas connue à ±5 points près sur des parties jamais vues), hors de 2 à 30 min (pas mesuré
+    au-delà), ou s'il manque quelque chose : jamais de pourcentage deviné."""
+    M = (modele or {}).get("duel")
+    if not M or not moi or not lui or not 2 <= minute <= 30:
+        return None
+    nom = lambda j: (modele.get("ids") or {}).get(str(valeurs["cles_champions"].get(id_champion(j), "")))
+    a, b = M["champions"].get(nom(moi) or ""), M["champions"].get(nom(lui) or "")
+    m = round(minute)
+    if not a or not b or m not in a[3] or m not in b[3] or poste_moi not in M["normale"] or poste_lui not in M["normale"]:
+        return None
+    u = (minute - M["minute_ref"]) / 10
+    logit = a[0] - b[0] + u * (a[1] - b[1])
+    if poste_moi != poste_lui:
+        pa, pb = M["postes"][poste_moi], M["postes"][poste_lui]
+        logit += pa[0] - pb[0] + u * (pa[1] - pb[1])
+    # Avance de chacun sur la normale de son poste. L'or de l'autre n'est pas donné par le jeu : on prend, pour les deux,
+    # l'or de ses objets (ce que montre le tableau des scores). Le décalage avec l'or total gagné s'annule dans l'écart.
+    normale = lambda poste, quoi: interpoler_releves(M["normale"][poste][quoi], minute)
+    if None in (normale(poste_moi, "or"), normale(poste_lui, "or"), normale(poste_moi, "niveau"), normale(poste_lui, "niveau")):
+        return None
+    ecart_or = (or_objets(moi, valeurs) - normale(poste_moi, "or")) - (or_objets(lui, valeurs) - normale(poste_lui, "or"))
+    ecart_niveau = ((moi.get("level") or 1) - normale(poste_moi, "niveau")) - ((lui.get("level") or 1) - normale(poste_lui, "niveau"))
+    logit += M["or_1000"] * ecart_or / 1000 + M["niveau"] * ecart_niveau
+    return 1 / (1 + math.exp(-logit))
+
+
+def couleur_duel(p):
+    return None if p is None else ("vert" if p >= 0.55 else ("rouge" if p <= 0.45 else "orange"))
+
+
 def couleurs_or(eux, nous, ecart_min=500):
     """Couleurs des deux chiffres : le plus riche en vert, l'autre en rouge ; les deux en orange si l'écart est
     sous 500 ; gris si l'un des deux manque."""
@@ -250,6 +306,21 @@ def charger_valeurs(dossier):
             lues = {}
     valeurs.update({k: v for k, v in lues.items() if k in VALEURS_DEFAUT and v not in (None, "")})
     return valeurs
+
+
+def charger_duels(dossier):
+    """Modèle des duels publié par le bouton 5 (branche assistant) : téléchargé à chaque lancement, sinon la copie."""
+    copie = dossier / "surcouche_duels.json"
+    try:
+        with urllib.request.urlopen(URL_DUELS, timeout=8) as r:
+            modele = json.load(r)
+        copie.write_text(json.dumps(modele), encoding="utf-8")
+        return modele
+    except (urllib.error.URLError, OSError, ValueError):
+        try:
+            return json.loads(copie.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}
 
 
 def charger_images(dossier, patch):
@@ -326,6 +397,7 @@ class Fenetre:
         self.tk, self.dossier = tk, dossier
         self.valeurs = charger_valeurs(dossier)
         self.donnees_images = charger_images(dossier, self.valeurs.get("patch"))
+        self.modele_duels = charger_duels(dossier)
         self.suivi = Suivi()
         self.donnees, self.temps_lu, self.verrou = None, 0.0, threading.Lock()
         self.alertes_faites, self.lignes, self.images = set(), [], {}
@@ -500,17 +572,20 @@ class Fenetre:
         tk = self.tk
         for w in self.cadre.winfo_children():
             w.destroy()
-        for col, taille in ((2, self.icone + 2), (3, 8), (4, self.icone + 2)):
+        for col, taille in ((3, self.icone + 2), (4, 8), (5, self.icone + 2)):
             self.cadre.grid_columnconfigure(col, minsize=taille)
-        self.cadre.grid_columnconfigure(5, minsize=self.icone // 2)    # espace entre les deux équipes
+        self.cadre.grid_columnconfigure(6, minsize=self.icone // 2)    # espace entre les deux équipes
         self.lignes = []
         for i, (eux, nous) in enumerate(paires):
-            self._portrait(i, 0, eux, EUX)
+            # Ma chance de le battre en duel, à gauche de son portrait (vide quand on ne sait pas).
+            duel = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=4, anchor="e", pady=0)
+            duel.grid(row=i, column=0)
+            self._portrait(i, 1, eux, EUX)
             or_eux = tk.Label(self.cadre, text="", bg=FOND, font=self.police, width=5, anchor="e", pady=0)
-            or_eux.grid(row=i, column=1)
+            or_eux.grid(row=i, column=2)
             champ = id_champion(eux) if eux else None
-            ligne = {"eux": eux, "nous": nous, "champion": champ, "or_eux": or_eux}
-            for sort, col in (("F", 2), ("Z", 4)):
+            ligne = {"eux": eux, "nous": nous, "champion": champ, "or_eux": or_eux, "duel": duel, "poste": POSTE_MODELE[POSTES[i]]}
+            for sort, col in (("F", 3), ("Z", 5)):
                 w = tk.Label(self.cadre, text="", bg=FOND, fg=TEXTE, font=self.police_compte, cursor="hand2",
                              compound="center", bd=0)
                 w.grid(row=i, column=col, pady=1)
@@ -518,22 +593,22 @@ class Fenetre:
                     w.bind("<Button-1>", lambda _e, c=champ, s=sort: self._clic(c, s))
                 ligne[sort] = w
             cosmic = tk.Label(self.cadre, text="", bg=FOND, fg=COULEURS["orange"], font=("Segoe UI", -max(7, self.icone // 2)), pady=0)
-            cosmic.grid(row=i, column=3, sticky="n")
+            cosmic.grid(row=i, column=4, sticky="n")
             ligne["cosmic"] = cosmic
             or_nous = tk.Label(self.cadre, text="", bg=FOND, font=self.police, width=5, anchor="e", pady=0)
-            or_nous.grid(row=i, column=6)
+            or_nous.grid(row=i, column=7)
             ligne["or_nous"] = or_nous
-            self._portrait(i, 7, nous, NOUS)
+            self._portrait(i, 8, nous, NOUS)
             self.lignes.append(ligne)
         # Dernière ligne : les deux totaux sous leurs colonnes d'or, avec le nom de chaque équipe à côté
         # (EUX en rouge sous les portraits adverses, NOUS en bleu sous les tiens).
-        tk.Frame(self.cadre, bg="#3a3f47", height=1).grid(row=5, column=0, columnspan=8, sticky="ew", pady=(1, 0))
-        tk.Label(self.cadre, text="EUX", bg=FOND, fg=EUX, font=self.police_gras, pady=0).grid(row=6, column=0)
+        tk.Frame(self.cadre, bg="#3a3f47", height=1).grid(row=5, column=0, columnspan=9, sticky="ew", pady=(1, 0))
+        tk.Label(self.cadre, text="EUX", bg=FOND, fg=EUX, font=self.police_gras, pady=0).grid(row=6, column=1)
         self.total_eux = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, anchor="e", pady=0)
-        self.total_eux.grid(row=6, column=1)
+        self.total_eux.grid(row=6, column=2)
         self.total_nous = tk.Label(self.cadre, text="", bg=FOND, font=self.police_gras, width=5, anchor="e", pady=0)
-        self.total_nous.grid(row=6, column=6)
-        tk.Label(self.cadre, text="NOUS", bg=FOND, fg=NOUS, font=self.police_gras, pady=0).grid(row=6, column=7)
+        self.total_nous.grid(row=6, column=7)
+        tk.Label(self.cadre, text="NOUS", bg=FOND, fg=NOUS, font=self.police_gras, pady=0).grid(row=6, column=8)
         self._caler_par_defaut()
 
     def _durees(self, j):
@@ -604,6 +679,8 @@ class Fenetre:
 
             # Chaque vis-à-vis : or des objets (couleurs du plus riche), Saut éclair et Zhonya de l'adversaire.
             actuels = {(j.get("team"), id_champion(j)): j for j in donnees.get("allPlayers") or []}
+            moi = joueur_actif(donnees)
+            mon_poste = next((l["poste"] for l in self.lignes if moi and l["nous"] and id_champion(l["nous"]) == id_champion(moi)), None)
             total_eux = total_nous = 0
             for ligne in self.lignes:
                 eux = actuels.get((ligne["eux"].get("team"), ligne["champion"])) if ligne["eux"] else None
@@ -617,6 +694,8 @@ class Fenetre:
                 ligne["or_nous"].configure(text=format_or(or_n) if or_n is not None else "", fg=COULEURS[c_n])
                 if eux is None:
                     continue
+                p = chance_duel(moi, eux, mon_poste, ligne["poste"], temps / 60, self.modele_duels, self.valeurs)
+                ligne["duel"].configure(text="" if p is None else f"{100 * p:.0f}%", fg=COULEURS.get(couleur_duel(p), TEXTE))
                 durees = self._durees(eux)
                 for sort, present in (("F", a_le_sort(eux)), ("Z", a_zhonya(eux, self.valeurs))):
                     self._icone(ligne[sort], sort, present, self.suivi.restant(ligne["champion"], sort, temps, durees[sort]))
