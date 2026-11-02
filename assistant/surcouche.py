@@ -248,20 +248,26 @@ def chance_duel(moi, lui, poste_moi, poste_lui, minute, modele, valeurs):
 MESSAGE_OBJECTIF = "Items\n\nPriorité\nVision\nContrôle de la rivière\nObjectif"
 MESSAGE_RETARD = "Crossmap!"
 DUREE_MESSAGE_S = 5
-RETARD_CROSSMAP = 0.25          # 25 % de retard ou plus chez les joueurs concernés : « Crossmap! »
+RETARD_CROSSMAP = 0.25          # 25 % de retard ou plus chez les joueurs concernés : « Crossmap! »…
+RETARD_CROSSMAP_OR = 5000       # … ou 5 000 d'or de retard ou plus
+TOUJOURS_Y_ALLER = ("Ancien",)  # le Dragon ancien : toujours le message habituel, retard ou pas
 OR_PAR_NIVEAU = 750             # un niveau de retard compte comme 750 d'or
 # Les joueurs concernés par chaque objectif (index des postes : top, jungle, mid, ADC, support).
-CONCERNES = {"Dragon": (1, 3, 4), "Ancien": (1, 3, 4), "Héraut": (0, 1), "Nashor": (0, 1, 2, 3, 4)}
+CONCERNES = {"Dragon": (1, 3, 4), "Héraut": (0, 1), "Nashor": (0, 1, 2, 3, 4)}
 
 
 def message_objectif(nom, paires, valeurs):
     """« Crossmap! » si les joueurs concernés de mon équipe (bot et jungle pour un dragon, top et jungle pour le Héraut,
-    toute l'équipe pour le Nashor) ont 25 % de retard ou plus sur les leurs, en comptant l'or de leurs objets plus 750
-    par niveau ; sinon le message habituel. paires : [(adversaire, coéquipier)] de top à support."""
+    toute l'équipe pour le Nashor) ont 25 % ou 5 000 d'or de retard ou plus sur les leurs, en comptant l'or de leurs
+    objets plus 750 par niveau ; sinon le message habituel. Le Dragon ancien : toujours le message habituel (il faut y
+    aller). paires : [(adversaire, coéquipier)] de top à support."""
+    if nom in TOUJOURS_Y_ALLER:
+        return MESSAGE_OBJECTIF
     poids = lambda j: or_objets(j, valeurs) + OR_PAR_NIVEAU * (j.get("level") or 1) if j else 0
     eux = sum(poids(paires[i][0]) for i in CONCERNES.get(nom, range(5)) if i < len(paires))
     nous = sum(poids(paires[i][1]) for i in CONCERNES.get(nom, range(5)) if i < len(paires))
-    return MESSAGE_RETARD if eux > 0 and (eux - nous) / eux >= RETARD_CROSSMAP else MESSAGE_OBJECTIF
+    retard = eux - nous
+    return MESSAGE_RETARD if eux > 0 and (retard / eux >= RETARD_CROSSMAP or retard >= RETARD_CROSSMAP_OR) else MESSAGE_OBJECTIF
 
 
 def couleur_duel(p):

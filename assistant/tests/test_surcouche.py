@@ -174,6 +174,16 @@ class MessageObjectifTest(unittest.TestCase):
         # Le Héraut ne regarde que le top et la jungle, à égalité ici.
         self.assertEqual(S.message_objectif("Héraut", self.paires([3157], [], niveau_nous=3), V), S.MESSAGE_OBJECTIF)
 
+    def test_ancien_toujours(self):
+        self.assertEqual(S.message_objectif("Ancien", self.paires([3157], [], niveau_nous=3), V), S.MESSAGE_OBJECTIF)
+
+    def test_crossmap_a_5000_or_de_retard(self):
+        # Nashor, toute l'équipe : eux 4 150 + 30 × 750 + 3 × 3 250 = 36 400 ; nous 1 800 + 30 × 750 = 24 300 → 12 100 d'or
+        # de retard (33 %) ; avec beaucoup d'or des deux côtés, 5 000 d'or suffisent même sous 25 %.
+        self.assertEqual(S.message_objectif("Nashor", self.paires([3157, 3157, 3157, 3157], [3157, 3157]), V), S.MESSAGE_RETARD)
+        P = self.paires([3157] * 6, [3157] * 4)                 # Dragon : 6 500 d'or de retard, 19 % : crossmap quand même
+        self.assertEqual(S.message_objectif("Dragon", P, V), S.MESSAGE_RETARD)
+
     def test_retard_juste_sous_25_pourcent(self):
         # Eux : 900 + 3250 + 13 500 = 17 650 ; nous : 900 + 13 500 = 14 400 → 18 % de retard : pas de crossmap.
         self.assertEqual(S.message_objectif("Dragon", self.paires([3157], []), V), S.MESSAGE_OBJECTIF)
