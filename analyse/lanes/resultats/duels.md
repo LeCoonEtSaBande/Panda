@@ -1,216 +1,220 @@
 # Duels, chacun avec l'or et le niveau habituels de son poste
 
-- 515005 duels (un champion tué par un autre, seul, sans aide) ; A 387066, B 127939.
-- Or et niveau : avance de chacun sur la normale de son poste à cette minute. 1 000 or d'avance de plus = +12.3 points ; 1 niveau = +21.4 points.
-- Sur B : Champions, mieux que postes + or + niveau seuls : gain 14.2 millièmes, **vérifié**.
-- Sur B : Évolution avec la minute, mieux que sans : gain 7.2 millièmes, **vérifié**.
-- Force de chaque champion vérifiée sur B : 126 sur 173 (accord des forces A / B : 0.94).
+- 1112771 duels (un champion tué par un autre, seul, sans aide) ; A 834107, B 278664.
+- Or et niveau : avance de chacun sur la normale de son poste à cette minute. 1 000 or d'avance de plus = +12.3 points ; 1 niveau = +21.5 points.
+- Sur B : Champions, mieux que postes + or + niveau seuls : gain 15.0 millièmes, **vérifié**.
+- Sur B : Évolution avec la minute, mieux que sans : gain 7.1 millièmes, **vérifié**.
+- Force de chaque champion nettement différente de la moyenne sur B : 147 sur 174 (accord des forces A / B : 0.98).
+- **Connu** (sa chance contre un champion moyen connue à ±5 points près sur B, et B confirme A) : 145 champions à 8 min, 58 à 25 min, sur 174. Les autres sont **approximatifs** : pas de pourcentage dans l'assistant.
+- **Justesse sur B** (le favori annoncé gagne-t-il ?) : les deux champions connus 61.4 % (190310 duels), dont même poste 56.9 % (117028) ; au moins un approximatif 66.4 % (88354) ; pile ou face 50 %.
+- Selon l'annonce (les deux connus) : 50-55 % annoncés → 52.4 % (67358) ; 55-60 % annoncés → 57.7 % (43714) ; 60-65 % annoncés → 61.9 % (26195) ; 65-70 % annoncés → 65.8 % (14873) ; 70-100 % annoncés → 79.2 % (38170).
 
 ## Effet du poste (à 13 min), contre la moyenne des postes
 
 | Poste | Effet | Évolution par 10 min |
 |---|---|---|
-| top | +8.2 points | +2.7 |
-| jgl | +11.0 points | +5.2 |
-| mid | +15.2 points | +0.9 |
-| adc | -5.8 points | +4.8 |
-| sup | -26.4 points | -13.3 |
+| top | +8.2 points | +3.3 |
+| jgl | +10.9 points | +5.3 |
+| mid | +15.0 points | +0.9 |
+| adc | -5.5 points | +4.8 |
+| sup | -26.3 points | -14.0 |
 
 ## Top : force en duel, contre un champion moyen de son poste (à 13 min)
 
-| Champion | Gagne | Évolution par 10 min | Duels | Sur B |
+| Champion | Gagne | Évolution par 10 min | Duels | Connu |
 |---|---|---|---|---|
-| Warwick | 69 % | +14.0 | 6145 | vérifié |
-| Mordekaiser | 69 % | +16.8 | 12051 | vérifié |
-| Nasus | 69 % | +28.0 | 5028 | vérifié |
-| Tahm Kench | 69 % | +18.2 | 3865 | vérifié |
-| **Urgot** | 66 % | +13.8 | 5973 | vérifié |
-| K'Sante | 65 % | +9.6 | 3967 | vérifié |
-| Cho'Gath | 64 % | +16.5 | 9221 | vérifié |
-| Illaoi | 61 % | +8.8 | 4960 | vérifié |
-| Camille | 61 % | +10.6 | 10241 | vérifié |
-| Darius | 61 % | +6.8 | 14924 | vérifié |
-| Renekton | 61 % | +8.7 | 10784 | vérifié |
-| Garen | 61 % | +10.8 | 14814 | vérifié |
-| Sett | 60 % | +7.0 | 13919 | vérifié |
-| Jax | 60 % | +9.0 | 10789 | vérifié |
-| Poppy | 60 % | +9.0 | 2433 | vérifié |
-| Ambessa | 60 % | +5.7 | 6003 | vérifié |
-| Olaf | 60 % | +5.6 | 6927 | vérifié |
-| Gwen | 59 % | +13.3 | 6602 | vérifié |
-| Pantheon | 59 % | +2.8 | 9896 | vérifié |
-| Zaahen | 59 % | +7.2 | 6186 | vérifié |
-| Aatrox | 59 % | +2.2 | 9445 | vérifié |
-| Trundle | 59 % | +8.2 | 3324 | vérifié |
-| Volibear | 58 % | +8.1 | 11153 | vérifié |
-| Kled | 58 % | -1.4 | 3627 | vérifié |
-| Malphite | 57 % | +6.2 | 10635 | vérifié |
-| Yone | 57 % | +11.8 | 33758 | vérifié |
-| Ornn | 57 % | +8.5 | 5790 | à surveiller |
-| Gragas | 57 % | +2.0 | 5926 | vérifié |
-| Shen | 57 % | +5.2 | 6128 | vérifié |
-| Yorick | 56 % | +3.9 | 3566 | vérifié |
-| **Dr. Mundo** | 56 % | +19.5 | 5070 | rien |
-| Fiora | 56 % | +4.4 | 11281 | vérifié |
-| Rumble | 55 % | +1.9 | 2296 | vérifié |
-| Riven | 55 % | +3.2 | 5391 | vérifié |
-| Irelia | 55 % | +0.4 | 14603 | vérifié |
-| Kennen | 54 % | +0.4 | 4399 | vérifié |
-| Gnar | 52 % | +5.9 | 5888 | rien |
-| Tryndamere | 52 % | -1.3 | 6330 | vérifié |
-| Heimerdinger | 51 % | -5.0 | 2901 | rien |
-| **Maokai** | 50 % | +4.0 | 1170 | rien |
-| Kayle | 48 % | +5.1 | 5733 | rien |
-| Jayce | 47 % | -3.7 | 8440 | vérifié |
-| Gangplank | 47 % | -8.4 | 9488 | vérifié |
-| Teemo | 46 % | -2.8 | 9448 | vérifié |
-| Quinn | 44 % | -3.8 | 4026 | vérifié |
-| Singed | 44 % | +2.3 | 4276 | vérifié |
-| Sion | 43 % | +6.4 | 6610 | vérifié |
+| Tahm Kench | 70 % | +18.3 | 8051 | 2 à 18 min |
+| Nasus | 70 % | +28.9 | 10632 | 2 à 21 min |
+| Warwick | 69 % | +14.1 | 12733 | 2 à 22 min |
+| Mordekaiser | 69 % | +17.0 | 24950 | 2 à 29 min |
+| **Urgot** | 66 % | +13.2 | 12475 | 2 à 22 min |
+| K'Sante | 65 % | +9.6 | 8670 | 2 à 19 min |
+| Cho'Gath | 63 % | +16.3 | 19329 | 2 à 27 min |
+| Poppy | 62 % | +10.0 | 5116 | 3 à 16 min |
+| Camille | 61 % | +10.0 | 22091 | 2 min, 17 à 28 min |
+| Illaoi | 61 % | +10.2 | 10430 | 14 à 21 min |
+| Darius | 61 % | +6.8 | 34518 | 2 à 30 min |
+| Sett | 61 % | +6.9 | 30380 | 2 à 11 min, 23 à 30 min |
+| Olaf | 61 % | +6.9 | 15817 | 2 à 18 min |
+| Jax | 61 % | +8.3 | 23502 | 2 à 28 min |
+| Garen | 61 % | +10.1 | 32448 | 2 à 19 min |
+| Renekton | 60 % | +7.2 | 23082 | 2 à 28 min |
+| Aatrox | 60 % | +2.6 | 20824 | 2 à 25 min |
+| Ambessa | 59 % | +5.4 | 14538 | 2 à 24 min |
+| Gwen | 59 % | +11.8 | 13826 | 2 à 25 min |
+| Pantheon | 59 % | +3.1 | 21861 | 2 à 9 min, 20 à 30 min |
+| Trundle | 59 % | +8.1 | 7635 | 2 à 19 min |
+| Zaahen | 59 % | +6.6 | 12691 | 2 à 17 min |
+| Kled | 58 % | -1.1 | 8010 | 2 à 18 min |
+| Volibear | 58 % | +7.0 | 22132 | 2 à 28 min |
+| Malphite | 58 % | +6.2 | 22449 | 2 à 27 min |
+| Ornn | 57 % | +8.1 | 13143 | 2 à 21 min |
+| Yone | 57 % | +11.0 | 69219 | 2 à 30 min |
+| **Dr. Mundo** | 57 % | +19.4 | 10856 | 2 à 20 min |
+| Shen | 57 % | +4.1 | 13574 | 2 à 22 min |
+| Yorick | 57 % | +1.5 | 8061 | 2 à 20 min |
+| Gragas | 57 % | +2.5 | 11926 | 2 à 23 min |
+| Fiora | 56 % | +4.5 | 24888 | 8 à 16 min |
+| Riven | 55 % | +4.4 | 11627 | 2 à 4 min, 13 à 21 min |
+| Irelia | 55 % | +0.4 | 32134 | 2 à 13 min |
+| Kennen | 54 % | +0.1 | 9736 | 2 à 22 min |
+| Rumble | 54 % | -0.9 | 5000 | 4 à 17 min |
+| **Maokai** | 52 % | +7.4 | 2417 | 10 min |
+| Gnar | 52 % | +6.7 | 13268 | 2 à 9 min, 14 à 22 min |
+| Tryndamere | 52 % | -1.5 | 14308 | 2 à 24 min |
+| Heimerdinger | 51 % | -6.7 | 5791 | 4 à 12 min |
+| Kayle | 48 % | +4.2 | 12102 | 2 à 23 min |
+| Gangplank | 47 % | -8.5 | 20918 | 2 à 29 min |
+| Jayce | 47 % | -3.0 | 18806 | 2 à 28 min |
+| Teemo | 46 % | -3.4 | 20000 | 2 à 28 min |
+| Quinn | 44 % | -4.9 | 8343 | 2 à 24 min |
+| Singed | 43 % | +0.5 | 9344 | 2 à 19 min |
+| Sion | 42 % | +5.4 | 15228 | 2 à 23 min |
 
 ## Jungle : force en duel, contre un champion moyen de son poste (à 13 min)
 
-| Champion | Gagne | Évolution par 10 min | Duels | Sur B |
+| Champion | Gagne | Évolution par 10 min | Duels | Connu |
 |---|---|---|---|---|
-| Zac | 67 % | +13.7 | 2115 | vérifié |
-| Wukong | 66 % | +4.0 | 7277 | vérifié |
-| Sejuani | 65 % | +14.8 | 1612 | vérifié |
-| Briar | 62 % | +2.8 | 5655 | vérifié |
-| **Fiddlesticks** | 61 % | +9.4 | 2400 | vérifié |
-| Rengar | 61 % | -0.7 | 6599 | vérifié |
-| Rek'Sai | 61 % | +6.3 | 1136 | rien |
-| **Skarner** | 61 % | +12.0 | 785 | vérifié |
-| **Kayn rouge** | 60 % | +15.7 | 2879 | vérifié |
-| Evelynn | 60 % | +5.8 | 2980 | vérifié |
-| Xin Zhao | 60 % | +8.3 | 2242 | vérifié |
-| Shyvana | 60 % | +11.2 | 3776 | vérifié |
-| Lee Sin | 60 % | +1.7 | 6132 | vérifié |
-| Udyr | 59 % | +0.9 | 2344 | vérifié |
-| Amumu | 59 % | +9.8 | 1400 | vérifié |
-| Rammus | 58 % | +11.7 | 808 | rien |
-| Nocturne | 58 % | -7.1 | 2758 | vérifié |
-| Vi | 57 % | +6.2 | 3120 | vérifié |
-| Elise | 57 % | -5.9 | 4654 | vérifié |
-| Master Yi | 57 % | +5.5 | 7103 | vérifié |
-| Kha'Zix | 56 % | -9.4 | 8595 | vérifié |
-| Nunu & Willump | 54 % | +6.4 | 2120 | rien |
-| Bel'Veth | 53 % | +14.2 | 2493 | rien |
-| **Viego** | 53 % | -3.6 | 7568 | vérifié |
-| Naafiri | 53 % | -2.7 | 3284 | à surveiller |
-| **Kayn bleu** | 53 % | +2.5 | 3241 | rien |
-| Jarvan IV | 52 % | -0.2 | 5306 | rien |
-| Hecarim | 52 % | -8.7 | 4702 | à surveiller |
-| Talon | 52 % | -4.8 | 9952 | rien |
-| Shaco | 51 % | -8.0 | 5380 | rien |
-| Lillia | 50 % | -0.6 | 3643 | rien |
-| Qiyana | 50 % | -7.5 | 14648 | rien |
-| Nidalee | 49 % | -7.8 | 2313 | rien |
-| Kindred | 48 % | -5.3 | 2210 | à surveiller |
-| Graves | 46 % | -8.5 | 4544 | vérifié |
-| **Ivern** | 42 % | -8.3 | 980 | rien |
-| Karthus | 31 % | -13.0 | 3518 | vérifié |
+| Zac | 68 % | +15.1 | 4518 | 5 à 16 min |
+| Wukong | 66 % | +5.9 | 14331 | 2 à 26 min |
+| Sejuani | 64 % | +12.3 | 3070 | 6 à 12 min |
+| Rek'Sai | 63 % | +6.5 | 2547 | 10 à 13 min |
+| Briar | 62 % | +2.9 | 11841 | 2 à 8 min |
+| Xin Zhao | 62 % | +8.5 | 4794 | 5 à 7 min, 15 à 16 min |
+| **Fiddlesticks** | 62 % | +9.6 | 5255 | 5 à 20 min |
+| **Skarner** | 61 % | +11.3 | 1730 | jamais |
+| Rengar | 60 % | -0.9 | 14215 | 2 à 28 min |
+| **Kayn rouge** | 60 % | +15.2 | 6472 | 3 à 20 min |
+| Evelynn | 60 % | +4.6 | 6598 | 5 à 22 min |
+| Shyvana | 60 % | +9.2 | 8380 | 2 à 20 min |
+| Lee Sin | 59 % | +0.6 | 12852 | 2 à 25 min |
+| Amumu | 59 % | +9.8 | 3046 | 9 à 15 min |
+| Udyr | 59 % | +1.3 | 5153 | 5 à 17 min |
+| Nocturne | 58 % | -6.4 | 6326 | 5 à 22 min |
+| Master Yi | 58 % | +5.7 | 15131 | 3 à 19 min |
+| Elise | 58 % | -4.3 | 9995 | 2 à 24 min |
+| Rammus | 58 % | +10.2 | 1620 | jamais |
+| Vi | 56 % | +5.1 | 7139 | 4 à 22 min |
+| Kha'Zix | 56 % | -10.1 | 18493 | 12 à 30 min |
+| **Kayn bleu** | 54 % | +2.8 | 7181 | 5 à 22 min |
+| Naafiri | 54 % | -4.5 | 7439 | 2 à 20 min |
+| **Viego** | 53 % | -2.0 | 16162 | 8 à 27 min |
+| Hecarim | 53 % | -8.0 | 10364 | 2 à 22 min |
+| Nunu & Willump | 53 % | +6.1 | 4668 | 6 à 17 min |
+| Jarvan IV | 53 % | -0.4 | 12085 | 2 à 25 min |
+| Bel'Veth | 53 % | +15.3 | 5308 | 7 à 18 min |
+| Talon | 52 % | -5.4 | 21446 | 2 à 30 min |
+| Shaco | 51 % | -7.5 | 11405 | 2 à 26 min |
+| Lillia | 51 % | -1.9 | 7541 | 3 à 21 min |
+| Nidalee | 51 % | -8.7 | 4700 | 5 à 15 min |
+| Qiyana | 50 % | -6.9 | 31401 | 2 à 30 min |
+| Kindred | 48 % | -5.7 | 4783 | 5 à 16 min |
+| Graves | 46 % | -9.0 | 10082 | 2 à 24 min |
+| **Ivern** | 40 % | -7.1 | 2070 | jamais |
+| Karthus | 32 % | -12.6 | 7513 | 3 à 12 min |
 
 ## Mid : force en duel, contre un champion moyen de son poste (à 13 min)
 
-| Champion | Gagne | Évolution par 10 min | Duels | Sur B |
+| Champion | Gagne | Évolution par 10 min | Duels | Connu |
 |---|---|---|---|---|
-| Akali | 65 % | +11.6 | 17287 | vérifié |
-| Sylas | 61 % | +5.7 | 15929 | vérifié |
-| Diana | 57 % | -1.6 | 8588 | vérifié |
-| Katarina | 55 % | +2.9 | 14536 | vérifié |
-| Fizz | 55 % | -1.0 | 8325 | vérifié |
-| Yasuo | 55 % | +6.4 | 20921 | vérifié |
-| Cassiopeia | 54 % | +1.7 | 3176 | vérifié |
-| Swain | 53 % | -0.6 | 3574 | rien |
-| Vladimir | 53 % | +9.9 | 9004 | rien |
-| Kassadin | 53 % | +9.5 | 6577 | rien |
-| LeBlanc | 53 % | -4.7 | 10399 | vérifié |
-| Vex | 53 % | -1.5 | 4802 | vérifié |
-| Annie | 52 % | +4.7 | 3752 | rien |
-| Locke | 52 % | -3.4 | 17078 | vérifié |
-| Anivia | 52 % | -9.3 | 3951 | vérifié |
-| Ekko | 51 % | +1.5 | 14680 | rien |
-| Aurora | 50 % | -4.6 | 5951 | rien |
-| Akshan | 49 % | -5.8 | 6265 | rien |
-| Zoe | 49 % | -11.7 | 4948 | rien |
-| Azir | 49 % | +5.8 | 2713 | rien |
-| Zed | 48 % | -2.5 | 17325 | rien |
-| Galio | 47 % | +1.7 | 3518 | vérifié |
-| Mel | 47 % | -10.1 | 3904 | rien |
-| Lissandra | 45 % | -2.4 | 6525 | vérifié |
-| Ahri | 45 % | -4.8 | 16647 | vérifié |
-| Ryze | 45 % | +4.6 | 2366 | vérifié |
-| Viktor | 45 % | +0.3 | 11710 | vérifié |
-| Lux | 44 % | -8.8 | 8758 | vérifié |
-| Veigar | 42 % | +4.4 | 5117 | vérifié |
-| Hwei | 40 % | -4.1 | 6910 | vérifié |
-| Orianna | 40 % | -3.4 | 4269 | vérifié |
-| Syndra | 40 % | -0.8 | 13847 | vérifié |
-| Malzahar | 40 % | +1.3 | 6495 | vérifié |
-| Aurelion Sol | 39 % | +2.1 | 2883 | vérifié |
-| Xerath | 38 % | -10.2 | 7515 | vérifié |
-| Taliyah | 34 % | -11.7 | 3993 | vérifié |
-| Twisted Fate | 32 % | -13.0 | 4431 | vérifié |
+| Akali | 65 % | +10.3 | 39582 | 2 à 30 min |
+| Sylas | 61 % | +5.4 | 34446 | 2 à 30 min |
+| Diana | 57 % | -2.1 | 19623 | 2 à 27 min |
+| Katarina | 55 % | +2.5 | 30962 | 2 à 30 min |
+| Yasuo | 55 % | +6.5 | 43998 | 2 à 30 min |
+| Fizz | 55 % | -1.9 | 18196 | 2 à 28 min |
+| Cassiopeia | 54 % | +1.1 | 7422 | 2 à 20 min |
+| Vladimir | 54 % | +10.7 | 19215 | 2 à 29 min |
+| LeBlanc | 54 % | -4.7 | 22453 | 2 à 4 min, 14 à 30 min |
+| Annie | 53 % | +5.7 | 8308 | 2 à 23 min |
+| Swain | 53 % | -0.7 | 7207 | 2 à 19 min |
+| Locke | 52 % | -3.6 | 37912 | 2 à 30 min |
+| Kassadin | 52 % | +7.4 | 14407 | 2 à 25 min |
+| Ekko | 52 % | +1.2 | 30963 | 2 à 30 min |
+| Anivia | 51 % | -9.8 | 8720 | 2 à 21 min |
+| Vex | 51 % | -4.8 | 10176 | 2 à 24 min |
+| Zoe | 51 % | -11.1 | 10888 | 2 à 24 min |
+| Aurora | 51 % | -5.4 | 12909 | 2 à 27 min |
+| Akshan | 50 % | -6.0 | 13041 | 2 à 25 min |
+| Azir | 49 % | +5.6 | 6026 | 4 min, 13 à 20 min |
+| Zed | 48 % | -2.6 | 37461 | 2 à 30 min |
+| Galio | 48 % | +1.3 | 7717 | 2 à 19 min |
+| Mel | 47 % | -10.9 | 7952 | 2 à 12 min |
+| Ahri | 45 % | -5.4 | 36290 | 2 à 13 min |
+| Lissandra | 45 % | -2.2 | 14655 | 2 à 26 min |
+| Ryze | 45 % | +4.2 | 5287 | 3 à 19 min |
+| Lux | 44 % | -7.6 | 18859 | 2 à 30 min |
+| Viktor | 44 % | +0.2 | 23676 | 2 à 30 min |
+| Veigar | 42 % | +3.5 | 10914 | 2 à 25 min |
+| Hwei | 42 % | -3.7 | 14521 | 2 à 27 min |
+| Orianna | 41 % | -3.3 | 10547 | 2 à 23 min |
+| Syndra | 41 % | -1.1 | 30959 | 2 à 30 min |
+| Aurelion Sol | 41 % | +1.1 | 6213 | 4 à 19 min |
+| Malzahar | 40 % | +1.9 | 13544 | 2 à 26 min |
+| Xerath | 39 % | -10.9 | 15740 | 2 à 28 min |
+| Taliyah | 34 % | -10.2 | 10096 | 2 à 19 min |
+| Twisted Fate | 31 % | -14.0 | 9475 | 2 à 21 min |
 
 ## ADC : force en duel, contre un champion moyen de son poste (à 13 min)
 
-| Champion | Gagne | Évolution par 10 min | Duels | Sur B |
+| Champion | Gagne | Évolution par 10 min | Duels | Connu |
 |---|---|---|---|---|
-| Vayne | 54 % | +10.6 | 5049 | rien |
-| Samira | 51 % | -0.1 | 2975 | rien |
-| Twitch | 48 % | -3.3 | 6888 | vérifié |
-| Varus | 47 % | -8.0 | 4410 | vérifié |
-| Kog'Maw | 47 % | -0.4 | 3681 | vérifié |
-| Kai'Sa | 46 % | -3.4 | 13042 | vérifié |
-| Corki | 46 % | -5.6 | 2764 | vérifié |
-| Aphelios | 46 % | -2.5 | 5073 | vérifié |
-| Xayah | 44 % | -7.1 | 4268 | vérifié |
-| Tristana | 44 % | -7.3 | 9533 | vérifié |
-| Ezreal | 43 % | -8.6 | 6593 | vérifié |
-| Draven | 42 % | -12.6 | 4764 | vérifié |
-| Lucian | 41 % | -10.7 | 5510 | vérifié |
-| Kalista | 40 % | -5.5 | 3032 | vérifié |
-| Nilah | 38 % | +6.4 | 698 | vérifié |
-| Zeri | 38 % | -5.9 | 3058 | vérifié |
-| Jhin | 38 % | -20.1 | 11155 | vérifié |
-| Caitlyn | 38 % | -7.5 | 9357 | vérifié |
-| Yunara | 38 % | -9.9 | 6496 | vérifié |
-| Miss Fortune | 37 % | -14.3 | 5321 | vérifié |
-| Smolder | 37 % | -5.5 | 4400 | vérifié |
-| Ziggs | 36 % | -13.4 | 2160 | vérifié |
-| Ashe | 35 % | -10.2 | 4198 | vérifié |
-| Jinx | 34 % | -12.6 | 9693 | vérifié |
-| Sivir | 31 % | -13.1 | 3160 | vérifié |
+| Vayne | 54 % | +11.0 | 10618 | 17 à 25 min |
+| Samira | 50 % | +0.8 | 6353 | 6 à 20 min |
+| Twitch | 47 % | -3.9 | 14898 | 2 à 29 min |
+| Kog'Maw | 46 % | -1.1 | 7817 | 3 à 22 min |
+| Varus | 46 % | -10.0 | 9992 | 2 à 13 min, 21 à 23 min |
+| Kai'Sa | 46 % | -3.6 | 28963 | 14 à 30 min |
+| Aphelios | 46 % | -2.6 | 10826 | 2 à 25 min |
+| Corki | 46 % | -5.4 | 5795 | 5 à 13 min |
+| Tristana | 43 % | -7.0 | 18923 | 2 à 11 min |
+| Xayah | 43 % | -6.3 | 9985 | 11 à 24 min |
+| Ezreal | 43 % | -8.6 | 15082 | 2 à 27 min |
+| Lucian | 42 % | -9.1 | 11604 | 2 à 10 min |
+| Draven | 41 % | -12.0 | 10259 | 3 à 23 min |
+| Nilah | 41 % | +6.4 | 1545 | jamais |
+| Kalista | 39 % | -6.0 | 7540 | 4 à 21 min |
+| Caitlyn | 38 % | -7.4 | 19047 | 2 à 29 min |
+| Miss Fortune | 38 % | -13.0 | 12437 | 2 à 26 min |
+| Jhin | 38 % | -19.1 | 24287 | 2 à 30 min |
+| Zeri | 37 % | -7.6 | 6649 | 6 à 21 min |
+| Yunara | 37 % | -8.7 | 14069 | 2 à 26 min |
+| Smolder | 37 % | -4.3 | 8684 | 10 à 23 min |
+| Ziggs | 36 % | -14.0 | 4635 | 7 à 19 min |
+| Ashe | 35 % | -8.5 | 9223 | 4 à 8 min, 12 à 23 min |
+| Jinx | 34 % | -12.0 | 19409 | 2 à 28 min |
+| Sivir | 31 % | -13.2 | 6830 | 6 à 22 min |
 
 ## Support : force en duel, contre un champion moyen de son poste (à 13 min)
 
-| Champion | Gagne | Évolution par 10 min | Duels | Sur B |
+| Champion | Gagne | Évolution par 10 min | Duels | Connu |
 |---|---|---|---|---|
-| Pyke | 52 % | -4.1 | 4155 | rien |
-| Nautilus | 51 % | +3.8 | 2300 | rien |
-| Neeko | 50 % | +2.0 | 1428 | rien |
-| Leona | 50 % | +6.1 | 1447 | rien |
-| Blitzcrank | 49 % | -0.1 | 2132 | rien |
-| Vel'Koz | 49 % | -8.3 | 6197 | rien |
-| Yuumi | 48 % | -1.3 | 729 | rien |
-| Thresh | 47 % | -0.3 | 3423 | vérifié |
-| Rell | 47 % | -1.3 | 941 | rien |
-| **Morgana** | 46 % | -5.1 | 2239 | rien |
-| Bard | 45 % | -5.9 | 2123 | rien |
-| Alistar | 45 % | +1.6 | 1264 | rien |
-| Brand | 44 % | +2.5 | 3078 | vérifié |
-| Rakan | 42 % | +2.8 | 935 | vérifié |
-| Braum | 40 % | +3.5 | 980 | à surveiller |
-| Sona | 40 % | -4.2 | 978 | à surveiller |
-| Renata Glasc | 37 % | +0.2 | 648 | vérifié |
-| Senna | 37 % | -3.9 | 3510 | vérifié |
-| Karma | 36 % | -15.6 | 3078 | vérifié |
-| Seraphine | 36 % | -19.2 | 3269 | vérifié |
-| Zyra | 35 % | -6.0 | 3013 | vérifié |
-| Nami | 32 % | -19.2 | 4527 | vérifié |
-| Janna | 32 % | -16.6 | 3354 | vérifié |
-| Zilean | 30 % | -10.5 | 1966 | vérifié |
-| Lulu | 28 % | -23.5 | 4114 | vérifié |
-| Milio | 27 % | -16.7 | 2084 | vérifié |
-| Soraka | 20 % | -14.8 | 2093 | vérifié |
+| Pyke | 53 % | -3.0 | 8741 | 4 à 23 min |
+| Nautilus | 52 % | +3.2 | 5076 | 5 à 14 min |
+| Neeko | 50 % | -0.9 | 3226 | 8 à 15 min |
+| Yuumi | 49 % | -3.3 | 1545 | jamais |
+| Blitzcrank | 49 % | +2.1 | 4671 | 7 à 15 min |
+| Vel'Koz | 49 % | -8.0 | 13980 | 2 à 27 min |
+| Rell | 47 % | +2.2 | 1987 | jamais |
+| Leona | 47 % | +7.0 | 3290 | 8 à 10 min |
+| Thresh | 47 % | +2.1 | 7259 | 4 à 17 min |
+| Alistar | 46 % | +3.4 | 2804 | 10 min |
+| **Morgana** | 45 % | -3.6 | 4872 | 7 à 18 min |
+| Bard | 44 % | -3.5 | 4495 | 8 à 15 min |
+| Brand | 44 % | +0.4 | 6689 | 5 à 21 min |
+| Taric | 44 % | +0.1 | 677 | jamais |
+| Rakan | 41 % | +1.7 | 2094 | jamais |
+| Sona | 38 % | -1.7 | 2110 | jamais |
+| Braum | 38 % | +4.9 | 2101 | jamais |
+| Karma | 37 % | -12.4 | 6546 | 7 à 16 min |
+| Senna | 37 % | -6.8 | 7465 | 7 à 20 min |
+| Zyra | 37 % | -7.4 | 6668 | 7 à 10 min |
+| Seraphine | 35 % | -19.0 | 6950 | 5 à 12 min |
+| Renata Glasc | 34 % | +1.9 | 1609 | jamais |
+| Janna | 33 % | -15.1 | 7068 | 6 à 15 min |
+| Nami | 32 % | -19.3 | 9443 | 5 à 15 min |
+| Lulu | 29 % | -22.4 | 8861 | 4 à 15 min |
+| Zilean | 28 % | -9.3 | 4041 | 10 min |
+| Milio | 28 % | -14.5 | 4299 | jamais |
+| Soraka | 20 % | -13.7 | 4612 | jamais |
 

@@ -61,8 +61,8 @@ Vérifié sur B le 26/10/2026 (13 900 parties de B, appris sur A ; détails dans
 | Envahir | retiré le 27/10/2026 (choix du propriétaire : pas assez fiable) ; `lanes/envahir.py` reste pour la trace, il n'est plus calculé | non |
 | Early/late : la compo la plus late gagne 37 % avant 20 min et 61 % entre 35 et 40 min | confirmé | oui |
 | Mix de dégâts : moins de 20 % ou plus de 70 % de dégâts magiques, −4 à −5 points | à surveiller (confirmé sur C le 24/10, pas assez d'équipes sur B) | non |
-| Duels (1 contre 1), chacun avec l'or et le niveau habituels de son poste (515 000 duels) : modèle d'ensemble et évolution avec la minute | vérifié (gain 14 et 7 millièmes) | oui |
-| Force en duel de chaque champion | vérifiée pour 126 champions sur 173 (accord A/B 0,94) ; les autres comptent comme un champion moyen de leur poste | oui |
+| Duels (1 contre 1), chacun avec l'or et le niveau habituels de son poste (1 112 000 duels au 02/11/2026) : modèle d'ensemble et évolution avec la minute | vérifié (gain 15 et 7 millièmes) | oui |
+| Duel de chaque champion, **connu** ou **approximatif** (02/11/2026) : connu à une minute si sa chance contre un champion moyen est mesurée sur B à ±5 points près et que B confirme A | connus : 145 champions sur 174 à 8 min, 58 à 25 min ; quand les deux sont connus, le favori annoncé gagne 61.4 % des duels de B (même poste : 56.9 %), et les pourcentages annoncés sont justes à 1 point près | oui, seulement quand les deux sont connus ; sinon « approximatif » (assistant) ou rien (surcouche) |
 | Types des champions (`types/classer.py`) | choix du propriétaire ; les notes des parties retrouvent ses choix sans les voir (justesse par type dans `types/resultats/types.md`) et donnent la même décision sur A et sur B pour la plupart des champions | oui |
 | Recuit teamfight (13 effets de compo, sur C) | non confirmé (28 tirages au hasard sur 40 font aussi bien) | non |
 

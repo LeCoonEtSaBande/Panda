@@ -181,25 +181,29 @@ def confirmation_c():
 
 def duels():
     """Duels (lanes/duels.py), analyse à deux tas : appris sur A, vérifié sur B. Rien si le modèle d'ensemble ne tient
-    pas sur B. Un champion dont la force n'est pas vérifiée sur B compte comme un champion moyen de son poste : sa force
-    ET son évolution avec la minute valent 0 (avant le 26/10/2026, l'évolution restait : il n'était pas vraiment moyen).
-    L'évolution avec la minute n'est gardée que si elle est vérifiée sur B. Or et niveau : avance sur la normale du poste."""
+    pas sur B. Depuis le 02/11/2026, chaque champion a la liste des minutes (2 à 30) où il est « connu » (sa chance
+    contre un champion moyen est connue à ±5 points près sur B, et B confirme A) : l'assistant et la surcouche
+    n'affichent un pourcentage de duel que si les deux champions sont connus à cette minute ; sinon « approximatif »
+    (assistant) ou rien (surcouche), et le duel ne compte pas dans le score des candidats.
+    L'évolution avec la minute n'est gardée que si elle est vérifiée sur B. Or et niveau : avance sur la normale du
+    poste (normale exportée pour la surcouche, qui a l'or et le niveau réels de la partie)."""
     modele = LANES_RES / "duels.json"
     if not modele.exists():
         return None
     m = json.loads(modele.read_text(encoding="utf-8"))
-    if "verification_B" not in m or "postes" not in m:
+    if "verification_B" not in m or "postes" not in m or "normale_postes" not in m:
         return None
     ensemble, minute = (t["verdict"] == "vérifié" for t in m["verification_B"]["ensemble"])
     if not ensemble:
         return None
-    verifies = {ch for ch, v in m["champions"].items() if v.get("verdict_B") == "vérifié"}
     return {"or_1000": m["coef_or_1000"], "niveau": m["coef_niveau"], "minute_ref": m["minute_reference"],
             "postes": {p: [round(v["effet"], 4), round(v["pente_10min"], 4) if minute else 0.0] for p, v in m["postes"].items()},
-            # [force, évolution par 10 min, nombre de duels mesurés]
-            "champions": {ch: ([round(v["force"], 4), round(v["pente_10min"], 4) if minute else 0.0] if ch in verifies else [0.0, 0.0]) + [v["duels"]]
+            # [force, évolution par 10 min, nombre de duels mesurés, minutes où il est connu]
+            "champions": {ch: [round(v["force"], 4), round(v["pente_10min"], 4) if minute else 0.0, v["duels"],
+                               v.get("connu_minutes", [])]
                           for ch, v in m["champions"].items() if v["duels"] >= 150},
-            "confirmes": sorted(verifies), "duels": m["duels"]}
+            "normale": m["normale_postes"], "marge_connu": m["verification_B"].get("marge_connu_points"),
+            "justesse": m["verification_B"].get("justesse"), "duels": m["duels"]}
 
 
 def main():

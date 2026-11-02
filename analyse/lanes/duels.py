@@ -18,8 +18,18 @@ une ligne par duel, du point de vue du champion bleu) :
                        + effet du poste du bleu − celui du poste du rouge
                        + évolution de ces forces avec la minute (certains champions sont forts tôt, d'autres tard)
                        + écart des avances d'or + écart des avances de niveau
-Analyse à deux tas : appris sur A, vérifié sur B (ensemble du modèle, évolution avec la minute, et force de chaque
-champion, avec correction des tests multiples). Seules les forces vérifiées sur B vont dans l'assistant.
+Analyse à deux tas : appris sur A, vérifié sur B (ensemble du modèle, évolution avec la minute, et chaque champion).
+
+« Connu » ou « approximatif » (02/11/2026) : avant, un champion était « vérifié » si sa force était nettement différente
+de la moyenne sur B ; les autres comptaient comme un champion moyen, et l'assistant affichait quand même un pourcentage,
+trompeur. Maintenant, pour chaque champion et chaque minute de 2 à 30, on mesure sur B sa force à cette minute (force
+et évolution, en partant du modèle appris sur A pour tous les autres) avec sa marge d'erreur. Il est **connu** à cette
+minute si :
+  - la marge d'erreur est petite : sa chance contre un champion moyen est connue à ±5 points près (95 % de confiance) ;
+  - B confirme A : la force mesurée sur B est dans cette marge autour de celle apprise sur A.
+Sinon il est **approximatif** à cette minute, et l'assistant n'affiche pas de pourcentage pour ses duels. Un duel n'a
+un pourcentage que si les deux champions sont connus à cette minute. Au-delà de 30 min, rien (pas de relevé d'or).
+Justesse mesurée sur B : part des duels où le favori annoncé (chacun avec l'or habituel de son poste) a gagné.
 Écrit resultats/duels.json et resultats/duels.md.
 
     python3 analyse/lanes/duels.py
@@ -47,6 +57,8 @@ from dynamique import RESULTATS  # noqa: E402
 MINUTES = (0, 5, 10, 15, 20, 25, 30)
 POSTES = ("top", "jgl", "mid", "adc", "sup")
 MINUTE_REF = 13.0          # les évolutions avec le temps sont centrées sur la minute médiane des duels
+MARGE_CONNU = 5.0         # points : marge d'erreur (95 %) maximale pour dire qu'un champion est connu à une minute
+MINUTES_CONNU = range(2, 31)
 POOL = ("Fiddlesticks", "Ivern", "Dr. Mundo", "Kayn bleu", "Kayn rouge", "Viego", "Maokai", "Skarner", "Morgana", "Urgot")
 
 
@@ -108,7 +120,34 @@ def lire_duels(donnees, tas):
         else:
             duels.append({"match": e["match"], "tas": tas[e["match"]], "bleu": cv, "rouge": ck, "bleu_gagne": 0,
                           "postes": (pv, pk), "or": ov - ok, "niveau": nv - nk, "minute": minute})
-    return duels
+    normale_export = {p: {"or": {m: round(v, 1) for m, v in normale[p][0].items()},
+                          "niveau": {m: round(v, 3) for m, v in normale[p][1].items()}} for p in POSTES}
+    return duels, normale_export
+
+
+def connu_par_minute(f_a, s_a, f_b, s_b, cov):
+    """Minutes (2 à 30) où le champion est connu : marge d'erreur sur B ≤ MARGE_CONNU points, et B confirme A."""
+    connues = []
+    for m in MINUTES_CONNU:
+        u = (m - MINUTE_REF) / 10
+        se = math.sqrt(max(cov[0][0] + u * u * cov[1][1] + 2 * u * cov[0][1], 0.0))
+        marge = 1.96 * se * 25          # en points de chance de victoire autour de 50 % (pente de la logistique : 1/4)
+        if marge <= MARGE_CONNU and abs((f_b + u * s_b) - (f_a + u * s_a)) <= 1.96 * se:
+            connues.append(m)
+    return connues
+
+
+def plages(minutes):
+    """[2, 3, …, 30] -> « 2 à 30 min » ; plusieurs plages séparées par des virgules ; « jamais » si vide."""
+    if not minutes:
+        return "jamais"
+    morceaux, debut, prec = [], minutes[0], minutes[0]
+    for m in minutes[1:] + [None]:
+        if m != prec + 1 if m is not None else True:
+            morceaux.append(f"{debut} à {prec} min" if debut != prec else f"{debut} min")
+            debut = m
+        prec = m if m is not None else prec
+    return ", ".join(morceaux)
 
 
 def colonnes(n):
@@ -165,7 +204,7 @@ def main():
     regle = commun.lire_decoupage()
     table = commun.drafts_ab(regle, donnees)   # toutes les parties, A et B
     tas = dict(zip(table["match"], table["tas"]))
-    duels = lire_duels(donnees, tas)
+    duels, normale = lire_duels(donnees, tas)
     compte, compte_a, compte_b = defaultdict(int), defaultdict(int), defaultdict(int)
     for d in duels:
         for c in (d["bleu"], d["rouge"]):
@@ -207,19 +246,39 @@ def main():
             continue
         i = champions.index(ch)
         x = np.asarray(Xb[:, i].todense()).ravel()          # +1 s'il est bleu, −1 s'il est rouge, 0 sinon
+        xt = np.asarray(Xb[:, n + i].todense()).ravel()     # le même, multiplié par (minute − 13) / 10
         sel = x != 0
         b_sans = beta_a.copy(); b_sans[i] = 0.0; b_sans[n + i] = 0.0
         depart = Xb[sel] @ b_sans + c_a
-        coef, _ = bloc3.logistique(x[sel][:, None], yb[sel], depart, lam=1e-6)
-        mu = bloc3.sigmoide(depart + x[sel] * coef[0])
-        erreur = 1 / math.sqrt(max(float(np.sum(mu * (1 - mu) * x[sel] ** 2)), 1e-12))
+        # Force et évolution mesurées sur B, avec leur marge d'erreur (inverse de l'information de Fisher).
+        Z = np.column_stack([x[sel], xt[sel]])
+        coef, _ = bloc3.logistique(Z, yb[sel], depart, lam=1e-6)
+        mu = bloc3.sigmoide(depart + Z @ coef)
+        cov = np.linalg.inv((Z * (mu * (1 - mu))[:, None]).T @ Z + 1e-9 * np.eye(2))
+        erreur = math.sqrt(max(float(cov[0, 0]), 1e-12))
         sens = 1 if beta_a[i] > 0 else -1
         tests.append({"champion": ch, "force_A": float(beta_a[i]), "force_B": float(coef[0]), "duels_A": compte_a[ch],
-                      "duels_B": compte_b[ch], "p": p_unilaterale(sens * coef[0] / erreur)})
+                      "duels_B": compte_b[ch], "p": p_unilaterale(sens * coef[0] / erreur),
+                      "connu_minutes": connu_par_minute(float(beta_a[i]), float(beta_a[n + i]), float(coef[0]), float(coef[1]),
+                                                        cov.tolist())})
     for t, q in zip(tests, bloc3.benjamini_hochberg([t["p"] for t in tests]) if tests else []):
         t["q"] = float(q)
         t["verdict"] = "vérifié" if q < 0.05 else ("à surveiller" if t["p"] < 0.05 else "rien")
     accord = float(np.corrcoef([t["force_A"] for t in tests], [t["force_B"] for t in tests])[0, 1]) if len(tests) > 5 else float("nan")
+    connu = {t["champion"]: set(t["connu_minutes"]) for t in tests}
+
+    # Justesse sur B, comme dans l'assistant : chacun avec l'or et le niveau habituels de son poste (écarts à zéro).
+    Xn = Xb.tolil(); Xn[:, col["or"]] = 0; Xn[:, col["niveau"]] = 0
+    p_b = bloc3.sigmoide(Xn.tocsr() @ beta_a + c_a)
+    duels_b = [d for d, est_b in zip(duels, b) if est_b]
+    deux = np.array([round(d["minute"]) in connu.get(d["bleu"], ()) and round(d["minute"]) in connu.get(d["rouge"], ())
+                     for d in duels_b])
+    meme = np.array([d["postes"][0] == d["postes"][1] for d in duels_b])
+    juste = lambda m: (float(100 * np.mean((p_b[m] > 0.5) == (yb[m] == 1))), int(m.sum())) if m.sum() else (float("nan"), 0)
+    confiance = np.maximum(p_b, 1 - p_b)
+    justesse = {"connus": juste(deux), "connus_meme_poste": juste(deux & meme), "approximatifs": juste(~deux),
+                "par_annonce": [[bas, haut, *juste(deux & (confiance >= bas / 100) & (confiance < haut / 100))]
+                                for bas, haut in ((50, 55), (55, 60), (60, 65), (65, 70), (70, 101))]}
 
     # Modèle final, sur A + B, pour l'affichage.
     beta, c = apprendre(X, y, lam)
@@ -234,11 +293,14 @@ def main():
     verdict = {t["champion"]: t["verdict"] for t in tests}
     sortie = {"duels": len(duels), "duels_A": int(a.sum()), "duels_B": int(b.sum()), "lambda": lam,
               "or_niveau": "avance sur la normale de son poste à cette minute",
-              "verification_B": {"ensemble": ensemble, "accord_forces_A_B": accord, "champions": tests},
+              "verification_B": {"ensemble": ensemble, "accord_forces_A_B": accord, "champions": tests,
+                                 "marge_connu_points": MARGE_CONNU, "justesse": justesse},
+              "normale_postes": normale,
               "coef_or_1000": coef_or, "coef_niveau": coef_niveau, "minute_reference": MINUTE_REF,
               "postes": {p_: {"effet": effet_poste[p_], "pente_10min": pente_poste[p_]} for p_ in POSTES},
               "champions": {ch: {"force": force[ch], "pente_10min": pente[ch], "duels": compte[ch],
-                                 "poste": max(poste[ch], key=poste[ch].get), "verdict_B": verdict.get(ch, "pas assez de duels")}
+                                 "poste": max(poste[ch], key=poste[ch].get), "verdict_B": verdict.get(ch, "pas assez de duels"),
+                                 "connu_minutes": sorted(connu.get(ch, ()))}
                             for ch in champions}}
     RESULTATS.mkdir(parents=True, exist_ok=True)
     (RESULTATS / "duels.json").write_text(json.dumps(sortie, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -250,16 +312,24 @@ def main():
              f"- Or et niveau : avance de chacun sur la normale de son poste à cette minute. 1 000 or d'avance de plus = {points(coef_or):+.1f} points ; "
              f"1 niveau = {points(coef_niveau):+.1f} points.",
              *[f"- Sur B : {t['nom']} : gain {t['gain_millièmes']:.1f} millièmes, **{t['verdict']}**." for t in ensemble],
-             f"- Force de chaque champion vérifiée sur B : {nb_verif} sur {len(tests)} (accord des forces A / B : {accord:.2f}).", "",
+             f"- Force de chaque champion nettement différente de la moyenne sur B : {nb_verif} sur {len(tests)} (accord des forces A / B : {accord:.2f}).",
+             f"- **Connu** (sa chance contre un champion moyen connue à ±{MARGE_CONNU:.0f} points près sur B, et B confirme A) : "
+             f"{sum(1 for t in tests if 8 in connu[t['champion']])} champions à 8 min, {sum(1 for t in tests if 25 in connu[t['champion']])} à 25 min, "
+             f"sur {len(champions)}. Les autres sont **approximatifs** : pas de pourcentage dans l'assistant.",
+             f"- **Justesse sur B** (le favori annoncé gagne-t-il ?) : les deux champions connus {justesse['connus'][0]:.1f} % "
+             f"({justesse['connus'][1]} duels), dont même poste {justesse['connus_meme_poste'][0]:.1f} % ({justesse['connus_meme_poste'][1]}) ; "
+             f"au moins un approximatif {justesse['approximatifs'][0]:.1f} % ({justesse['approximatifs'][1]}) ; pile ou face 50 %.",
+             "- Selon l'annonce (les deux connus) : " + " ; ".join(f"{bas}-{min(haut, 100)} % annoncés → {j:.1f} % ({nb})"
+                                                                for bas, haut, j, nb in justesse["par_annonce"] if nb) + ".", "",
              "## Effet du poste (à 13 min), contre la moyenne des postes", "", "| Poste | Effet | Évolution par 10 min |", "|---|---|---|"]
     texte += [f"| {p_} | {points(effet_poste[p_]):+.1f} points | {points(pente_poste[p_]):+.1f} |" for p_ in POSTES]
     texte.append("")
     for p_, titre in (("top", "Top"), ("jgl", "Jungle"), ("mid", "Mid"), ("adc", "ADC"), ("sup", "Support")):
         liste = sorted((ch for ch in champions if poste_principal[ch] == p_ and compte[ch] >= 400), key=lambda ch: -force[ch])
         texte += [f"## {titre} : force en duel, contre un champion moyen de son poste (à 13 min)", "",
-                  "| Champion | Gagne | Évolution par 10 min | Duels | Sur B |", "|---|---|---|---|---|"]
+                  "| Champion | Gagne | Évolution par 10 min | Duels | Connu |", "|---|---|---|---|---|"]
         texte += [f"| {'**' + ch + '**' if ch in POOL else ch} | {50 + points(force[ch]):.0f} % | {points(pente[ch]):+.1f} | {compte[ch]} | "
-                  f"{sortie['champions'][ch]['verdict_B']} |" for ch in liste]
+                  f"{plages(sortie['champions'][ch]['connu_minutes'])} |" for ch in liste]
         texte.append("")
     (RESULTATS / "duels.md").write_text("\n".join(texte) + "\n", encoding="utf-8")
     print("\n".join(texte[:12]))
