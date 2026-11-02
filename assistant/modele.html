@@ -812,13 +812,21 @@ function quiEstQui(nous, eux) {
   </div></div>`;
 }
 
-// Pour chaque équipe : ses cibles (carrys, enchanteurs, champions fragiles) et ses protecteurs (bloqueurs, enchanteurs).
-// Juste la liste, sans analyse (choix du propriétaire, 02/11/2026).
+// Pour chaque équipe : ses cibles (carrys, enchanteurs, champions fragiles), avec ce qui leur permet de survivre (fuite,
+// protection d'elles-mêmes), et ses protecteurs (bloqueurs, enchanteurs), avec leurs protections et leurs contrôles.
+// Juste ces informations, sans consigne ni analyse (choix du propriétaire, 02/11/2026).
 function blocCiblesProtecteurs(eq, cote, moi) {
   const cl = cote === "eux" ? "e" : "n", toi = c => cote === "nous" && c === moi ? " <b>(toi)</b>" : "";
-  const ligne = (p, c, pourquoi) => `<div class="b-ligne"><div class="qui-c"><span class="${cl}">${esc(c)}</span>${toi(c)}<small>${NOM_POSTE[p]} · ${esc(pourquoi)}</small></div></div>`;
-  const cibles = POSTES.filter(p => estCible(eq[p])).map(p => ligne(p, eq[p], pourquoiCible(eq[p])));
-  const prot = POSTES.filter(p => eq[p] && estProtecteur(eq[p])).map(p => ligne(p, eq[p], tousDe(eq[p]).filter(t => t === "bloqueur" || t === "enchanteur").map(t => TYPE[t][1]).join(", ")));
+  const tete = (p, c, pourquoi) => `<div class="qui-c"><span class="${cl}">${esc(c)}</span>${toi(c)}<small>${NOM_POSTE[p]} · ${esc(pourquoi)}</small></div>`;
+  const cibles = POSTES.filter(p => estCible(eq[p])).map(p => { const c = eq[p];
+    return `<div class="b-ligne">${tete(p, c, pourquoiCible(c))}<div class="obst">
+      <span><b>Fuite</b> : ${listeSorts(sortsDe(c, "deplacement"), "aucune")}</span>
+      <span><b>Se protège</b> : ${listeSorts(sortsDe(c, "protection"), "rien")}</span></div></div>`; });
+  const prot = POSTES.filter(p => eq[p] && estProtecteur(eq[p])).map(p => { const c = eq[p];
+    const pourquoi = tousDe(c).filter(t => t === "bloqueur" || t === "enchanteur").map(t => TYPE[t][1]).join(", ");
+    return `<div class="b-ligne">${tete(p, c, pourquoi)}<div class="obst">
+      <span><b>Protections</b> : ${listeSorts(sortsDe(c, "protection"), "aucune")}</span>
+      <span><b>Contrôles</b> : ${listeSorts(sortsDe(c, "controle"), "aucun")}</span></div></div>`; });
   return `<div class="b-titre">🎯 Cibles</div>${cibles.join("") || `<p class="petit" style="margin:0">Aucune.</p>`}
     <div class="b-titre">🛡️ Protecteurs</div>${prot.join("") || `<p class="petit" style="margin:0">Aucun.</p>`}`;
 }
