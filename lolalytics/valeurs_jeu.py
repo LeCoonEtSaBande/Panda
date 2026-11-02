@@ -279,7 +279,7 @@ def main():
         precedent = {}
 
     lus, prix, version = {}, precedent.get("prix_objets", {}), precedent.get("version_ddragon", "")
-    champions, zhonya_lus = [], []
+    champions, zhonya_lus, cles = [], [], precedent.get("cles_champions", {})
     versions = telecharger(f"{DDRAGON}/api/versions.json")
     if versions:
         version = json.loads(versions)[0]
@@ -296,7 +296,11 @@ def main():
             lus["zhonya_ids"] = (zhonya, "Data Dragon")
         brut = telecharger(f"{dd}/champion.json")
         if brut:
-            champions = sorted(json.loads(brut).get("data", {}))
+            liste = json.loads(brut).get("data", {})
+            champions = sorted(liste)
+            # Identifiant Data Dragon (« MonkeyKing ») -> identifiant Riot (« 62 ») : la surcouche relie ainsi le champion
+            # de la partie au modèle des duels du bouton 5.
+            cles = {c: str(v.get("key", "")) for c, v in liste.items() if v.get("key")} or cles
         brut = telecharger(f"{dd}/runesReforged.json")
         if brut:
             for cle, val in lire_cosmic(json.loads(brut)).items():
@@ -313,7 +317,7 @@ def main():
     valeurs, sources, changements = assembler(precedent, lus)
     patch = ".".join(version.split(".")[:2]) if version else precedent.get("patch", "")
     resultat = {"patch": patch, "version_ddragon": version, "date": time.strftime("%Y-%m-%d"), **valeurs,
-                "sources": sources, "prix_objets": prix}
+                "sources": sources, "prix_objets": prix, "cles_champions": cles}
     sortie.write_text(json.dumps(resultat, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     # Images de la surcouche, dans un fichier à part (la surcouche ne le retélécharge qu'au changement de patch).
     fichier_images = sortie.with_name("images_surcouche.json")
