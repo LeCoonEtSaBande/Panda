@@ -76,6 +76,8 @@ jobs:
             if [ "$ancien" != "$nouveau" ]; then git rm -q --ignore-unmatch "$ancien"; rm -f "$ancien"; fi
           done
           git add "$nouveau"
+          # Le modèle des duels pour la surcouche en jeu (téléchargé par le lien client au lancement).
+          if [ -f duels_surcouche.json ]; then git add duels_surcouche.json; fi
           if git diff --cached --quiet; then echo "Page inchangée."; exit 0; fi
           git commit -q -m "Assistant Draft régénéré : $nouveau"
           for essai in 1 2 3; do
