@@ -244,10 +244,10 @@ def chance_duel(moi, lui, poste_moi, poste_lui, minute, modele, valeurs):
     return 1 / (1 + math.exp(-logit))
 
 
-# Message affiché 5 secondes à la place de la surcouche, au moment du bip (1 min 30 avant un objectif).
+# Message affiché 10 secondes à la place de la surcouche, au moment du bip (1 min 30 avant un objectif).
 MESSAGE_OBJECTIF = "Items\n\nPriorité\nVision\nContrôle de la rivière\nObjectif"
 MESSAGE_RETARD = "Crossmap!"
-DUREE_MESSAGE_S = 5
+DUREE_MESSAGE_S = 10
 RETARD_CROSSMAP = 0.25          # 25 % de retard ou plus chez les joueurs concernés : « Crossmap! »…
 RETARD_CROSSMAP_OR = 5000       # … ou 5 000 d'or de retard ou plus
 TOUJOURS_Y_ALLER = ("Ancien",)  # le Dragon ancien : toujours le message habituel, retard ou pas
@@ -464,7 +464,7 @@ class Fenetre:
             w.bind("<ButtonRelease-1>", self._fin_glisser)
         self.cadre = tk.Frame(self.racine, bg=FOND, padx=2, pady=1)
         self.cadre.pack(fill="both")
-        # Le message d'objectif : à la place de tout le reste, centré, orange et gras, pendant 5 secondes.
+        # Le message d'objectif : à la place de tout le reste, centré, orange et gras, pendant 10 secondes.
         self.message = tk.Label(self.racine, text="", bg=FOND, fg=COULEURS["orange"], justify="center",
                                 font=("Segoe UI", self.police_gras[1] - 3, "bold"))
         self.fin_message = 0.0
@@ -648,7 +648,7 @@ class Fenetre:
         return [(cherche(l["eux"]), cherche(l["nous"])) for l in self.lignes]
 
     def _montrer_message(self, texte):
-        """Le message prend la place de la surcouche (même taille, même endroit) pendant 5 secondes."""
+        """Le message prend la place de la surcouche (même taille, même endroit) pendant 10 secondes."""
         self.racine.update_idletasks()
         largeur, hauteur = self.racine.winfo_width(), self.racine.winfo_height()
         self.bandeau.pack_forget()
