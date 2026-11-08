@@ -15,6 +15,7 @@ import argparse
 import csv
 import json
 import sys
+import time
 from pathlib import Path
 
 ICI = Path(__file__).resolve().parent
@@ -94,7 +95,8 @@ def construire(dossier_lola, export, sortie):
              for p, v in ex["lanes"]["postes"].items()}
     donnees = {
         "meta": {"patch": patch, "export": ex["date"], "parties_lanes": ex["lanes"]["parties"],
-                 "parties_ganks": ex["ganks"]["parties"]},
+                 "parties_ganks": ex["ganks"]["parties"],
+                 "genere": time.strftime("%Y-%m-%dT%H:%M:%S")},        # chaque génération : profils par défaut remis
         "noms": noms,
         # Catalogue : [catégorie de jungler de l'ancien catalogue (seulement pour les ganks et envahir), les styles affichés
         # (Carry, Tank et HP, plus ses deux styles principaux), 1 s'il est fragile, tous ses types (pour les cibles,

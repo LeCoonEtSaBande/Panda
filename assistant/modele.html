@@ -401,7 +401,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
 const D = __DONNEES__;
 const POSTES = ["top", "jgl", "mid", "adc", "sup"];
 const NOM_POSTE = {top: "Top", jgl: "Jungle", mid: "Mid", adc: "ADC", sup: "Support"};
-const POOL_JUNGLE = ["Briar", "Darius", "Dr. Mundo", "Fiddlesticks", "Gwen", "Ivern", "Kayn bleu", "Viego", "Lee Sin"];
+// Profils mis par défaut à chaque nouvelle version de la page (choix du propriétaire, 08/11/2026) : à l'ouverture d'une
+// version générée après celle déjà vue dans ce navigateur, ces profils sont remis tels quels (même nom : remplacé ;
+// absent : ajouté). Les autres profils enregistrés ne sont pas touchés.
+const PROFILS_DEFAUT = [
+  ["Lee", ["jgl"], {jgl: ["Nidalee", "Fiddlesticks", "Lee Sin", "Ivern"]}],
+  ["Nico Mid", ["mid"], {mid: ["Ahri", "Hwei", "Viktor"]}],
+  ["Nico Bot", ["adc"], {adc: ["Ezreal", "Ashe", "Smolder"]}],
+];
 const CLE = "assistant-draft-v2";
 
 // --- Matchups Lolalytics : table de recherche ---------------------------------------------------
@@ -418,10 +425,23 @@ const nouveauProfil = (nom, postes, pool) => ({id: "p" + Date.now().toString(36)
 let etat = null;
 try { etat = JSON.parse(localStorage.getItem(CLE) || "null"); } catch (e) {}
 if (!etat || !Array.isArray(etat.profils) || !etat.profils.length) {
-  // Profils de départ : « Lee » (jungle, son pool) et « All » (jungle, tous les champions du poste).
-  const moi = nouveauProfil("Lee", ["jgl"], {jgl: POOL_JUNGLE.slice()}), tous = nouveauProfil("All", ["jgl"], {jgl: []});
-  etat = {profils: [moi, tous], actif: moi.id, poste: "jgl", onglet: "draft", tous: false, choix: "", manuel: false,
+  etat = {profils: [], actif: "", poste: "jgl", onglet: "draft", tous: false, choix: "", manuel: false,
           nous: POSTES.map(p => ({poste: p, champ: ""})), eux: POSTES.map(() => ({poste: "", champ: ""}))};
+}
+{ // Nouvelle version de la page : les profils par défaut sont remis (les autres restent).
+  const version = D.meta.genere || `${D.meta.export}|${D.meta.patch}`;
+  if (etat.version_profils !== version) {
+    for (const [nom, postes, pool] of PROFILS_DEFAUT) {
+      const existant = etat.profils.find(p => p.nom === nom);
+      if (existant) { existant.postes = postes.slice(); existant.pool = JSON.parse(JSON.stringify(pool)); }
+      else etat.profils.push(nouveauProfil(nom, postes.slice(), JSON.parse(JSON.stringify(pool))));
+    }
+    etat.version_profils = version;
+  }
+  if (!etat.profils.some(p => p.id === etat.actif)) {
+    const lee = etat.profils.find(p => p.nom === "Lee") || etat.profils[0];
+    etat.actif = lee.id; etat.poste = lee.postes[0];
+  }
 }
 function garder() { try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {} }
 const profil = () => etat.profils.find(p => p.id === etat.actif) || etat.profils[0];
